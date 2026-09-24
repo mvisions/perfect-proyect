@@ -16,6 +16,33 @@ const yearInput = $("#yearInput");
 const groupInput = $("#groupNumber");
 const calendarGrid = $("#calendarGrid");
 const alarmInput = $("#alarmInput");
+const backgroundToggle = $("#backgroundToggle");
+const backgroundFiles = $("#backgroundFiles");
+const backgroundOptions = $("#backgroundOptions");
+const solidBackground = $("#solidBackground");
+const backgroundColorInput = $("#backgroundColorInput");
+const backgroundReset = $("#backgroundReset");
+const customBackgroundKey = "limasam-custom-backgrounds";
+backgroundToggle.checked = localStorage.getItem("limasam-show-background") !== "false";
+backgroundColorInput.value = localStorage.getItem("limasam-background-color") || "#f5f7f3";
+
+function loadCustomBackgrounds() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(customBackgroundKey) || "[]");
+    return months.map((_, index) => saved[index] || null);
+  } catch {
+    return months.map(() => null);
+  }
+}
+
+const customBackgroundData = loadCustomBackgrounds();
+const customAgendaBackgrounds = customBackgroundData.map((source) => {
+  if (!source) return null;
+  const image = new Image();
+  image.src = source;
+  image.addEventListener("load", () => drawAgendaCanvas());
+  return image;
+});
 const agendaBackgrounds = months.map((_, index) => {
   const image = new Image();
   image.src = index === 0
@@ -24,6 +51,26 @@ const agendaBackgrounds = months.map((_, index) => {
   image.addEventListener("load", () => drawAgendaCanvas());
   return image;
 });
+
+function currentAgendaBackground() {
+  return customAgendaBackgrounds[state.month] || agendaBackgrounds[state.month];
+}
+
+function updateBackgroundOptions() {
+  backgroundOptions.hidden = !backgroundToggle.checked;
+  solidBackground.hidden = backgroundToggle.checked;
+}
+
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(reader.result));
+    reader.addEventListener("error", reject);
+    reader.readAsDataURL(file);
+  });
+}
+
+updateBackgroundOptions();
 
 months.forEach((name, index) => {
   const option = document.createElement("option");
@@ -234,7 +281,7 @@ function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
 function drawAgendaCanvas() {
   const canvas = $("#agendaCanvas");
   const context = canvas.getContext("2d");
-  const agendaBackground = agendaBackgrounds[state.month];
+  const agendaBackground = currentAgendaBackground();
   const width = 1600;
   const height = 1320;
   const margin = 72;
@@ -245,7 +292,7 @@ function drawAgendaCanvas() {
   canvas.width = width;
   canvas.height = height;
 
-  if (agendaBackground.complete && agendaBackground.naturalWidth) {
+  if (backgroundToggle.checked && agendaBackground.complete && agendaBackground.naturalWidth) {
     const scale = Math.max(width / agendaBackground.naturalWidth, height / agendaBackground.naturalHeight);
     const imageWidth = agendaBackground.naturalWidth * scale;
     const imageHeight = agendaBackground.naturalHeight * scale;
@@ -257,6 +304,9 @@ function drawAgendaCanvas() {
       imageHeight
     );
     context.fillStyle = "rgba(245,247,243,.26)";
+    context.fillRect(0, 0, width, height);
+  } else if (!backgroundToggle.checked) {
+    context.fillStyle = backgroundColorInput.value;
     context.fillRect(0, 0, width, height);
   }
 
@@ -392,6 +442,49 @@ yearInput.addEventListener("change", () => {
   }
 });
 groupInput.addEventListener("input", renderCalendar);
+backgroundToggle.addEventListener("change", () => {
+  localStorage.setItem("limasam-show-background", String(backgroundToggle.checked));
+  updateBackgroundOptions();
+  drawAgendaCanvas();
+});
+backgroundColorInput.addEventListener("input", () => {
+  localStorage.setItem("limasam-background-color", backgroundColorInput.value);
+  drawAgendaCanvas();
+});
+backgroundFiles.addEventListener("change", async () => {
+  const files = [...backgroundFiles.files].slice(0, months.length);
+  if (!files.length) return;
+  try {
+    const sources = await Promise.all(files.map(readImage));
+    const startIndex = sources.length === 1 ? state.month : 0;
+    if (sources.length > 1) {
+      customBackgroundData.fill(null);
+      customAgendaBackgrounds.fill(null);
+    }
+    sources.forEach((source, index) => {
+      const monthIndex = startIndex + index;
+      if (monthIndex >= months.length) return;
+      customBackgroundData[monthIndex] = source;
+      const image = new Image();
+      image.src = source;
+      image.addEventListener("load", () => drawAgendaCanvas());
+      customAgendaBackgrounds[monthIndex] = image;
+    });
+    localStorage.setItem(customBackgroundKey, JSON.stringify(customBackgroundData));
+    drawAgendaCanvas();
+    showToast(`${sources.length} imagen${sources.length === 1 ? "" : "es"} personalizada${sources.length === 1 ? "" : "s"}`);
+  } catch {
+    showToast("No se pudieron cargar las imágenes");
+  }
+});
+backgroundReset.addEventListener("click", () => {
+  customBackgroundData.fill(null);
+  customAgendaBackgrounds.fill(null);
+  localStorage.removeItem(customBackgroundKey);
+  backgroundFiles.value = "";
+  drawAgendaCanvas();
+  showToast("Fondos predeterminados restaurados");
+});
 
 $("#routeForm").addEventListener("submit", async (event) => {
   event.preventDefault();

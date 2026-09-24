@@ -29,6 +29,13 @@
         <div class="field-group"><label for="groupNumber">Número de grupo</label><div class="input-with-icon"><span>#</span><input id="groupNumber" type="text" placeholder="Ej. 204" maxlength="18"></div></div>
         <div class="field-group"><label for="monthSelect">Mes</label><select id="monthSelect"></select></div>
         <div class="field-group compact-field"><label for="yearInput">Año</label><input id="yearInput" type="number" min="2000" max="2100" value="2026"></div>
+        <label class="background-toggle"><input id="backgroundToggle" type="checkbox" checked><span>Mostrar fondo de barrenderos</span></label>
+        <div class="background-options" id="backgroundOptions">
+          <label class="background-file" for="backgroundFiles">Subir imágenes</label>
+          <input id="backgroundFiles" type="file" accept="image/*" multiple>
+          <button class="button button-quiet background-reset" id="backgroundReset" type="button">Usar fondos predeterminados</button>
+        </div>
+        <label class="solid-background" id="solidBackground" for="backgroundColorInput"><span>Color sólido</span><input id="backgroundColorInput" type="color" value="#f5f7f3"></label>
         <button class="button button-primary" id="downloadButton" type="button"><span>↓</span> Descargar PNG</button>
       </section>
       <div class="content-grid">
