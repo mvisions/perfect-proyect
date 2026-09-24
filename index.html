@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Calendario de rutas limasam">
-  <title>limasam | Calendario de rutas</title>
+  <meta name="description" content="Agenda de trabajos y actividades">
+  <title>Agenda de trabajos y actividades</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="#"><span class="brand-mark">l</span><span>limasam</span></a>
+      <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"><span class="brand-lens"></span></span><span>Agenda de trabajos y actividades</span></a>
       <div class="topbar-note"><span class="live-dot"></span> Calendario de rutas</div>
     </header>
     <main class="workspace">
@@ -47,13 +47,18 @@
             <label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Madrid · IFEMA" autocomplete="off">
             <label for="timeInput">Hora de entrada</label><input id="timeInput" type="time">
             <label class="alarm-toggle"><input id="alarmInput" type="checkbox" checked><span>Activar alarma en Android</span></label>
-            <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
+            <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-quiet" id="clearRememberedButton" type="button">Borrar recuerdo</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
           </form>
           <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><span>Tu ruta aparecerá aquí</span></div>
         </aside>
       </div>
+      <section class="agenda-preview" aria-labelledby="previewTitle">
+        <div class="preview-heading"><p class="section-label">Vista previa</p><h2 id="previewTitle">Agenda lista para compartir</h2></div>
+        <canvas id="agendaCanvas" aria-label="Vista previa de la agenda"></canvas>
+        <p class="preview-credit">Fondos: Limasam y Wikimedia Commons · una imagen distinta para cada mes</p>
+      </section>
     </main>
-    <footer class="footer"><span>limasam</span><span id="footerGroup">Grupo sin asignar</span></footer>
+    <footer class="footer"><span>Agenda de trabajos y actividades</span><span id="footerGroup">Grupo sin asignar</span></footer>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script type="module" src="app.js"></script>

@@ -1,6 +1,6 @@
 {
   "appId": "com.limasam.rutas",
-  "appName": "limasam",
+  "appName": "Agenda de trabajos y actividades",
   "webDir": "dist",
   "bundledWebRuntime": false
 }

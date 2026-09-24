@@ -16,6 +16,14 @@ const yearInput = $("#yearInput");
 const groupInput = $("#groupNumber");
 const calendarGrid = $("#calendarGrid");
 const alarmInput = $("#alarmInput");
+const agendaBackgrounds = months.map((_, index) => {
+  const image = new Image();
+  image.src = index === 0
+    ? "assets/barrenderos.webp"
+    : `assets/barrenderos-${String(index + 1).padStart(2, "0")}.jpg`;
+  image.addEventListener("load", () => drawAgendaCanvas());
+  return image;
+});
 
 months.forEach((name, index) => {
   const option = document.createElement("option");
@@ -28,6 +36,23 @@ yearInput.value = state.year;
 
 function storageKey() {
   return `limasam-${state.year}-${state.month}`;
+}
+
+const rememberedRouteKey = "limasam-last-route";
+
+function loadRememberedRoute() {
+  try {
+    return JSON.parse(localStorage.getItem(rememberedRouteKey) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function saveRememberedRoute(route) {
+  localStorage.setItem(rememberedRouteKey, JSON.stringify({
+    destination: route.destination,
+    time: route.time
+  }));
 }
 
 function loadRoutes() {
@@ -111,6 +136,7 @@ function renderCalendar() {
   $("#footerGroup").textContent = groupInput.value.trim()
     ? `Grupo ${groupInput.value.trim()}`
     : "Grupo sin asignar";
+  drawAgendaCanvas();
 }
 
 function selectDay(day) {
@@ -120,7 +146,7 @@ function selectDay(day) {
     .find((button) => button.querySelector(".day-number")?.textContent === String(day));
   selectedButton?.classList.add("is-selected");
 
-  const route = state.routes[day] || { destination: "", time: "", alarm: true };
+  const route = state.routes[day] || loadRememberedRoute() || { destination: "", time: "", alarm: true };
   $("#selectedDayBadge").textContent = day;
   $("#editorTitle").textContent = `Día ${day}`;
   $("#routeDate").textContent = dateLabel(day);
@@ -164,7 +190,7 @@ async function scheduleAlarm(day, route) {
     await LocalNotifications.schedule({
       notifications: [{
         id,
-        title: "limasam · Recordatorio de ruta",
+        title: "Agenda de trabajos y actividades · Recordatorio de ruta",
         body: `${route.destination} · entrada a las ${route.time}`,
         schedule: { at },
         sound: "default"
@@ -205,43 +231,93 @@ function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
   lines.slice(0, 2).forEach((currentLine, index) => context.fillText(currentLine, x, y + index * lineHeight));
 }
 
-function downloadPng() {
-  const canvas = document.createElement("canvas");
+function drawAgendaCanvas() {
+  const canvas = $("#agendaCanvas");
   const context = canvas.getContext("2d");
+  const agendaBackground = agendaBackgrounds[state.month];
   const width = 1600;
-  const height = 1120;
+  const height = 1320;
   const margin = 72;
-  const gridTop = 310;
-  const cellWidth = (width - margin * 2) / 7;
-  const cellHeight = 108;
+  const gridTop = 470;
+  const gridGap = 14;
+  const cellWidth = (width - margin * 2 - gridGap * 6) / 7;
+  const cellHeight = 112;
   canvas.width = width;
   canvas.height = height;
 
-  context.fillStyle = "#f5f7f3";
-  context.fillRect(0, 0, width, height);
+  if (agendaBackground.complete && agendaBackground.naturalWidth) {
+    const scale = Math.max(width / agendaBackground.naturalWidth, height / agendaBackground.naturalHeight);
+    const imageWidth = agendaBackground.naturalWidth * scale;
+    const imageHeight = agendaBackground.naturalHeight * scale;
+    context.drawImage(
+      agendaBackground,
+      (width - imageWidth) / 2,
+      (height - imageHeight) / 2,
+      imageWidth,
+      imageHeight
+    );
+    context.fillStyle = "rgba(245,247,243,.26)";
+    context.fillRect(0, 0, width, height);
+  }
+
+  const headerX = margin - 18;
+  const drawPanel = (x, y, panelWidth, panelHeight, fill, stroke) => {
+    context.fillStyle = fill;
+    context.beginPath();
+    context.roundRect(x, y, panelWidth, panelHeight, 16);
+    context.fill();
+    context.strokeStyle = stroke;
+    context.lineWidth = 2;
+    context.stroke();
+  };
+  drawPanel(headerX, 46, 900, 100, "rgba(23,33,31,.94)", "rgba(255,255,255,.35)");
+  drawPanel(headerX, 166, 560, 64, "rgba(242,125,101,.94)", "rgba(255,255,255,.72)");
+  const groupName = groupInput.value.trim();
+  const hasGroup = Boolean(groupName);
+  if (hasGroup) {
+    drawPanel(headerX, 236, 300, 32, "rgba(32,124,98,.92)", "rgba(255,255,255,.7)");
+  }
   context.fillStyle = "#17211f";
   context.fillRect(0, 0, width, 17);
-  context.fillStyle = "#f27d65";
-  context.fillRect(margin, 64, 9, 112);
-  context.fillStyle = "#17211f";
+  context.fillStyle = "#ffffff";
   context.font = "700 44px Arial";
-  context.fillText("limasam", margin + 28, 101);
-  context.fillStyle = "#207c62";
+  context.fillText("Agenda de trabajos y actividades", margin + 28, 101);
+  context.fillStyle = "#ccefe1";
   context.font = "700 15px Arial";
   context.fillText("CALENDARIO DE RUTAS", margin + 28, 132);
   context.fillStyle = "#17211f";
   context.font = "700 58px Arial";
   context.fillText(`${months[state.month]} ${state.year}`, margin, 218);
-  context.fillStyle = "#71807a";
-  context.font = "500 20px Arial";
-  context.fillText(groupInput.value.trim() ? `Grupo ${groupInput.value.trim()}` : "Grupo sin asignar", margin, 260);
-  context.fillStyle = "#f27d65";
-  context.fillRect(width - margin - 9, 64, 9, 112);
+  if (hasGroup) {
+    context.fillStyle = "#ffffff";
+    context.font = "500 20px Arial";
+    context.fillText(`Grupo ${groupName}`, margin, 260);
+  }
 
   const weekdays = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"];
-  context.fillStyle = "#9aa8a2";
+  const weekdayY = hasGroup ? 432 : 398;
+  const weekdayHeight = 30;
+  context.textAlign = "center";
   context.font = "700 15px Arial";
-  weekdays.forEach((day, index) => context.fillText(day, margin + index * cellWidth + 12, gridTop - 24));
+  weekdays.forEach((day, index) => {
+    const x = margin + index * (cellWidth + gridGap);
+    context.fillStyle = "rgba(32,124,98,.52)";
+    context.beginPath();
+    context.roundRect(x, weekdayY, cellWidth, weekdayHeight, 8);
+    context.shadowColor = "rgba(23,33,31,.16)";
+    context.shadowBlur = 6;
+    context.shadowOffsetY = 3;
+    context.fill();
+    context.strokeStyle = "rgba(32,124,98,.72)";
+    context.lineWidth = 1.5;
+    context.stroke();
+    context.shadowColor = "transparent";
+    context.shadowBlur = 0;
+    context.shadowOffsetY = 0;
+    context.fillStyle = "#ffffff";
+    context.fillText(day, x + cellWidth / 2, weekdayY + 20);
+  });
+  context.textAlign = "left";
 
   const firstDay = new Date(state.year, state.month, 1).getDay();
   const offset = firstDay === 0 ? 6 : firstDay - 1;
@@ -251,13 +327,24 @@ function downloadPng() {
     const position = offset + day - 1;
     const column = position % 7;
     const row = Math.floor(position / 7);
-    const x = margin + column * cellWidth;
-    const y = gridTop + row * cellHeight;
+    const x = margin + column * (cellWidth + gridGap);
+    const y = gridTop + row * (cellHeight + gridGap);
     const route = state.routes[day];
+    const isWeekend = column >= 5;
 
-    context.strokeStyle = "#e2e9e3";
+    context.fillStyle = isWeekend ? "rgba(67,151,218,.78)" : "rgba(255,255,255,.84)";
+    context.beginPath();
+    context.roundRect(x, y, cellWidth, cellHeight, 10);
+    context.shadowColor = "rgba(23,33,31,.22)";
+    context.shadowBlur = 10;
+    context.shadowOffsetY = 5;
+    context.fill();
+    context.strokeStyle = isWeekend ? "rgba(36,108,174,.82)" : "#e2e9e3";
     context.lineWidth = 2;
-    context.strokeRect(x + 4, y, cellWidth - 8, cellHeight - 8);
+    context.stroke();
+    context.shadowColor = "transparent";
+    context.shadowBlur = 0;
+    context.shadowOffsetY = 0;
     context.fillStyle = "#17211f";
     context.font = "700 17px Arial";
     context.fillText(String(day), x + 17, y + 29);
@@ -279,8 +366,13 @@ function downloadPng() {
   const rows = Math.ceil((offset + daysInMonth) / 7);
   context.fillStyle = "#71807a";
   context.font = "500 15px Arial";
-  context.fillText("Calendario generado con limasam", margin, gridTop + rows * cellHeight + 28);
+  context.fillText("Calendario generado con Agenda de trabajos y actividades", margin, gridTop + rows * (cellHeight + gridGap) + 28);
 
+  return canvas;
+}
+
+function downloadPng() {
+  const canvas = drawAgendaCanvas();
   const link = document.createElement("a");
   link.download = `limasam-${months[state.month].toLowerCase()}-${state.year}.png`;
   link.href = canvas.toDataURL("image/png");
@@ -312,11 +404,19 @@ $("#routeForm").addEventListener("submit", async (event) => {
     return;
   }
   state.routes[selectedDay] = { destination, time, alarm: alarmInput.checked };
+  saveRememberedRoute(state.routes[selectedDay]);
   saveRoutes();
   renderCalendar();
   selectDay(selectedDay);
   await scheduleAlarm(selectedDay, state.routes[selectedDay]);
   showToast("Ruta guardada");
+});
+
+$("#clearRememberedButton").addEventListener("click", () => {
+  localStorage.removeItem(rememberedRouteKey);
+  $("#destinationInput").value = "";
+  $("#timeInput").value = "";
+  showToast("Recuerdo borrado");
 });
 
 $("#clearButton").addEventListener("click", async () => {
