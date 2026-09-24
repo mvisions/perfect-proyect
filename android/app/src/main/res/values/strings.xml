@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">limasam</string>
+    <string name="title_activity_main">limasam</string>
+    <string name="package_name">com.limasam.rutas</string>
+    <string name="custom_url_scheme">com.limasam.rutas</string>
+</resources>

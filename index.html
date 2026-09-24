@@ -46,6 +46,7 @@
             <div class="route-date" id="routeDate"></div>
             <label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Madrid · IFEMA" autocomplete="off">
             <label for="timeInput">Hora de entrada</label><input id="timeInput" type="time">
+            <label class="alarm-toggle"><input id="alarmInput" type="checkbox" checked><span>Activar alarma en Android</span></label>
             <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
           </form>
           <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><span>Tu ruta aparecerá aquí</span></div>
@@ -55,6 +56,6 @@
     <footer class="footer"><span>limasam</span><span id="footerGroup">Grupo sin asignar</span></footer>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -15,6 +15,7 @@ const monthSelect = $("#monthSelect");
 const yearInput = $("#yearInput");
 const groupInput = $("#groupNumber");
 const calendarGrid = $("#calendarGrid");
+const alarmInput = $("#alarmInput");
 
 months.forEach((name, index) => {
   const option = document.createElement("option");
@@ -119,12 +120,13 @@ function selectDay(day) {
     .find((button) => button.querySelector(".day-number")?.textContent === String(day));
   selectedButton?.classList.add("is-selected");
 
-  const route = state.routes[day] || { destination: "", time: "" };
+  const route = state.routes[day] || { destination: "", time: "", alarm: true };
   $("#selectedDayBadge").textContent = day;
   $("#editorTitle").textContent = `Día ${day}`;
   $("#routeDate").textContent = dateLabel(day);
   $("#destinationInput").value = route.destination;
   $("#timeInput").value = route.time;
+  alarmInput.checked = route.alarm !== false;
   $("#routeForm").hidden = false;
   $("#emptyState").hidden = true;
   $("#editorHint").hidden = true;
@@ -136,6 +138,54 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("is-visible");
   setTimeout(() => toast.classList.remove("is-visible"), 2400);
+}
+
+function nativeAndroid() {
+  return Boolean(window.Capacitor?.isNativePlatform?.());
+}
+
+async function scheduleAlarm(day, route) {
+  if (!nativeAndroid() || !route.alarm || !route.time) return;
+  try {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    const permission = await LocalNotifications.requestPermissions();
+    if (permission.display !== "granted") {
+      showToast("Permiso de alarmas no concedido");
+      return;
+    }
+    const [hour, minute] = route.time.split(":").map(Number);
+    const at = new Date(state.year, state.month, day, hour, minute);
+    if (at <= new Date()) {
+      showToast("La hora elegida ya ha pasado");
+      return;
+    }
+    const id = state.year * 10000 + (state.month + 1) * 100 + day;
+    await LocalNotifications.cancel({ notifications: [{ id }] });
+    await LocalNotifications.schedule({
+      notifications: [{
+        id,
+        title: "limasam · Recordatorio de ruta",
+        body: `${route.destination} · entrada a las ${route.time}`,
+        schedule: { at },
+        sound: "default"
+      }]
+    });
+    showToast("Alarma programada en Android");
+  } catch (error) {
+    console.error("No se pudo programar la alarma", error);
+    showToast("No se pudo programar la alarma");
+  }
+}
+
+async function cancelAlarm(day) {
+  if (!nativeAndroid()) return;
+  try {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    const id = state.year * 10000 + (state.month + 1) * 100 + day;
+    await LocalNotifications.cancel({ notifications: [{ id }] });
+  } catch (error) {
+    console.error("No se pudo cancelar la alarma", error);
+  }
 }
 
 function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
@@ -251,7 +301,7 @@ yearInput.addEventListener("change", () => {
 });
 groupInput.addEventListener("input", renderCalendar);
 
-$("#routeForm").addEventListener("submit", (event) => {
+$("#routeForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const selectedDay = state.selected;
   const destination = $("#destinationInput").value.trim();
@@ -261,20 +311,22 @@ $("#routeForm").addEventListener("submit", (event) => {
     showToast("Escribe un destino para guardar la ruta");
     return;
   }
-  state.routes[selectedDay] = { destination, time };
+  state.routes[selectedDay] = { destination, time, alarm: alarmInput.checked };
   saveRoutes();
   renderCalendar();
   selectDay(selectedDay);
+  await scheduleAlarm(selectedDay, state.routes[selectedDay]);
   showToast("Ruta guardada");
 });
 
-$("#clearButton").addEventListener("click", () => {
+$("#clearButton").addEventListener("click", async () => {
   const selectedDay = state.selected;
   if (selectedDay) {
     delete state.routes[selectedDay];
     saveRoutes();
     renderCalendar();
     selectDay(selectedDay);
+    await cancelAlarm(selectedDay);
     showToast("Día vaciado");
   }
 });

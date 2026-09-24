@@ -1,0 +1,6 @@
+{
+  "appId": "com.limasam.rutas",
+  "appName": "limasam",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
