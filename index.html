@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calendario de rutas limasam">
+  <title>limasam | Calendario de rutas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-mark">l</span><span>limasam</span></a>
+      <div class="topbar-note"><span class="live-dot"></span> Calendario de rutas</div>
+    </header>
+    <main class="workspace">
+      <section class="intro-block">
+        <div>
+          <p class="eyebrow">Planificador mensual</p>
+          <h1>Tu mes, <em>en ruta.</em></h1>
+          <p class="intro-copy">Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.</p>
+        </div>
+        <div class="date-stamp"><span id="stampMonth">ENERO</span><strong id="stampYear">2026</strong></div>
+      </section>
+      <section class="control-panel" aria-label="Configuración del calendario">
+        <div class="field-group"><label for="groupNumber">Número de grupo</label><div class="input-with-icon"><span>#</span><input id="groupNumber" type="text" placeholder="Ej. 204" maxlength="18"></div></div>
+        <div class="field-group"><label for="monthSelect">Mes</label><select id="monthSelect"></select></div>
+        <div class="field-group compact-field"><label for="yearInput">Año</label><input id="yearInput" type="number" min="2000" max="2100" value="2026"></div>
+        <button class="button button-primary" id="downloadButton" type="button"><span>↓</span> Descargar PNG</button>
+      </section>
+      <div class="content-grid">
+        <section class="calendar-card" aria-labelledby="calendarTitle">
+          <div class="calendar-heading"><div><p class="section-label">Vista mensual</p><h2 id="calendarTitle">Enero 2026</h2></div><div class="calendar-legend"><span class="legend-swatch"></span> Día con ruta</div></div>
+          <div class="weekdays" aria-hidden="true"><span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span><span>DOM</span></div>
+          <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Calendario mensual"></div>
+          <p class="calendar-help"><span class="keyboard-key">↗</span> Selecciona cualquier día para añadir o editar una ruta</p>
+        </section>
+        <aside class="editor-card" aria-labelledby="editorTitle">
+          <div class="editor-topline"><span class="section-label">Detalle del día</span><span class="day-badge" id="selectedDayBadge">—</span></div>
+          <h2 id="editorTitle">Selecciona un día</h2>
+          <p class="editor-hint" id="editorHint">Haz clic en un día del calendario para registrar su destino y hora.</p>
+          <form id="routeForm" class="route-form" hidden>
+            <div class="route-date" id="routeDate"></div>
+            <label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Madrid · IFEMA" autocomplete="off">
+            <label for="timeInput">Hora de entrada</label><input id="timeInput" type="time">
+            <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
+          </form>
+          <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><span>Tu ruta aparecerá aquí</span></div>
+        </aside>
+      </div>
+    </main>
+    <footer class="footer"><span>limasam</span><span id="footerGroup">Grupo sin asignar</span></footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
