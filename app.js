@@ -3,9 +3,32 @@ const months = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
+const routeTypes = {
+  ruta: { label: "Ruta", color: "#207c62" },
+  limpieza: { label: "Limpieza", color: "#3c82c4" },
+  mantenimiento: { label: "Mantenimiento", color: "#d18b27" },
+  reunion: { label: "Reunión", color: "#9b5bb4" },
+  otro: { label: "Otro", color: "#e16f5b" }
+};
+const dayStatuses = {
+  trabajado: "Trabajado",
+  "festivo-trabajado": "Festivo trabajado",
+  baja: "Baja",
+  "asuntos-propios": "Asuntos propios",
+  vacaciones: "Vacaciones",
+  descanso: "Descanso"
+};
+const nationalHolidays = new Set(["1-1", "1-6", "5-1", "8-15", "10-12", "11-1", "12-6", "12-8", "12-25"]);
+const customHolidayKey = "limasam-custom-holidays";
+const localDriveBackupKey = "limasam-drive-local-backup";
+const googleClientId = "673366304553-dgg8pgu9u8hb4ocfs8p1as5imkt6ht1v.apps.googleusercontent.com";
+const driveFileName = "Agenda de trabajos y actividades.json";
+const lastSyncKey = "limasam-last-sync";
+
+const currentDate = new Date();
 const state = {
-  month: new Date().getMonth(),
-  year: new Date().getFullYear(),
+  month: currentDate.getMonth(),
+  year: currentDate.getFullYear(),
   selected: null,
   routes: {}
 };
@@ -16,15 +39,45 @@ const yearInput = $("#yearInput");
 const groupInput = $("#groupNumber");
 const calendarGrid = $("#calendarGrid");
 const alarmInput = $("#alarmInput");
+const reminderInput = $("#reminderInput");
+const statusInput = $("#statusInput");
+const holidayDateInput = $("#holidayDateInput");
+const holidayNameInput = $("#holidayNameInput");
+const holidayList = $("#holidayList");
 const backgroundToggle = $("#backgroundToggle");
 const backgroundFiles = $("#backgroundFiles");
 const backgroundOptions = $("#backgroundOptions");
 const solidBackground = $("#solidBackground");
 const backgroundColorInput = $("#backgroundColorInput");
 const backgroundReset = $("#backgroundReset");
+const themeSelect = $("#themeSelect");
+const weekdayColorInput = $("#weekdayColorInput");
+const weekendColorInput = $("#weekendColorInput");
+const driveButton = $("#driveButton");
+const driveButtonLabel = $("#driveButtonLabel");
+const driveLogoutButton = $("#driveLogoutButton");
+const syncStatus = $("#syncStatus");
+const syncNowButton = $("#syncNowButton");
+const pdfButton = $("#pdfButton");
+const csvButton = $("#csvButton");
+const shareRecordButton = $("#shareRecordButton");
+const recordButton = $("#recordButton");
+const recordCard = $("#recordCard");
 const customBackgroundKey = "limasam-custom-backgrounds";
+let driveAccessToken = null;
+let driveFileId = localStorage.getItem("limasam-drive-file-id");
+let driveSyncTimer = null;
+let driveChangesPending = false;
 backgroundToggle.checked = localStorage.getItem("limasam-show-background") !== "false";
 backgroundColorInput.value = localStorage.getItem("limasam-background-color") || "#f5f7f3";
+weekdayColorInput.value = localStorage.getItem("limasam-weekday-color") || "#ffffff";
+weekendColorInput.value = localStorage.getItem("limasam-weekend-color") || "#e4f2ff";
+const savedTheme = localStorage.getItem("limasam-theme") || (localStorage.getItem("limasam-dark-mode") === "true" ? "dark" : "light");
+themeSelect.value = savedTheme;
+document.body.classList.toggle("dark-mode", savedTheme === "dark");
+document.body.classList.toggle("night-mode", savedTheme === "night");
+document.documentElement.style.setProperty("--weekday-color", weekdayColorInput.value);
+document.documentElement.style.setProperty("--weekend-color", weekendColorInput.value);
 
 function loadCustomBackgrounds() {
   try {
@@ -80,6 +133,7 @@ months.forEach((name, index) => {
 });
 monthSelect.value = state.month;
 yearInput.value = state.year;
+holidayDateInput.value = `${state.year}-${String(state.month + 1).padStart(2, "0")}-01`;
 
 function storageKey() {
   return `limasam-${state.year}-${state.month}`;
@@ -98,7 +152,10 @@ function loadRememberedRoute() {
 function saveRememberedRoute(route) {
   localStorage.setItem(rememberedRouteKey, JSON.stringify({
     destination: route.destination,
-    time: route.time
+    time: route.time,
+    type: route.type || "ruta",
+    reminder: Number(route.reminder || 0),
+    status: route.status || "trabajado"
   }));
 }
 
@@ -112,10 +169,345 @@ function loadRoutes() {
 
 function saveRoutes() {
   localStorage.setItem(storageKey(), JSON.stringify(state.routes));
+  driveChangesPending = true;
+  updateSyncUi();
+  queueDriveSync();
+}
+
+function updateSyncUi() {
+  const savedAt = localStorage.getItem(lastSyncKey);
+  syncNowButton.hidden = !driveAccessToken;
+  if (driveChangesPending) {
+    syncStatus.textContent = "Cambios pendientes";
+    syncStatus.classList.add("is-pending");
+  } else if (savedAt) {
+    syncStatus.textContent = `Sincronizado ${new Date(savedAt).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}`;
+    syncStatus.classList.remove("is-pending");
+  } else {
+    syncStatus.textContent = driveAccessToken ? "Sincronizado ahora" : "Sin sincronizar";
+    syncStatus.classList.remove("is-pending");
+  }
+}
+
+function markDriveSynced() {
+  driveChangesPending = false;
+  localStorage.setItem(lastSyncKey, new Date().toISOString());
+  updateSyncUi();
+}
+
+function loadExternalScript(source) {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${source}"]`);
+    if (existing) {
+      if (window.google?.accounts?.oauth2) resolve();
+      else existing.addEventListener("load", resolve, { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = source;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+function cloudPayload() {
+  const routes = {};
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (key?.match(/^limasam-\d{4}-\d+$/)) routes[key] = JSON.parse(localStorage.getItem(key));
+  }
+  return { version: 1, updatedAt: new Date().toISOString(), routes, customHolidays };
+}
+
+async function driveRequest(url, options = {}) {
+  const response = await fetch(url, { ...options, headers: { Authorization: `Bearer ${driveAccessToken}`, ...(options.headers || {}) } });
+  if (!response.ok) throw new Error(`Google Drive respondió ${response.status}`);
+  return response;
+}
+
+async function uploadDriveFile() {
+  const content = JSON.stringify(cloudPayload(), null, 2);
+  const body = new Blob([content], { type: "application/json" });
+  if (!driveFileId) {
+    const metadata = new Blob([JSON.stringify({ name: driveFileName, mimeType: "application/json" })], { type: "application/json" });
+    const form = new FormData();
+    form.append("metadata", metadata);
+    form.append("file", body);
+    const response = await driveRequest("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", { method: "POST", body: form });
+    driveFileId = (await response.json()).id;
+    localStorage.setItem("limasam-drive-file-id", driveFileId);
+    markDriveSynced();
+    return;
+  }
+  await driveRequest(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body });
+  markDriveSynced();
+}
+
+async function syncFromDrive() {
+  const query = encodeURIComponent(`name = '${driveFileName}' and trashed = false and mimeType = 'application/json'`);
+  const listResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files?q=${query}&spaces=drive&fields=files(id,name)&pageSize=1`);
+  const files = (await listResponse.json()).files || [];
+  if (!files.length) {
+    await uploadDriveFile();
+    return;
+  }
+  driveFileId = files[0].id;
+  localStorage.setItem("limasam-drive-file-id", driveFileId);
+  const contentResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
+  const payload = await contentResponse.json();
+  localStorage.setItem(localDriveBackupKey, JSON.stringify({ savedAt: new Date().toISOString(), payload: cloudPayload() }));
+  Object.keys(localStorage).filter((key) => key.match(/^limasam-\d{4}-\d+$/)).forEach((key) => localStorage.removeItem(key));
+  Object.entries(payload.routes || {}).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value)));
+  if (Array.isArray(payload.customHolidays)) {
+    customHolidays.splice(0, customHolidays.length, ...payload.customHolidays);
+    localStorage.setItem(customHolidayKey, JSON.stringify(customHolidays));
+  }
+  renderHolidayList();
+  renderCalendar();
+  markDriveSynced();
+}
+
+function queueDriveSync() {
+  if (!driveAccessToken) return;
+  clearTimeout(driveSyncTimer);
+  driveSyncTimer = setTimeout(async () => {
+    try {
+      await uploadDriveFile();
+      driveButtonLabel.textContent = "Drive sincronizado";
+    } catch (error) {
+      console.error("No se pudo sincronizar Google Drive", error);
+      driveButtonLabel.textContent = "Error al sincronizar";
+    }
+  }, 500);
+}
+
+async function connectGoogleDrive() {
+  driveButton.disabled = true;
+  driveButtonLabel.textContent = "Conectando...";
+  syncStatus.textContent = "Conectando con Drive...";
+  try {
+    await loadExternalScript("https://accounts.google.com/gsi/client");
+    const token = await new Promise((resolve, reject) => {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: googleClientId,
+        scope: "https://www.googleapis.com/auth/drive.file",
+        callback: resolve,
+        error_callback: reject
+      });
+      client.requestAccessToken({ prompt: driveFileId ? "" : "consent" });
+    });
+    if (!token.access_token) throw new Error("No se recibió el permiso de Google");
+    driveAccessToken = token.access_token;
+    await syncFromDrive();
+    driveButtonLabel.textContent = "Drive conectado";
+    driveLogoutButton.hidden = false;
+    recordButton.hidden = false;
+    updateSyncUi();
+    showToast("Agenda sincronizada con Google Drive");
+  } catch (error) {
+    console.error("No se pudo conectar Google Drive", error);
+    driveButtonLabel.textContent = "Conectar Google Drive";
+    updateSyncUi();
+    showToast("No se pudo conectar Google Drive");
+  } finally {
+    driveButton.disabled = false;
+  }
+}
+
+async function syncNow() {
+  if (!driveAccessToken) return connectGoogleDrive();
+  syncNowButton.disabled = true;
+  syncStatus.textContent = "Sincronizando...";
+  try {
+    await uploadDriveFile();
+    driveButtonLabel.textContent = "Drive sincronizado";
+    showToast("Cambios sincronizados");
+  } catch (error) {
+    console.error("No se pudo sincronizar", error);
+    syncStatus.textContent = "Error de sincronización";
+    showToast("No se pudo sincronizar");
+  } finally {
+    syncNowButton.disabled = false;
+    updateSyncUi();
+  }
+}
+
+async function disconnectGoogleDrive() {
+  const token = driveAccessToken;
+  driveAccessToken = null;
+  clearTimeout(driveSyncTimer);
+  if (token && window.google?.accounts?.oauth2?.revoke) {
+    await new Promise((resolve) => window.google.accounts.oauth2.revoke(token, resolve));
+  }
+  driveButtonLabel.textContent = "Conectar Google Drive";
+  driveLogoutButton.hidden = true;
+  recordButton.hidden = true;
+  recordCard.hidden = true;
+  document.body.classList.remove("record-view");
+  recordButton.textContent = "Ver expediente";
+  updateSyncUi();
+  showToast("Sesión de Google cerrada");
+}
+
+function loadCustomHolidays() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(customHolidayKey) || "[]");
+    return Array.isArray(saved) ? saved.filter((holiday) => holiday?.date && holiday?.name) : [];
+  } catch {
+    return [];
+  }
+}
+
+const customHolidays = loadCustomHolidays();
+
+function holidayDate(day) {
+  return `${state.year}-${String(state.month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function customHoliday(day) {
+  return customHolidays.find((holiday) => holiday.date === holidayDate(day));
 }
 
 function dateLabel(day) {
   return `${day} de ${months[state.month].toLowerCase()} de ${state.year}`;
+}
+
+function isHoliday(day) {
+  return nationalHolidays.has(`${state.month + 1}-${day}`) || Boolean(customHoliday(day));
+}
+
+function holidayLabel(day) {
+  return customHoliday(day)?.name || "Festivo";
+}
+
+function renderHolidayList() {
+  const currentYear = String(state.year);
+  const holidays = customHolidays.filter((holiday) => holiday.date.startsWith(`${currentYear}-`)).sort((left, right) => left.date.localeCompare(right.date));
+  holidayList.innerHTML = holidays.length
+    ? holidays.map((holiday) => `<li><span>${escapeHtml(holiday.date.slice(5).split("-").reverse().join("/"))} · ${escapeHtml(holiday.name)}</span><button type="button" class="holiday-remove" data-date="${holiday.date}" aria-label="Eliminar ${escapeHtml(holiday.name)}">×</button></li>`).join("")
+    : "<li class=\"holiday-empty\">No hay festivos personalizados este año</li>";
+}
+
+function routeColor(route) {
+  return routeTypes[route?.type]?.color || routeTypes.ruta.color;
+}
+
+function statusLabel(route) {
+  return dayStatuses[route?.status] || dayStatuses.trabajado;
+}
+
+function routeDisplayName(route) {
+  return route.destination || statusLabel(route);
+}
+
+function calendarColor(variable, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
+}
+
+function updateMonthSummary() {
+  const routes = Object.values(state.routes);
+  $("#routeCount").textContent = routes.length;
+  $("#scheduledHours").textContent = routes.filter((route) => route.time).length;
+  $("#holidayCount").textContent = Array.from({ length: new Date(state.year, state.month + 1, 0).getDate() }, (_, index) => index + 1)
+    .filter(isHoliday).length;
+}
+
+function yearRoutes(year) {
+  const records = [];
+  for (let month = 0; month < 12; month += 1) {
+    let routes = {};
+    try {
+      routes = JSON.parse(localStorage.getItem(`limasam-${year}-${month}`) || "{}");
+    } catch {
+      routes = {};
+    }
+    Object.entries(routes).forEach(([day, route]) => records.push({ month, day: Number(day), ...route }));
+  }
+  return records.sort((left, right) => new Date(year, left.month, left.day) - new Date(year, right.month, right.day));
+}
+
+function renderAnnualSummary() {
+  const records = yearRoutes(state.year).filter((record) => record.status !== "descanso");
+  const isWeekdayWorked = (record) => {
+    if ((record.status || "trabajado") !== "trabajado") return false;
+    const dayOfWeek = new Date(state.year, record.month, record.day).getDay();
+    return dayOfWeek !== 0 && dayOfWeek !== 6;
+  };
+  const weekdayWorked = records.filter(isWeekdayWorked).length;
+  const counts = records.reduce((result, record) => {
+    const status = record.status || "trabajado";
+    result[status] = (result[status] || 0) + 1;
+    return result;
+  }, {});
+  $("#recordYear").textContent = state.year;
+  $("#annualTotalCount").textContent = records.length;
+  $("#workedCount").textContent = weekdayWorked;
+  $("#holidayWorkedCount").textContent = counts["festivo-trabajado"] || 0;
+  $("#leaveCount").textContent = counts.baja || 0;
+  $("#personalCount").textContent = counts["asuntos-propios"] || 0;
+  $("#vacationCount").textContent = counts.vacaciones || 0;
+  $("#monthlyStats").innerHTML = months.map((month, monthIndex) => {
+    const monthRecords = records.filter((record) => record.month === monthIndex);
+    const values = {
+      worked: monthRecords.filter(isWeekdayWorked).length,
+      holiday: monthRecords.filter((record) => record.status === "festivo-trabajado").length,
+      vacation: monthRecords.filter((record) => record.status === "vacaciones").length,
+      leave: monthRecords.filter((record) => record.status === "baja").length,
+      personal: monthRecords.filter((record) => record.status === "asuntos-propios").length
+    };
+    const total = Object.values(values).reduce((sum, value) => sum + value, 0);
+    return `<div class="month-row"><span class="month-name">${month.slice(0, 3)}</span><div class="month-track" aria-label="${month}: ${total} días"><span class="month-bar bar-worked" style="--bar-size:${values.worked}"></span><span class="month-bar bar-holiday" style="--bar-size:${values.holiday}"></span><span class="month-bar bar-vacation" style="--bar-size:${values.vacation}"></span><span class="month-bar bar-leave" style="--bar-size:${values.leave}"></span><span class="month-bar bar-personal" style="--bar-size:${values.personal}"></span></div><strong class="month-total">${total}</strong></div>`;
+  }).join("");
+  $("#recordRows").innerHTML = records.length
+    ? records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td><span class="status-pill status-${record.status || "trabajado"}">${escapeHtml(statusLabel(record))}</span></td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time || "Sin horario")}</td></tr>`).join("")
+    : "<tr><td class=\"record-empty\" colspan=\"4\">Todavía no hay registros para este año</td></tr>";
+}
+
+function downloadFile(content, fileName, type) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([content], { type }));
+  link.download = fileName;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+function downloadRecordCsv() {
+  const records = yearRoutes(state.year);
+  const rows = [["Fecha", "Estado", "Destino", "Horario"], ...records.map((record) => [
+    `${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}`,
+    statusLabel(record),
+    routeDisplayName(record),
+    record.time || "Sin horario"
+  ])];
+  const csv = `\uFEFF${rows.map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(";")).join("\n")}`;
+  downloadFile(csv, `expediente-${state.year}.csv`, "text/csv;charset=utf-8");
+  showToast("CSV descargado");
+}
+
+function downloadRecordPdf() {
+  const records = yearRoutes(state.year);
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    showToast("Permite las ventanas emergentes para crear el PDF");
+    return;
+  }
+  const rows = records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td>${escapeHtml(statusLabel(record))}</td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time || "Sin horario")}</td></tr>`).join("");
+  printWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="UTF-8"><title>Expediente ${state.year}</title><style>body{font-family:Arial,sans-serif;color:#17211f;padding:32px}h1{font-size:24px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #d9e2dc;text-align:left}th{font-size:11px;text-transform:uppercase;color:#60736a}@media print{body{padding:0}}</style></head><body><h1>Expediente de ${state.year}</h1><p>Agenda de trabajos y actividades</p><table><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th></tr></thead><tbody>${rows || '<tr><td colspan="4">Sin registros</td></tr>'}</tbody></table></body></html>`);
+  printWindow.document.close();
+  printWindow.addEventListener("load", () => printWindow.print());
+  showToast("Elige “Guardar como PDF” en la ventana de impresión");
+}
+
+function shareRecordSummary() {
+  const records = yearRoutes(state.year);
+  const counts = records.reduce((result, record) => {
+    const status = record.status || "trabajado";
+    result[status] = (result[status] || 0) + 1;
+    return result;
+  }, {});
+  const summary = `Expediente ${state.year}\nTrabajados: ${counts.trabajado || 0}\nFestivos trabajados: ${counts["festivo-trabajado"] || 0}\nBajas: ${counts.baja || 0}\nAsuntos propios: ${counts["asuntos-propios"] || 0}\nVacaciones: ${counts.vacaciones || 0}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(summary)}`, "_blank", "noopener");
 }
 
 function escapeHtml(text) {
@@ -126,6 +518,9 @@ function escapeHtml(text) {
 
 function renderCalendar() {
   loadRoutes();
+  calendarGrid.classList.remove("month-enter");
+  void calendarGrid.offsetWidth;
+  calendarGrid.classList.add("month-enter");
   calendarGrid.innerHTML = "";
   $("#calendarTitle").textContent = `${months[state.month]} ${state.year}`;
   $("#stampMonth").textContent = months[state.month].toUpperCase();
@@ -148,14 +543,17 @@ function renderCalendar() {
     button.type = "button";
     button.className = "day-cell";
     button.setAttribute("role", "gridcell");
-    button.setAttribute("aria-label", `${dateLabel(day)}${route ? `, ${route.destination} a las ${route.time}` : ""}`);
+    button.setAttribute("aria-label", `${dateLabel(day)}${route ? `, ${routeDisplayName(route)}${route.time ? ` a las ${route.time}` : ""}` : ""}`);
     const dayOfWeek = new Date(state.year, state.month, day).getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       button.classList.add("is-weekend");
     }
     if (route) {
       button.classList.add("has-route");
+      button.classList.add(`route-${route.type || "ruta"}`);
+      button.classList.add(`status-${route.status || "trabajado"}`);
     }
+    if (isHoliday(day)) button.classList.add("is-holiday");
 
     if (today.getDate() === day && today.getMonth() === state.month && today.getFullYear() === state.year) {
       button.classList.add("is-today");
@@ -165,8 +563,9 @@ function renderCalendar() {
     }
 
     button.innerHTML = `<span class="day-number">${day}</span>`;
+    if (isHoliday(day)) button.innerHTML += `<span class="holiday-label">${escapeHtml(holidayLabel(day))}</span>`;
     if (route) {
-      button.innerHTML += `<span class="route-dot" aria-hidden="true"></span><span class="route-preview">${escapeHtml(route.destination)}</span><span class="route-time">${route.time || "Sin hora"}</span>`;
+      button.innerHTML += `<span class="route-dot" aria-hidden="true"></span><span class="route-preview">${escapeHtml(routeDisplayName(route))}</span><span class="route-time">${route.time || statusLabel(route)}</span>`;
     }
     button.addEventListener("click", () => selectDay(day));
     calendarGrid.appendChild(button);
@@ -183,6 +582,8 @@ function renderCalendar() {
   $("#footerGroup").textContent = groupInput.value.trim()
     ? `Grupo ${groupInput.value.trim()}`
     : "Grupo sin asignar";
+  updateMonthSummary();
+  renderAnnualSummary();
   drawAgendaCanvas();
 }
 
@@ -193,12 +594,15 @@ function selectDay(day) {
     .find((button) => button.querySelector(".day-number")?.textContent === String(day));
   selectedButton?.classList.add("is-selected");
 
-  const route = state.routes[day] || loadRememberedRoute() || { destination: "", time: "", alarm: true };
+  const route = state.routes[day] || loadRememberedRoute() || { destination: "", time: "", type: "ruta", reminder: 0, status: "trabajado", alarm: true };
   $("#selectedDayBadge").textContent = day;
   $("#editorTitle").textContent = `Día ${day}`;
   $("#routeDate").textContent = dateLabel(day);
   $("#destinationInput").value = route.destination;
+  $("#typeInput").value = route.type || "ruta";
   $("#timeInput").value = route.time;
+  reminderInput.value = String(route.reminder || 0);
+  statusInput.value = route.status || "trabajado";
   alarmInput.checked = route.alarm !== false;
   $("#routeForm").hidden = false;
   $("#emptyState").hidden = true;
@@ -218,7 +622,7 @@ function nativeAndroid() {
 }
 
 async function scheduleAlarm(day, route) {
-  if (!nativeAndroid() || !route.alarm || !route.time) return;
+  if (!nativeAndroid() || !route.alarm || !route.time || ["baja", "asuntos-propios", "descanso"].includes(route.status)) return;
   try {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
     const permission = await LocalNotifications.requestPermissions();
@@ -228,6 +632,7 @@ async function scheduleAlarm(day, route) {
     }
     const [hour, minute] = route.time.split(":").map(Number);
     const at = new Date(state.year, state.month, day, hour, minute);
+    at.setMinutes(at.getMinutes() - Number(route.reminder || 0));
     if (at <= new Date()) {
       showToast("La hora elegida ya ha pasado");
       return;
@@ -238,7 +643,7 @@ async function scheduleAlarm(day, route) {
       notifications: [{
         id,
         title: "Agenda de trabajos y actividades · Recordatorio de ruta",
-        body: `${route.destination} · entrada a las ${route.time}`,
+        body: `${route.destination} · entrada a las ${route.time}${Number(route.reminder || 0) ? ` · aviso ${route.reminder} min antes` : ""}`,
         schedule: { at },
         sound: "default"
       }]
@@ -382,7 +787,8 @@ function drawAgendaCanvas() {
     const route = state.routes[day];
     const isWeekend = column >= 5;
 
-    context.fillStyle = isWeekend ? "rgba(67,151,218,.78)" : "rgba(255,255,255,.84)";
+    const cellColor = isWeekend ? calendarColor("--weekend-color", "#e4f2ff") : calendarColor("--weekday-color", "#ffffff");
+    context.fillStyle = cellColor;
     context.beginPath();
     context.roundRect(x, y, cellWidth, cellHeight, 10);
     context.shadowColor = "rgba(23,33,31,.22)";
@@ -400,12 +806,12 @@ function drawAgendaCanvas() {
     context.fillText(String(day), x + 17, y + 29);
 
     if (route) {
-      context.fillStyle = "#207c62";
+      context.fillStyle = routeColor(route);
       context.font = "700 16px Arial";
-      drawWrappedText(context, route.destination, x + 17, y + 59, cellWidth - 34, 21);
+      drawWrappedText(context, routeDisplayName(route), x + 17, y + 59, cellWidth - 34, 21);
       context.fillStyle = "#71807a";
       context.font = "500 14px Arial";
-      context.fillText(route.time || "Sin hora", x + 17, y + 93);
+      context.fillText(route.time || statusLabel(route), x + 17, y + 93);
       context.fillStyle = "#f27d65";
       context.beginPath();
       context.arc(x + cellWidth - 21, y + 20, 5, 0, Math.PI * 2);
@@ -430,6 +836,35 @@ function downloadPng() {
   showToast("PNG descargado correctamente");
 }
 
+async function shareAgenda() {
+  const canvas = drawAgendaCanvas();
+  const fileName = `limasam-${months[state.month].toLowerCase()}-${state.year}.png`;
+  try {
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    if (!blob) throw new Error("No se pudo crear la imagen");
+    const file = new File([blob], fileName, { type: "image/png" });
+    const shareData = {
+      title: "Agenda de trabajos y actividades",
+      text: `Agenda de ${months[state.month].toLowerCase()} de ${state.year}`,
+      files: [file]
+    };
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share(shareData);
+      showToast("Agenda lista para compartir");
+      return;
+    }
+    const link = document.createElement("a");
+    link.download = fileName;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+    window.open(`https://wa.me/?text=${encodeURIComponent(`Agenda de ${months[state.month].toLowerCase()} de ${state.year}. Adjunta el PNG descargado.`)}`, "_blank", "noopener");
+    showToast("PNG descargado. Adjunta la imagen en WhatsApp");
+  } catch (error) {
+    if (error.name !== "AbortError") showToast("No se pudo compartir la agenda");
+  }
+}
+
 monthSelect.addEventListener("change", () => {
   state.month = Number(monthSelect.value);
   renderCalendar();
@@ -439,7 +874,42 @@ yearInput.addEventListener("change", () => {
   if (year >= 2000 && year <= 2100) {
     state.year = year;
     renderCalendar();
+    renderHolidayList();
   }
+});
+$("#addHolidayButton").addEventListener("click", () => {
+  const date = holidayDateInput.value;
+  const name = holidayNameInput.value.trim();
+  if (!date || !name) {
+    showToast("Indica una fecha y un nombre para el festivo");
+    return;
+  }
+  const existingIndex = customHolidays.findIndex((holiday) => holiday.date === date);
+  const holiday = { date, name };
+  if (existingIndex >= 0) customHolidays[existingIndex] = holiday;
+  else customHolidays.push(holiday);
+  localStorage.setItem(customHolidayKey, JSON.stringify(customHolidays));
+  driveChangesPending = true;
+  updateSyncUi();
+  queueDriveSync();
+  renderHolidayList();
+  renderCalendar();
+  holidayNameInput.value = "";
+  showToast("Festivo guardado");
+});
+holidayList.addEventListener("click", (event) => {
+  const removeButton = event.target.closest(".holiday-remove");
+  if (!removeButton) return;
+  const index = customHolidays.findIndex((holiday) => holiday.date === removeButton.dataset.date);
+  if (index < 0) return;
+  customHolidays.splice(index, 1);
+  localStorage.setItem(customHolidayKey, JSON.stringify(customHolidays));
+  driveChangesPending = true;
+  updateSyncUi();
+  queueDriveSync();
+  renderHolidayList();
+  renderCalendar();
+  showToast("Festivo eliminado");
 });
 groupInput.addEventListener("input", renderCalendar);
 backgroundToggle.addEventListener("change", () => {
@@ -449,6 +919,24 @@ backgroundToggle.addEventListener("change", () => {
 });
 backgroundColorInput.addEventListener("input", () => {
   localStorage.setItem("limasam-background-color", backgroundColorInput.value);
+  drawAgendaCanvas();
+});
+themeSelect.addEventListener("change", () => {
+  const isDark = themeSelect.value === "dark";
+  const isNight = themeSelect.value === "night";
+  document.body.classList.toggle("dark-mode", isDark);
+  document.body.classList.toggle("night-mode", isNight);
+  localStorage.setItem("limasam-theme", themeSelect.value);
+  localStorage.setItem("limasam-dark-mode", String(isDark || isNight));
+});
+weekdayColorInput.addEventListener("input", () => {
+  document.documentElement.style.setProperty("--weekday-color", weekdayColorInput.value);
+  localStorage.setItem("limasam-weekday-color", weekdayColorInput.value);
+  drawAgendaCanvas();
+});
+weekendColorInput.addEventListener("input", () => {
+  document.documentElement.style.setProperty("--weekend-color", weekendColorInput.value);
+  localStorage.setItem("limasam-weekend-color", weekendColorInput.value);
   drawAgendaCanvas();
 });
 backgroundFiles.addEventListener("change", async () => {
@@ -486,17 +974,38 @@ backgroundReset.addEventListener("click", () => {
   showToast("Fondos predeterminados restaurados");
 });
 
+driveButton.addEventListener("click", connectGoogleDrive);
+syncNowButton.addEventListener("click", syncNow);
+pdfButton.addEventListener("click", downloadRecordPdf);
+csvButton.addEventListener("click", downloadRecordCsv);
+shareRecordButton.addEventListener("click", shareRecordSummary);
+driveLogoutButton.addEventListener("click", disconnectGoogleDrive);
+recordButton.addEventListener("click", () => {
+  recordCard.hidden = !recordCard.hidden;
+  document.body.classList.toggle("record-view", !recordCard.hidden);
+  recordButton.textContent = recordCard.hidden ? "Ver expediente" : "Ocultar expediente";
+  if (!recordCard.hidden) renderAnnualSummary();
+});
+
 $("#routeForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const selectedDay = state.selected;
   const destination = $("#destinationInput").value.trim();
   const time = $("#timeInput").value;
-  if (!destination) {
+  const status = statusInput.value;
+  if (!destination && status === "trabajado") {
     $("#destinationInput").focus();
     showToast("Escribe un destino para guardar la ruta");
     return;
   }
-  state.routes[selectedDay] = { destination, time, alarm: alarmInput.checked };
+  state.routes[selectedDay] = {
+    destination,
+    time,
+    type: $("#typeInput").value,
+    reminder: Number(reminderInput.value),
+    status,
+    alarm: alarmInput.checked
+  };
   saveRememberedRoute(state.routes[selectedDay]);
   saveRoutes();
   renderCalendar();
@@ -506,6 +1015,7 @@ $("#routeForm").addEventListener("submit", async (event) => {
 });
 
 $("#clearRememberedButton").addEventListener("click", () => {
+  if (!window.confirm("¿Quieres borrar el recuerdo de la última ruta?")) return;
   localStorage.removeItem(rememberedRouteKey);
   $("#destinationInput").value = "";
   $("#timeInput").value = "";
@@ -514,7 +1024,7 @@ $("#clearRememberedButton").addEventListener("click", () => {
 
 $("#clearButton").addEventListener("click", async () => {
   const selectedDay = state.selected;
-  if (selectedDay) {
+  if (selectedDay && window.confirm("¿Quieres vaciar todos los datos de este día?")) {
     delete state.routes[selectedDay];
     saveRoutes();
     renderCalendar();
@@ -525,4 +1035,7 @@ $("#clearButton").addEventListener("click", async () => {
 });
 
 $("#downloadButton").addEventListener("click", downloadPng);
+$("#shareButton").addEventListener("click", shareAgenda);
+renderHolidayList();
 renderCalendar();
+updateSyncUi();
