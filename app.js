@@ -16,6 +16,7 @@ const dayStatuses = {
   baja: "Baja",
   "asuntos-propios": "Asuntos propios",
   vacaciones: "Vacaciones",
+  ampliaciones: "Ampliaciones",
   descanso: "Descanso"
 };
 const nationalHolidays = new Set(["1-1", "1-6", "5-1", "8-15", "10-12", "11-1", "12-6", "12-8", "12-25"]);
@@ -40,6 +41,11 @@ const groupInput = $("#groupNumber");
 const calendarGrid = $("#calendarGrid");
 const alarmInput = $("#alarmInput");
 const reminderInput = $("#reminderInput");
+const shiftInput = $("#shiftInput");
+const exitInput = $("#exitInput");
+const extraHoursValue = $("#extraHoursValue");
+const extraHoursMinus = $("#extraHoursMinus");
+const extraHoursPlus = $("#extraHoursPlus");
 const statusInput = $("#statusInput");
 const holidayDateInput = $("#holidayDateInput");
 const holidayNameInput = $("#holidayNameInput");
@@ -61,6 +67,11 @@ const syncNowButton = $("#syncNowButton");
 const pdfButton = $("#pdfButton");
 const csvButton = $("#csvButton");
 const shareRecordButton = $("#shareRecordButton");
+const installButton = $("#installButton");
+const offlineStatus = $("#offlineStatus");
+const previewDaySelect = $("#previewDaySelect");
+const agendaCanvas = $("#agendaCanvas");
+const routeManager = $("#routeManager");
 const recordButton = $("#recordButton");
 const recordCard = $("#recordCard");
 const customBackgroundKey = "limasam-custom-backgrounds";
@@ -68,6 +79,7 @@ let driveAccessToken = null;
 let driveFileId = localStorage.getItem("limasam-drive-file-id");
 let driveSyncTimer = null;
 let driveChangesPending = false;
+let deferredInstallPrompt = null;
 backgroundToggle.checked = localStorage.getItem("limasam-show-background") !== "false";
 backgroundColorInput.value = localStorage.getItem("limasam-background-color") || "#f5f7f3";
 weekdayColorInput.value = localStorage.getItem("limasam-weekday-color") || "#ffffff";
@@ -114,6 +126,15 @@ function updateBackgroundOptions() {
   solidBackground.hidden = backgroundToggle.checked;
 }
 
+function renderPreviewDayOptions() {
+  const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
+  previewDaySelect.innerHTML = Array.from({ length: daysInMonth }, (_, index) => {
+    const day = index + 1;
+    return `<option value="${day}">Día ${day}</option>`;
+  }).join("");
+  previewDaySelect.value = String(state.selected || 1);
+}
+
 function readImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -134,6 +155,7 @@ months.forEach((name, index) => {
 monthSelect.value = state.month;
 yearInput.value = state.year;
 holidayDateInput.value = `${state.year}-${String(state.month + 1).padStart(2, "0")}-01`;
+renderPreviewDayOptions();
 
 function storageKey() {
   return `limasam-${state.year}-${state.month}`;
@@ -153,9 +175,12 @@ function saveRememberedRoute(route) {
   localStorage.setItem(rememberedRouteKey, JSON.stringify({
     destination: route.destination,
     time: route.time,
-    type: route.type || "ruta",
+    type: route.type || "",
     reminder: Number(route.reminder || 0),
-    status: route.status || "trabajado"
+    status: route.status || "trabajado",
+    exit: route.exit || "",
+    shift: route.shift || "completa",
+    exitManual: route.exitManual === true
   }));
 }
 
@@ -188,6 +213,29 @@ function updateSyncUi() {
     syncStatus.classList.remove("is-pending");
   }
 }
+
+function updateOfflineStatus() {
+  offlineStatus.hidden = navigator.onLine;
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch((error) => console.error("No se pudo activar el modo offline", error)));
+}
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  installButton.hidden = false;
+});
+installButton.addEventListener("click", async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  installButton.hidden = true;
+});
+window.addEventListener("online", updateOfflineStatus);
+window.addEventListener("offline", updateOfflineStatus);
+updateOfflineStatus();
 
 function markDriveSynced() {
   driveChangesPending = false;
@@ -401,6 +449,26 @@ function routeDisplayName(route) {
   return route.destination || statusLabel(route);
 }
 
+function validTime(value) {
+  return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
+}
+
+function addHoursToTime(value, hours) {
+  if (!validTime(value)) return "";
+  const [hour, minute] = value.split(":").map(Number);
+  const totalMinutes = (hour * 60 + minute + hours * 60) % (24 * 60);
+  return `${String(Math.floor(totalMinutes / 60)).padStart(2, "0")}:${String(totalMinutes % 60).padStart(2, "0")}`;
+}
+
+function autoFillExit() {
+  const hours = shiftInput.value === "media" ? 4 : shiftInput.value === "continua" ? 7 : 8;
+  const entry = $("#timeInput").value;
+  if (validTime(entry) && exitInput.dataset.manual !== "true") {
+    exitInput.value = addHoursToTime(entry, hours);
+    exitInput.dataset.manual = "false";
+  }
+}
+
 function calendarColor(variable, fallback) {
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
 }
@@ -411,6 +479,25 @@ function updateMonthSummary() {
   $("#scheduledHours").textContent = routes.filter((route) => route.time).length;
   $("#holidayCount").textContent = Array.from({ length: new Date(state.year, state.month + 1, 0).getDate() }, (_, index) => index + 1)
     .filter(isHoliday).length;
+}
+
+function routeExtraHours(route) {
+  return Math.max(0, Number(route?.extraHours || 0));
+}
+
+function updateExtraHoursUi(route = state.routes[state.selected]) {
+  extraHoursValue.textContent = routeExtraHours(route);
+}
+
+function changeExtraHours(amount) {
+  if (!state.selected) return;
+  const route = state.routes[state.selected] || { destination: "", time: "", type: "", status: "trabajado", alarm: false };
+  route.extraHours = Math.max(0, routeExtraHours(route) + amount);
+  state.routes[state.selected] = route;
+  saveRoutes();
+  updateExtraHoursUi(route);
+  renderCalendar();
+  selectDay(state.selected);
 }
 
 function yearRoutes(year) {
@@ -435,6 +522,7 @@ function renderAnnualSummary() {
     return dayOfWeek !== 0 && dayOfWeek !== 6;
   };
   const weekdayWorked = records.filter(isWeekdayWorked).length;
+  const totalExtraHours = records.reduce((sum, record) => sum + routeExtraHours(record), 0);
   const counts = records.reduce((result, record) => {
     const status = record.status || "trabajado";
     result[status] = (result[status] || 0) + 1;
@@ -447,6 +535,8 @@ function renderAnnualSummary() {
   $("#leaveCount").textContent = counts.baja || 0;
   $("#personalCount").textContent = counts["asuntos-propios"] || 0;
   $("#vacationCount").textContent = counts.vacaciones || 0;
+  $("#extensionCount").textContent = counts.ampliaciones || 0;
+  $("#extraHoursCount").textContent = totalExtraHours;
   $("#monthlyStats").innerHTML = months.map((month, monthIndex) => {
     const monthRecords = records.filter((record) => record.month === monthIndex);
     const values = {
@@ -455,13 +545,15 @@ function renderAnnualSummary() {
       vacation: monthRecords.filter((record) => record.status === "vacaciones").length,
       leave: monthRecords.filter((record) => record.status === "baja").length,
       personal: monthRecords.filter((record) => record.status === "asuntos-propios").length
+      ,extension: monthRecords.filter((record) => record.status === "ampliaciones").length
+      ,extra: monthRecords.reduce((sum, record) => sum + routeExtraHours(record), 0)
     };
-    const total = Object.values(values).reduce((sum, value) => sum + value, 0);
-    return `<div class="month-row"><span class="month-name">${month.slice(0, 3)}</span><div class="month-track" aria-label="${month}: ${total} días"><span class="month-bar bar-worked" style="--bar-size:${values.worked}"></span><span class="month-bar bar-holiday" style="--bar-size:${values.holiday}"></span><span class="month-bar bar-vacation" style="--bar-size:${values.vacation}"></span><span class="month-bar bar-leave" style="--bar-size:${values.leave}"></span><span class="month-bar bar-personal" style="--bar-size:${values.personal}"></span></div><strong class="month-total">${total}</strong></div>`;
+    const total = values.worked + values.holiday + values.vacation + values.leave + values.personal + values.extension;
+    return `<div class="month-row"><span class="month-name">${month.slice(0, 3)}</span><div class="month-track" aria-label="${month}: ${total} días y ${values.extra} horas extra"><span class="month-bar bar-worked" style="--bar-size:${values.worked}"></span><span class="month-bar bar-holiday" style="--bar-size:${values.holiday}"></span><span class="month-bar bar-vacation" style="--bar-size:${values.vacation}"></span><span class="month-bar bar-leave" style="--bar-size:${values.leave}"></span><span class="month-bar bar-personal" style="--bar-size:${values.personal}"></span><span class="month-bar bar-extension" style="--bar-size:${values.extension}"></span><span class="month-bar bar-extra" style="--bar-size:${values.extra}"></span></div><strong class="month-total">${total} + ${values.extra} h</strong></div>`;
   }).join("");
   $("#recordRows").innerHTML = records.length
-    ? records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td><span class="status-pill status-${record.status || "trabajado"}">${escapeHtml(statusLabel(record))}</span></td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time || "Sin horario")}</td></tr>`).join("")
-    : "<tr><td class=\"record-empty\" colspan=\"4\">Todavía no hay registros para este año</td></tr>";
+    ? records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td><span class="status-pill status-${record.status || "trabajado"}">${escapeHtml(statusLabel(record))}</span></td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time ? `${record.time}${record.exit ? ` - ${record.exit}` : ""}` : "Sin horario")}</td><td>${routeExtraHours(record)} h</td></tr>`).join("")
+    : "<tr><td class=\"record-empty\" colspan=\"5\">Todavía no hay registros para este año</td></tr>";
 }
 
 function downloadFile(content, fileName, type) {
@@ -474,11 +566,12 @@ function downloadFile(content, fileName, type) {
 
 function downloadRecordCsv() {
   const records = yearRoutes(state.year);
-  const rows = [["Fecha", "Estado", "Destino", "Horario"], ...records.map((record) => [
+  const rows = [["Fecha", "Estado", "Destino", "Horario", "Horas extra"], ...records.map((record) => [
     `${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}`,
     statusLabel(record),
     routeDisplayName(record),
-    record.time || "Sin horario"
+    record.time ? `${record.time}${record.exit ? ` - ${record.exit}` : ""}` : "Sin horario",
+    routeExtraHours(record)
   ])];
   const csv = `\uFEFF${rows.map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(";")).join("\n")}`;
   downloadFile(csv, `expediente-${state.year}.csv`, "text/csv;charset=utf-8");
@@ -492,8 +585,8 @@ function downloadRecordPdf() {
     showToast("Permite las ventanas emergentes para crear el PDF");
     return;
   }
-  const rows = records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td>${escapeHtml(statusLabel(record))}</td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time || "Sin horario")}</td></tr>`).join("");
-  printWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="UTF-8"><title>Expediente ${state.year}</title><style>body{font-family:Arial,sans-serif;color:#17211f;padding:32px}h1{font-size:24px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #d9e2dc;text-align:left}th{font-size:11px;text-transform:uppercase;color:#60736a}@media print{body{padding:0}}</style></head><body><h1>Expediente de ${state.year}</h1><p>Agenda de trabajos y actividades</p><table><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th></tr></thead><tbody>${rows || '<tr><td colspan="4">Sin registros</td></tr>'}</tbody></table></body></html>`);
+  const rows = records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td>${escapeHtml(statusLabel(record))}</td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time ? `${record.time}${record.exit ? ` - ${record.exit}` : ""}` : "Sin horario")}</td><td>${routeExtraHours(record)} h</td></tr>`).join("");
+  printWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="UTF-8"><title>Expediente ${state.year}</title><style>body{font-family:Arial,sans-serif;color:#17211f;padding:32px}h1{font-size:24px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #d9e2dc;text-align:left}th{font-size:11px;text-transform:uppercase;color:#60736a}@media print{body{padding:0}}</style></head><body><h1>Expediente de ${state.year}</h1><p>Memoria laboral</p><table><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th><th>Horas extra</th></tr></thead><tbody>${rows || '<tr><td colspan="5">Sin registros</td></tr>'}</tbody></table></body></html>`);
   printWindow.document.close();
   printWindow.addEventListener("load", () => printWindow.print());
   showToast("Elige “Guardar como PDF” en la ventana de impresión");
@@ -506,7 +599,8 @@ function shareRecordSummary() {
     result[status] = (result[status] || 0) + 1;
     return result;
   }, {});
-  const summary = `Expediente ${state.year}\nTrabajados: ${counts.trabajado || 0}\nFestivos trabajados: ${counts["festivo-trabajado"] || 0}\nBajas: ${counts.baja || 0}\nAsuntos propios: ${counts["asuntos-propios"] || 0}\nVacaciones: ${counts.vacaciones || 0}`;
+  const totalExtraHours = records.reduce((sum, record) => sum + routeExtraHours(record), 0);
+  const summary = `Expediente ${state.year}\nTrabajados: ${counts.trabajado || 0}\nFestivos trabajados: ${counts["festivo-trabajado"] || 0}\nBajas: ${counts.baja || 0}\nAsuntos propios: ${counts["asuntos-propios"] || 0}\nVacaciones: ${counts.vacaciones || 0}\nHoras extra: ${totalExtraHours}`;
   window.open(`https://wa.me/?text=${encodeURIComponent(summary)}`, "_blank", "noopener");
 }
 
@@ -550,7 +644,7 @@ function renderCalendar() {
     }
     if (route) {
       button.classList.add("has-route");
-      button.classList.add(`route-${route.type || "ruta"}`);
+      button.classList.add(`route-${routeTypes[route.type] ? route.type : "ruta"}`);
       button.classList.add(`status-${route.status || "trabajado"}`);
     }
     if (isHoliday(day)) button.classList.add("is-holiday");
@@ -589,18 +683,25 @@ function renderCalendar() {
 
 function selectDay(day) {
   state.selected = day;
+  previewDaySelect.value = String(day);
+  routeManager.open = true;
   calendarGrid.querySelectorAll("button").forEach((button) => button.classList.remove("is-selected"));
   const selectedButton = [...calendarGrid.querySelectorAll("button")]
     .find((button) => button.querySelector(".day-number")?.textContent === String(day));
   selectedButton?.classList.add("is-selected");
 
-  const route = state.routes[day] || loadRememberedRoute() || { destination: "", time: "", type: "ruta", reminder: 0, status: "trabajado", alarm: true };
+  const route = state.routes[day] || loadRememberedRoute() || { destination: "", time: "", type: "", reminder: 0, status: "trabajado", shift: "completa", exit: "", alarm: true };
   $("#selectedDayBadge").textContent = day;
   $("#editorTitle").textContent = `Día ${day}`;
   $("#routeDate").textContent = dateLabel(day);
   $("#destinationInput").value = route.destination;
-  $("#typeInput").value = route.type || "ruta";
+  $("#typeInput").value = route.type || "";
   $("#timeInput").value = route.time;
+  shiftInput.value = route.shift || "completa";
+  exitInput.value = route.exit || "";
+  exitInput.dataset.manual = route.exitManual === true ? "true" : "false";
+  autoFillExit();
+  updateExtraHoursUi(route);
   reminderInput.value = String(route.reminder || 0);
   statusInput.value = route.status || "trabajado";
   alarmInput.checked = route.alarm !== false;
@@ -608,6 +709,32 @@ function selectDay(day) {
   $("#emptyState").hidden = true;
   $("#editorHint").hidden = true;
   $("#destinationInput").focus();
+  drawAgendaCanvas();
+}
+
+function selectCanvasDay(event) {
+  const rect = agendaCanvas.getBoundingClientRect();
+  const scaleX = agendaCanvas.width / rect.width;
+  const scaleY = agendaCanvas.height / rect.height;
+  const x = (event.clientX - rect.left) * scaleX;
+  const y = (event.clientY - rect.top) * scaleY;
+  const margin = 72;
+  const gridTop = 470;
+  const gridGap = 14;
+  const cellWidth = (1600 - margin * 2 - gridGap * 6) / 7;
+  const cellHeight = 112;
+  if (x < margin || y < gridTop) return;
+  const column = Math.floor((x - margin) / (cellWidth + gridGap));
+  const row = Math.floor((y - gridTop) / (cellHeight + gridGap));
+  if (column > 6 || row < 0 || row > 5) return;
+  const cellX = margin + column * (cellWidth + gridGap);
+  const cellY = gridTop + row * (cellHeight + gridGap);
+  if (x > cellX + cellWidth || y > cellY + cellHeight) return;
+  const firstDay = new Date(state.year, state.month, 1).getDay();
+  const offset = firstDay === 0 ? 6 : firstDay - 1;
+  const day = row * 7 + column - offset + 1;
+  const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
+  if (day >= 1 && day <= daysInMonth) selectDay(day);
 }
 
 function showToast(message) {
@@ -642,7 +769,7 @@ async function scheduleAlarm(day, route) {
     await LocalNotifications.schedule({
       notifications: [{
         id,
-        title: "Agenda de trabajos y actividades · Recordatorio de ruta",
+        title: "Memoria laboral · Recordatorio de jornada",
         body: `${route.destination} · entrada a las ${route.time}${Number(route.reminder || 0) ? ` · aviso ${route.reminder} min antes` : ""}`,
         schedule: { at },
         sound: "default"
@@ -736,7 +863,7 @@ function drawAgendaCanvas() {
   context.fillRect(0, 0, width, 17);
   context.fillStyle = "#ffffff";
   context.font = "700 44px Arial";
-  context.fillText("Agenda de trabajos y actividades", margin + 28, 101);
+  context.fillText("Memoria laboral", margin + 28, 101);
   context.fillStyle = "#ccefe1";
   context.font = "700 15px Arial";
   context.fillText("CALENDARIO DE RUTAS", margin + 28, 132);
@@ -798,6 +925,11 @@ function drawAgendaCanvas() {
     context.strokeStyle = isWeekend ? "rgba(36,108,174,.82)" : "#e2e9e3";
     context.lineWidth = 2;
     context.stroke();
+    if (state.selected === day) {
+      context.strokeStyle = "#f27d65";
+      context.lineWidth = 5;
+      context.stroke();
+    }
     context.shadowColor = "transparent";
     context.shadowBlur = 0;
     context.shadowOffsetY = 0;
@@ -811,7 +943,7 @@ function drawAgendaCanvas() {
       drawWrappedText(context, routeDisplayName(route), x + 17, y + 59, cellWidth - 34, 21);
       context.fillStyle = "#71807a";
       context.font = "500 14px Arial";
-      context.fillText(route.time || statusLabel(route), x + 17, y + 93);
+      context.fillText(route.time ? `${route.time}${route.exit ? ` - ${route.exit}` : ""}` : statusLabel(route), x + 17, y + 93);
       context.fillStyle = "#f27d65";
       context.beginPath();
       context.arc(x + cellWidth - 21, y + 20, 5, 0, Math.PI * 2);
@@ -822,7 +954,7 @@ function drawAgendaCanvas() {
   const rows = Math.ceil((offset + daysInMonth) / 7);
   context.fillStyle = "#71807a";
   context.font = "500 15px Arial";
-  context.fillText("Calendario generado con Agenda de trabajos y actividades", margin, gridTop + rows * (cellHeight + gridGap) + 28);
+  context.fillText("Calendario generado con Memoria laboral", margin, gridTop + rows * (cellHeight + gridGap) + 28);
 
   return canvas;
 }
@@ -844,7 +976,7 @@ async function shareAgenda() {
     if (!blob) throw new Error("No se pudo crear la imagen");
     const file = new File([blob], fileName, { type: "image/png" });
     const shareData = {
-      title: "Agenda de trabajos y actividades",
+      title: "Memoria laboral",
       text: `Agenda de ${months[state.month].toLowerCase()} de ${state.year}`,
       files: [file]
     };
@@ -867,12 +999,16 @@ async function shareAgenda() {
 
 monthSelect.addEventListener("change", () => {
   state.month = Number(monthSelect.value);
+  state.selected = null;
+  renderPreviewDayOptions();
   renderCalendar();
 });
 yearInput.addEventListener("change", () => {
   const year = Number(yearInput.value);
   if (year >= 2000 && year <= 2100) {
     state.year = year;
+    state.selected = null;
+    renderPreviewDayOptions();
     renderCalendar();
     renderHolidayList();
   }
@@ -912,6 +1048,16 @@ holidayList.addEventListener("click", (event) => {
   showToast("Festivo eliminado");
 });
 groupInput.addEventListener("input", renderCalendar);
+previewDaySelect.addEventListener("change", () => selectDay(Number(previewDaySelect.value)));
+$("#timeInput").addEventListener("input", autoFillExit);
+shiftInput.addEventListener("change", () => {
+  exitInput.dataset.manual = "false";
+  autoFillExit();
+});
+exitInput.addEventListener("input", () => {
+  exitInput.dataset.manual = "true";
+});
+agendaCanvas.addEventListener("click", selectCanvasDay);
 backgroundToggle.addEventListener("change", () => {
   localStorage.setItem("limasam-show-background", String(backgroundToggle.checked));
   updateBackgroundOptions();
@@ -986,22 +1132,39 @@ recordButton.addEventListener("click", () => {
   recordButton.textContent = recordCard.hidden ? "Ver expediente" : "Ocultar expediente";
   if (!recordCard.hidden) renderAnnualSummary();
 });
+extraHoursMinus.addEventListener("click", () => changeExtraHours(-1));
+extraHoursPlus.addEventListener("click", () => changeExtraHours(1));
 
 $("#routeForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const selectedDay = state.selected;
   const destination = $("#destinationInput").value.trim();
   const time = $("#timeInput").value;
+  const exit = exitInput.value;
   const status = statusInput.value;
   if (!destination && status === "trabajado") {
     $("#destinationInput").focus();
     showToast("Escribe un destino para guardar la ruta");
     return;
   }
+  if (time && !validTime(time)) {
+    $("#timeInput").focus();
+    showToast("La entrada debe tener formato HH:MM");
+    return;
+  }
+  if (exit && !validTime(exit)) {
+    exitInput.focus();
+    showToast("La salida debe tener formato HH:MM");
+    return;
+  }
   state.routes[selectedDay] = {
     destination,
     time,
     type: $("#typeInput").value,
+    shift: shiftInput.value,
+    exit,
+    exitManual: exitInput.dataset.manual === "true",
+    extraHours: Number(extraHoursValue.textContent) || 0,
     reminder: Number(reminderInput.value),
     status,
     alarm: alarmInput.checked
@@ -1019,6 +1182,9 @@ $("#clearRememberedButton").addEventListener("click", () => {
   localStorage.removeItem(rememberedRouteKey);
   $("#destinationInput").value = "";
   $("#timeInput").value = "";
+  shiftInput.value = "completa";
+  exitInput.value = "";
+  exitInput.dataset.manual = "false";
   showToast("Recuerdo borrado");
 });
 
@@ -1038,4 +1204,5 @@ $("#downloadButton").addEventListener("click", downloadPng);
 $("#shareButton").addEventListener("click", shareAgenda);
 renderHolidayList();
 renderCalendar();
+selectDay(1);
 updateSyncUi();

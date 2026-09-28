@@ -1,6 +1,6 @@
 {
   "appId": "com.limasam.rutas",
-  "appName": "Agenda de trabajos y actividades",
+  "appName": "Memoria laboral",
   "webDir": "dist",
   "bundledWebRuntime": false
 }

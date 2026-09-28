@@ -3,25 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Agenda de trabajos y actividades">
-  <title>Agenda de trabajos y actividades</title>
+  <meta name="description" content="Memoria laboral para registrar jornadas, destinos y horas">
+  <meta name="theme-color" content="#17211f">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Memoria laboral</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="visual-enhancements.css">
+  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="visual-enhancements.css?v=7">
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"><span class="brand-lens"></span></span><span>Agenda de trabajos y actividades</span></a>
-      <div class="topbar-actions"><button class="drive-button" id="driveButton" type="button"><span class="drive-icon" aria-hidden="true">▣</span><span id="driveButtonLabel">Conectar Google Drive</span></button><span class="sync-status" id="syncStatus">Sin sincronizar</span><button class="sync-now-button" id="syncNowButton" type="button" hidden>Sincronizar ahora</button><button class="drive-logout-button" id="driveLogoutButton" type="button" hidden>Cerrar sesión</button><button class="record-button" id="recordButton" type="button" hidden>Ver expediente</button><div class="topbar-note"><span class="live-dot"></span> Calendario de rutas</div></div>
+      <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"><span class="brand-lens"></span></span><span>Memoria laboral</span></a>
+      <div class="topbar-actions"><button class="install-button" id="installButton" type="button" hidden>Instalar app</button><span class="offline-status" id="offlineStatus" hidden>Sin conexión</span><button class="drive-button" id="driveButton" type="button"><span class="drive-icon" aria-hidden="true">▣</span><span id="driveButtonLabel">Conectar Google Drive</span></button><span class="sync-status" id="syncStatus">Sin sincronizar</span><button class="sync-now-button" id="syncNowButton" type="button" hidden>Sincronizar ahora</button><button class="drive-logout-button" id="driveLogoutButton" type="button" hidden>Cerrar sesión</button><button class="record-button" id="recordButton" type="button" hidden>Ver expediente</button><div class="topbar-note"><span class="live-dot"></span> Calendario de rutas</div></div>
     </header>
     <main class="workspace">
       <section class="intro-block">
         <div>
           <p class="eyebrow">Planificador mensual</p>
-          <h1>Tu mes, <em>en ruta.</em></h1>
+          <h1>Memoria laboral</h1>
           <p class="intro-copy">Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.</p>
         </div>
         <div class="date-stamp"><span id="stampMonth">MES ACTUAL</span><strong id="stampYear">AÑO ACTUAL</strong></div>
@@ -71,22 +73,24 @@
             <div><strong id="holidayCount">0</strong><span>festivos</span></div>
           </div>
         </section>
-        <aside class="editor-card" aria-labelledby="editorTitle">
-          <div class="editor-topline"><span class="section-label">Detalle del día</span><span class="day-badge" id="selectedDayBadge">—</span></div>
-          <h2 id="editorTitle">Selecciona un día</h2>
+        <details class="editor-card route-manager" id="routeManager" aria-labelledby="editorTitle">
+          <summary class="route-summary"><div class="editor-topline"><span class="section-label">Detalle del día</span><span class="day-badge" id="selectedDayBadge">—</span></div><h2 id="editorTitle">Selecciona un día</h2></summary>
           <p class="editor-hint" id="editorHint">Haz clic en un día del calendario para registrar su destino y hora.</p>
           <form id="routeForm" class="route-form" hidden>
             <div class="route-date" id="routeDate"></div>
-            <label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Madrid · IFEMA" autocomplete="off">
-            <label for="typeInput">Tipo de trabajo</label><select id="typeInput"><option value="ruta">Ruta</option><option value="limpieza">Limpieza</option><option value="mantenimiento">Mantenimiento</option><option value="reunion">Reunión</option><option value="otro">Otro</option></select>
-            <label for="timeInput">Hora de entrada</label><input id="timeInput" type="time">
+            <label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Barrio de Salamanca" autocomplete="off">
+            <label for="typeInput">Tipo de trabajo</label><input id="typeInput" type="text" maxlength="32" placeholder="Ej. Recogida de muebles" autocomplete="off">
+            <label for="timeInput">Hora de entrada (24 h)</label><input id="timeInput" type="text" inputmode="numeric" maxlength="5" pattern="(?:[01]\d|2[0-3]):[0-5]\d" placeholder="07:30" autocomplete="off">
+            <label for="shiftInput">Tipo de jornada</label><select id="shiftInput"><option value="completa">Jornada completa · 8 h</option><option value="continua">Jornada continua · 7 h</option><option value="media">Media jornada · 4 h</option></select>
+            <label for="exitInput">Hora de salida (24 h)</label><input id="exitInput" type="text" inputmode="numeric" maxlength="5" pattern="(?:[01]\d|2[0-3]):[0-5]\d" placeholder="15:30" autocomplete="off">
+            <div class="extra-hours-control"><span>Horas extra</span><div><button id="extraHoursMinus" type="button" aria-label="Restar una hora extra">−</button><strong id="extraHoursValue">0</strong><button id="extraHoursPlus" type="button" aria-label="Añadir una hora extra">+</button></div><small>Se suma de una en una</small></div>
             <label for="reminderInput">Avisar</label><select id="reminderInput"><option value="0">A la hora de entrada</option><option value="15">15 minutos antes</option><option value="30">30 minutos antes</option><option value="60">1 hora antes</option><option value="120">2 horas antes</option></select>
-            <label for="statusInput">Estado del día</label><select id="statusInput"><option value="trabajado">Trabajado</option><option value="festivo-trabajado">Festivo trabajado</option><option value="baja">Baja</option><option value="asuntos-propios">Asuntos propios</option><option value="vacaciones">Vacaciones</option><option value="descanso">Descanso</option></select>
+            <label for="statusInput">Estado del día</label><select id="statusInput"><option value="trabajado">Trabajado</option><option value="festivo-trabajado">Festivo trabajado</option><option value="baja">Baja</option><option value="asuntos-propios">Asuntos propios</option><option value="vacaciones">Vacaciones</option><option value="ampliaciones">Ampliaciones</option></select>
             <label class="alarm-toggle"><input id="alarmInput" type="checkbox" checked><span>Activar alarma en Android</span></label>
             <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-quiet" id="clearRememberedButton" type="button">Borrar recuerdo</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
           </form>
           <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><span>Tu ruta aparecerá aquí</span></div>
-        </aside>
+        </details>
       </div>
       <section class="record-card" id="recordCard" aria-labelledby="recordTitle" hidden>
         <div class="record-heading"><div><p class="section-label">Control anual</p><h2 id="recordTitle">Expediente de <span id="recordYear">2026</span></h2></div><span class="record-note">Resumen de días y actividades</span></div>
@@ -97,23 +101,25 @@
           <div><strong id="leaveCount">0</strong><span>Bajas</span></div>
           <div><strong id="personalCount">0</strong><span>Asuntos propios</span></div>
           <div><strong id="vacationCount">0</strong><span>Vacaciones</span></div>
+          <div><strong id="extensionCount">0</strong><span>Ampliaciones</span></div>
+          <div><strong id="extraHoursCount">0</strong><span>Horas extra</span></div>
         </div>
         <div class="annual-chart" aria-labelledby="chartTitle">
-          <div class="chart-heading"><h3 id="chartTitle">Días por mes</h3><div class="chart-legend"><span class="legend-worked">Trabajados</span><span class="legend-holiday">Festivos</span><span class="legend-vacation">Vacaciones</span><span class="legend-leave">Bajas</span><span class="legend-personal">Asuntos propios</span></div></div>
+          <div class="chart-heading"><h3 id="chartTitle">Días y horas extra por mes</h3><div class="chart-legend"><span class="legend-worked">Trabajados</span><span class="legend-holiday">Festivos</span><span class="legend-vacation">Vacaciones</span><span class="legend-leave">Bajas</span><span class="legend-personal">Asuntos propios</span><span class="legend-extension">Ampliaciones</span><span class="legend-extra">Horas extra</span></div></div>
           <div id="monthlyStats" class="monthly-stats"></div>
         </div>
         <div class="record-table-wrap">
-          <table class="record-table"><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th></tr></thead><tbody id="recordRows"></tbody></table>
+          <table class="record-table"><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th><th>Horas extra</th></tr></thead><tbody id="recordRows"></tbody></table>
         </div>
         <div class="record-export" aria-label="Exportar expediente"><span>Exportar expediente</span><button class="button button-quiet" id="pdfButton" type="button">Descargar PDF</button><button class="button button-quiet" id="csvButton" type="button">Descargar CSV</button><button class="button button-quiet" id="shareRecordButton" type="button">Compartir resumen</button></div>
       </section>
       <section class="agenda-preview" aria-labelledby="previewTitle">
-        <div class="preview-heading"><p class="section-label">Vista previa</p><h2 id="previewTitle">Agenda lista para compartir</h2></div>
+        <div class="preview-heading"><div><p class="section-label">Vista previa en tiempo real</p><h2 id="previewTitle">Agenda lista para compartir</h2></div><label class="preview-day-picker" for="previewDaySelect">Editar día<select id="previewDaySelect"></select></label></div>
         <canvas id="agendaCanvas" aria-label="Vista previa de la agenda"></canvas>
         <p class="preview-credit">Fondos: Limasam y Wikimedia Commons · una imagen distinta para cada mes</p>
       </section>
     </main>
-    <footer class="footer"><span>Agenda de trabajos y actividades</span><span id="footerGroup">Grupo sin asignar</span></footer>
+    <footer class="footer"><span>Memoria laboral</span><span id="footerGroup">Grupo sin asignar</span></footer>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script type="module" src="app.js"></script>
