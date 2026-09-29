@@ -43,6 +43,8 @@ const alarmInput = $("#alarmInput");
 const reminderInput = $("#reminderInput");
 const shiftInput = $("#shiftInput");
 const exitInput = $("#exitInput");
+const entryNowButton = $("#entryNowButton");
+const exitNowButton = $("#exitNowButton");
 const extraHoursValue = $("#extraHoursValue");
 const extraHoursMinus = $("#extraHoursMinus");
 const extraHoursPlus = $("#extraHoursPlus");
@@ -57,6 +59,7 @@ const solidBackground = $("#solidBackground");
 const backgroundColorInput = $("#backgroundColorInput");
 const backgroundReset = $("#backgroundReset");
 const themeSelect = $("#themeSelect");
+const soundToggle = $("#soundToggle");
 const weekdayColorInput = $("#weekdayColorInput");
 const weekendColorInput = $("#weekendColorInput");
 const driveButton = $("#driveButton");
@@ -86,10 +89,76 @@ weekdayColorInput.value = localStorage.getItem("limasam-weekday-color") || "#fff
 weekendColorInput.value = localStorage.getItem("limasam-weekend-color") || "#e4f2ff";
 const savedTheme = localStorage.getItem("limasam-theme") || (localStorage.getItem("limasam-dark-mode") === "true" ? "dark" : "light");
 themeSelect.value = savedTheme;
+soundToggle.checked = localStorage.getItem("limasam-sounds") !== "false";
 document.body.classList.toggle("dark-mode", savedTheme === "dark");
 document.body.classList.toggle("night-mode", savedTheme === "night");
 document.documentElement.style.setProperty("--weekday-color", weekdayColorInput.value);
 document.documentElement.style.setProperty("--weekend-color", weekendColorInput.value);
+
+let audioContext;
+let welcomeSoundPlayed = false;
+
+async function playMelody(notes) {
+  if (!soundToggle.checked) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  audioContext ||= new AudioContextClass();
+  await audioContext.resume();
+  const start = audioContext.currentTime + 0.05;
+  notes.forEach(([frequency, delay, duration]) => {
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.value = frequency;
+    gain.gain.setValueAtTime(0.0001, start + delay);
+    gain.gain.exponentialRampToValueAtTime(0.07, start + delay + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + delay + duration);
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start(start + delay);
+    oscillator.stop(start + delay + duration + 0.03);
+  });
+}
+
+async function playBeep() {
+  if (!soundToggle.checked) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  audioContext ||= new AudioContextClass();
+  await audioContext.resume();
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  const start = audioContext.currentTime + 0.01;
+  oscillator.type = "sine";
+  oscillator.frequency.value = 740;
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(0.16, start + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.09);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start(start);
+  oscillator.stop(start + 0.11);
+}
+
+async function playWelcomeMelody() {
+  if (welcomeSoundPlayed) return;
+  welcomeSoundPlayed = true;
+  await playMelody([[523.25, 0, .16], [659.25, .14, .16], [783.99, .28, .25]]);
+}
+
+async function playSavedMelody() {
+  await playMelody([[659.25, 0, .12], [783.99, .12, .18]]);
+}
+
+function unlockWelcomeSound() {
+  playWelcomeMelody();
+  window.removeEventListener("pointerdown", unlockWelcomeSound);
+  window.removeEventListener("keydown", unlockWelcomeSound);
+}
+
+window.addEventListener("pointerdown", unlockWelcomeSound, { once: true });
+window.addEventListener("keydown", unlockWelcomeSound, { once: true });
+document.addEventListener("click", (event) => {
+  if (event.target.closest("button, summary")) playBeep().catch(() => {});
+}, true);
 
 function loadCustomBackgrounds() {
   try {
@@ -469,6 +538,65 @@ function autoFillExit() {
   }
 }
 
+function randomBytes(size) {
+  const bytes = new Uint8Array(size);
+  crypto.getRandomValues(bytes);
+  return bytes;
+}
+
+function toBase64(bytes) {
+  return btoa(String.fromCharCode(...new Uint8Array(bytes)));
+}
+
+async function verifyBiometric() {
+  const credentialKey = "limasam-biometric-credential";
+  if (!window.PublicKeyCredential || !window.isSecureContext || !navigator.credentials) {
+    return window.confirm("Este navegador no permite usar huella. ¿Confirmas registrar la hora actual?");
+  }
+  try {
+    let credentialId = localStorage.getItem(credentialKey);
+    if (!credentialId) {
+      const credential = await navigator.credentials.create({ publicKey: {
+        challenge: randomBytes(32),
+        rp: { name: "Memoria laboral" },
+        user: { id: randomBytes(16), name: "usuario", displayName: "Usuario de Memoria laboral" },
+        pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+        timeout: 60000
+      } });
+      if (!credential) return false;
+      credentialId = toBase64(credential.rawId);
+      localStorage.setItem(credentialKey, credentialId);
+    }
+    await navigator.credentials.get({ publicKey: {
+      challenge: randomBytes(32),
+      allowCredentials: [{ type: "public-key", id: Uint8Array.from(atob(credentialId), (character) => character.charCodeAt(0)) }],
+      userVerification: "required",
+      timeout: 60000
+    } });
+    return true;
+  } catch (error) {
+    console.warn("No se pudo validar la huella", error);
+    showToast("No se pudo validar la huella");
+    return false;
+  }
+}
+
+async function registerCurrentTime(target) {
+  if (!(await verifyBiometric())) return;
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  if (target === "entry") {
+    $("#timeInput").value = time;
+    exitInput.dataset.manual = "false";
+    autoFillExit();
+  } else {
+    exitInput.value = time;
+    exitInput.dataset.manual = "true";
+  }
+  showToast(`Hora de ${target === "entry" ? "entrada" : "salida"} registrada: ${time}`);
+}
+
 function calendarColor(variable, fallback) {
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
 }
@@ -703,7 +831,9 @@ function selectDay(day) {
   autoFillExit();
   updateExtraHoursUi(route);
   reminderInput.value = String(route.reminder || 0);
-  statusInput.value = route.status || "trabajado";
+  const selectedDate = new Date(state.year, state.month, day);
+  const isWeekend = selectedDate.getDay() === 0 || selectedDate.getDay() === 6;
+  statusInput.value = isHoliday(day) || isWeekend ? "festivo-trabajado" : (route.status || "trabajado");
   alarmInput.checked = route.alarm !== false;
   $("#routeForm").hidden = false;
   $("#emptyState").hidden = true;
@@ -913,8 +1043,9 @@ function drawAgendaCanvas() {
     const y = gridTop + row * (cellHeight + gridGap);
     const route = state.routes[day];
     const isWeekend = column >= 5;
+    const holiday = isHoliday(day);
 
-    const cellColor = isWeekend ? calendarColor("--weekend-color", "#e4f2ff") : calendarColor("--weekday-color", "#ffffff");
+    const cellColor = holiday ? "#fff0c9" : (isWeekend ? calendarColor("--weekend-color", "#e4f2ff") : calendarColor("--weekday-color", "#ffffff"));
     context.fillStyle = cellColor;
     context.beginPath();
     context.roundRect(x, y, cellWidth, cellHeight, 10);
@@ -1075,6 +1206,10 @@ themeSelect.addEventListener("change", () => {
   localStorage.setItem("limasam-theme", themeSelect.value);
   localStorage.setItem("limasam-dark-mode", String(isDark || isNight));
 });
+soundToggle.addEventListener("change", () => {
+  localStorage.setItem("limasam-sounds", String(soundToggle.checked));
+  if (soundToggle.checked) playSavedMelody();
+});
 weekdayColorInput.addEventListener("input", () => {
   document.documentElement.style.setProperty("--weekday-color", weekdayColorInput.value);
   localStorage.setItem("limasam-weekday-color", weekdayColorInput.value);
@@ -1134,6 +1269,8 @@ recordButton.addEventListener("click", () => {
 });
 extraHoursMinus.addEventListener("click", () => changeExtraHours(-1));
 extraHoursPlus.addEventListener("click", () => changeExtraHours(1));
+entryNowButton.addEventListener("click", () => registerCurrentTime("entry"));
+exitNowButton.addEventListener("click", () => registerCurrentTime("exit"));
 
 $("#routeForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -1174,6 +1311,7 @@ $("#routeForm").addEventListener("submit", async (event) => {
   renderCalendar();
   selectDay(selectedDay);
   await scheduleAlarm(selectedDay, state.routes[selectedDay]);
+  playSavedMelody();
   showToast("Ruta guardada");
 });
 
