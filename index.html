@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=12">
-  <link rel="stylesheet" href="visual-enhancements.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=22">
+  <link rel="stylesheet" href="visual-enhancements.css?v=22">
 </head>
 <body>
   <div class="app-shell">
@@ -44,10 +44,13 @@
           <label class="background-file" for="backgroundFiles">Subir imágenes</label>
           <input id="backgroundFiles" type="file" accept="image/*" multiple>
           <button class="button button-quiet background-reset" id="backgroundReset" type="button">Usar fondos predeterminados</button>
+          <label class="share-punches-toggle" for="sharePunchesToggle"><input id="sharePunchesToggle" type="checkbox"><span>Incluir horas fichadas</span></label>
         </div>
         <label class="solid-background" id="solidBackground" for="backgroundColorInput"><span>Color sólido</span><input id="backgroundColorInput" type="color" value="#f5f7f3"></label>
         <div class="export-actions">
           <button class="button button-primary" id="downloadButton" type="button"><span>↓</span> Descargar PNG</button>
+          <button class="button button-share" id="shareMonthButton" type="button"><span class="whatsapp-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 3.5A10.5 10.5 0 0 0 3.42 16.08L2 21.2l5.24-1.37A10.5 10.5 0 1 0 20.5 3.5Zm-8 17.08a8.72 8.72 0 0 1-4.45-1.22l-.32-.19-3.11.81.83-3.03-.2-.33A8.75 8.75 0 1 1 12.5 20.58Z"/><path d="M16.85 13.43c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.04.4 1.4.51.47-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg></span><span>Compartir estructura del mes</span></button>
+          <label class="share-background-toggle" for="shareBackgroundToggle"><input id="shareBackgroundToggle" type="checkbox" disabled><span>Incluir fondo del mes</span></label>
           <button class="button button-share" id="shareButton" type="button"><span class="whatsapp-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 3.5A10.5 10.5 0 0 0 3.42 16.08L2 21.2l5.24-1.37A10.5 10.5 0 1 0 20.5 3.5Zm-8 17.08a8.72 8.72 0 0 1-4.45-1.22l-.32-.19-3.11.81.83-3.03-.2-.33A8.75 8.75 0 1 1 12.5 20.58Z"/><path d="M16.85 13.43c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.04.4 1.4.51.59.19 1.12.16 1.54.1.47-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg></span><span>Compartir por WhatsApp</span></button>
         </div>
       </section>
@@ -82,11 +85,12 @@
             <div class="route-date" id="routeDate"></div>
             <label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Barrio de Salamanca" autocomplete="off">
             <label for="typeInput">Tipo de trabajo</label><input id="typeInput" type="text" maxlength="32" placeholder="Ej. Recogida de muebles" autocomplete="off">
-            <div class="time-action-field"><label for="timeInput">Hora de entrada (24 h)</label><div class="time-action-row"><input id="timeInput" type="text" inputmode="numeric" maxlength="5" pattern="(?:[01]\d|2[0-3]):[0-5]\d" placeholder="07:30" autocomplete="off"><button id="entryNowButton" type="button" aria-label="Usar huella de entrada"><span aria-hidden="true">⌁</span> Huella de entrada</button></div></div>
+            <div class="time-action-field"><label for="entryHourInput">Hora de entrada (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="entryHourInput" aria-label="Hora de entrada, horas"></select><span>:</span><select id="entryMinuteInput" aria-label="Hora de entrada, minutos"></select></div><input id="timeInput" type="hidden"><button id="entryNowButton" type="button" aria-label="Usar huella de entrada"><span aria-hidden="true">⌁</span> Huella de entrada</button></div></div>
             <label for="shiftInput">Tipo de jornada</label><select id="shiftInput"><option value="completa">Jornada completa · 8 h</option><option value="continua">Jornada continua · 7 h</option><option value="media">Media jornada · 4 h</option></select>
-            <div class="time-action-field"><label for="exitInput">Hora de salida (24 h)</label><div class="time-action-row"><input id="exitInput" type="text" inputmode="numeric" maxlength="5" pattern="(?:[01]\d|2[0-3]):[0-5]\d" placeholder="15:30" autocomplete="off"><button id="exitNowButton" type="button" aria-label="Usar huella de salida"><span aria-hidden="true">⌁</span> Huella de salida</button></div></div>
+            <div class="time-action-field"><label for="exitHourInput">Hora de salida (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="exitHourInput" aria-label="Hora de salida, horas"></select><span>:</span><select id="exitMinuteInput" aria-label="Hora de salida, minutos"></select></div><input id="exitInput" type="hidden"><button id="exitNowButton" type="button" aria-label="Usar huella de salida"><span aria-hidden="true">⌁</span> Huella de salida</button></div></div>
+            <div class="work-duration"><span>Tiempo trabajado</span><strong id="workDurationValue">Sin calcular</strong></div>
             <div class="extra-hours-control"><span>Horas extra</span><div><button id="extraHoursMinus" type="button" aria-label="Restar una hora extra">−</button><strong id="extraHoursValue">0</strong><button id="extraHoursPlus" type="button" aria-label="Añadir una hora extra">+</button></div><small>Se suma de una en una</small></div>
-            <label for="reminderInput">Avisar</label><select id="reminderInput"><option value="0">A la hora de entrada</option><option value="15">15 minutos antes</option><option value="30">30 minutos antes</option><option value="60">1 hora antes</option><option value="120">2 horas antes</option></select>
+            <label for="reminderInput">Avisar</label><select id="reminderInput"><option value="30">30 minutos antes</option><option value="0">A la hora de entrada</option><option value="15">15 minutos antes</option><option value="60">1 hora antes</option><option value="120">2 horas antes</option></select>
             <label for="statusInput">Estado del día</label><select id="statusInput"><option value="trabajado">Trabajado</option><option value="festivo-trabajado">Festivo trabajado</option><option value="baja">Baja</option><option value="asuntos-propios">Asuntos propios</option><option value="vacaciones">Vacaciones</option><option value="ampliaciones">Ampliaciones</option></select>
             <label class="alarm-toggle"><input id="alarmInput" type="checkbox" checked><span>Activar alarma en Android</span></label>
             <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-quiet" id="clearRememberedButton" type="button">Borrar recuerdo</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
@@ -97,6 +101,8 @@
       </section>
       <section class="record-card" id="recordCard" aria-labelledby="recordTitle" hidden>
         <div class="record-heading"><div><p class="section-label">Control anual</p><h2 id="recordTitle">Expediente de <span id="recordYear">2026</span></h2></div><span class="record-note">Resumen de días y actividades</span></div>
+        <nav class="record-tabs" aria-label="Secciones del expediente"><button class="record-tab is-active" type="button" data-record-tab="summary">Resumen</button><button class="record-tab" type="button" data-record-tab="details">Detalle de días</button><button class="record-tab" type="button" data-record-tab="export">Exportar</button></nav>
+        <div class="record-tab-panel is-active" id="recordSummaryTab">
         <div class="record-stats">
           <div><strong id="annualTotalCount">0</strong><span>Total registrados</span></div>
           <div><strong id="workedCount">0</strong><span>Trabajados</span></div>
@@ -107,24 +113,29 @@
           <div><strong id="extensionCount">0</strong><span>Ampliaciones</span></div>
           <div><strong id="extraHoursCount">0</strong><span>Horas extra</span></div>
         </div>
-        <div class="annual-chart" aria-labelledby="chartTitle">
-          <div class="chart-heading"><h3 id="chartTitle">Días y horas extra por mes</h3><div class="chart-legend"><span class="legend-worked">Trabajados</span><span class="legend-holiday">Festivos</span><span class="legend-vacation">Vacaciones</span><span class="legend-leave">Bajas</span><span class="legend-personal">Asuntos propios</span><span class="legend-extension">Ampliaciones</span><span class="legend-extra">Horas extra</span></div></div>
-          <div id="monthlyStats" class="monthly-stats"></div>
+        <div class="annual-chart is-fan" aria-labelledby="chartTitle">
+          <div class="chart-heading"><h3 id="chartTitle">Días y horas extra por mes</h3><div class="chart-view-toggle"><button class="chart-view-button" type="button" data-chart-view="bars">Barras</button><button class="chart-view-button is-active" type="button" data-chart-view="fan">Abanico</button></div><div class="chart-legend"><span class="legend-worked">Trabajados</span><span class="legend-holiday">Festivos</span><span class="legend-vacation">Vacaciones</span><span class="legend-leave">Bajas</span><span class="legend-personal">Asuntos propios</span><span class="legend-extension">Ampliaciones</span><span class="legend-extra">Horas extra</span></div></div>
+          <div id="monthlyStats" class="monthly-stats" hidden></div>
+          <div id="fanChart" class="fan-chart"><div class="fan-core"><strong id="fanTotal">0</strong><span>días registrados</span></div></div><div id="fanLabels" class="fan-labels"></div>
         </div>
+        </div>
+        <div class="record-tab-panel" id="recordDetailsTab" hidden>
         <div class="record-table-wrap">
-          <table class="record-table"><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th><th>Horas extra</th></tr></thead><tbody id="recordRows"></tbody></table>
+          <table class="record-table"><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Entrada</th><th>Salida</th><th>Tiempo trabajado</th><th>Horas extra</th></tr></thead><tbody id="recordRows"></tbody></table>
         </div>
+        </div>
+        <div class="record-tab-panel" id="recordExportTab" hidden>
         <div class="record-export" aria-label="Exportar expediente"><span>Exportar expediente</span><button class="button button-quiet" id="pdfButton" type="button">Descargar PDF</button><button class="button button-quiet" id="csvButton" type="button">Descargar CSV</button><button class="button button-quiet" id="shareRecordButton" type="button">Compartir resumen</button></div>
+        </div>
       </section>
       <section class="agenda-preview" aria-labelledby="previewTitle">
         <div class="preview-heading"><div><p class="section-label">Vista previa en tiempo real</p><h2 id="previewTitle">Agenda lista para compartir</h2></div><label class="preview-day-picker" for="previewDaySelect">Editar día<select id="previewDaySelect"></select></label></div>
         <canvas id="agendaCanvas" aria-label="Vista previa de la agenda"></canvas>
-        <p class="preview-credit">Fondos: Limasam y Wikimedia Commons · una imagen distinta para cada mes</p>
       </section>
     </main>
     <footer class="footer"><span>Memoria laboral</span><span id="footerGroup">Grupo sin asignar</span></footer>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=2"></script>
 </body>
 </html>

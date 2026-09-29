@@ -25,6 +25,7 @@ const localDriveBackupKey = "limasam-drive-local-backup";
 const googleClientId = "673366304553-dgg8pgu9u8hb4ocfs8p1as5imkt6ht1v.apps.googleusercontent.com";
 const driveFileName = "Agenda de trabajos y actividades.json";
 const lastSyncKey = "limasam-last-sync";
+const deletedRoutesKey = "limasam-deleted-routes";
 
 const currentDate = new Date();
 const state = {
@@ -43,6 +44,11 @@ const alarmInput = $("#alarmInput");
 const reminderInput = $("#reminderInput");
 const shiftInput = $("#shiftInput");
 const exitInput = $("#exitInput");
+const entryHourInput = $("#entryHourInput");
+const entryMinuteInput = $("#entryMinuteInput");
+const exitHourInput = $("#exitHourInput");
+const exitMinuteInput = $("#exitMinuteInput");
+const workDurationValue = $("#workDurationValue");
 const entryNowButton = $("#entryNowButton");
 const exitNowButton = $("#exitNowButton");
 const extraHoursValue = $("#extraHoursValue");
@@ -70,10 +76,14 @@ const syncNowButton = $("#syncNowButton");
 const pdfButton = $("#pdfButton");
 const csvButton = $("#csvButton");
 const shareRecordButton = $("#shareRecordButton");
+const shareBackgroundToggle = $("#shareBackgroundToggle");
+const sharePunchesToggle = $("#sharePunchesToggle");
 const installButton = $("#installButton");
 const offlineStatus = $("#offlineStatus");
 const previewDaySelect = $("#previewDaySelect");
 const agendaCanvas = $("#agendaCanvas");
+const agendaPreview = $(".agenda-preview");
+const exportActions = $(".export-actions");
 const routeManager = $("#routeManager");
 const recordButton = $("#recordButton");
 const recordCard = $("#recordCard");
@@ -83,6 +93,8 @@ let driveFileId = localStorage.getItem("limasam-drive-file-id");
 let driveSyncTimer = null;
 let driveChangesPending = false;
 let deferredInstallPrompt = null;
+
+agendaPreview.append(exportActions);
 backgroundToggle.checked = localStorage.getItem("limasam-show-background") !== "false";
 backgroundColorInput.value = localStorage.getItem("limasam-background-color") || "#f5f7f3";
 weekdayColorInput.value = localStorage.getItem("limasam-weekday-color") || "#ffffff";
@@ -190,6 +202,12 @@ function currentAgendaBackground() {
   return customAgendaBackgrounds[state.month] || agendaBackgrounds[state.month];
 }
 
+function updateShareBackgroundOption() {
+  const available = Boolean(customBackgroundData[state.month]);
+  shareBackgroundToggle.disabled = !available;
+  if (!available) shareBackgroundToggle.checked = false;
+}
+
 function updateBackgroundOptions() {
   backgroundOptions.hidden = !backgroundToggle.checked;
   solidBackground.hidden = backgroundToggle.checked;
@@ -230,6 +248,35 @@ function storageKey() {
   return `limasam-${state.year}-${state.month}`;
 }
 
+function routeStorageId(year, month, day) {
+  return `limasam-${year}-${month}-${day}`;
+}
+
+function loadDeletedRoutes() {
+  try {
+    const deleted = JSON.parse(localStorage.getItem(deletedRoutesKey) || "[]");
+    return new Set(Array.isArray(deleted) ? deleted : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveDeletedRoutes(deleted) {
+  localStorage.setItem(deletedRoutesKey, JSON.stringify([...deleted]));
+}
+
+function markRouteDeleted(day) {
+  const deleted = loadDeletedRoutes();
+  deleted.add(routeStorageId(state.year, state.month, day));
+  saveDeletedRoutes(deleted);
+}
+
+function unmarkRouteDeleted(day) {
+  const deleted = loadDeletedRoutes();
+  deleted.delete(routeStorageId(state.year, state.month, day));
+  saveDeletedRoutes(deleted);
+}
+
 const rememberedRouteKey = "limasam-last-route";
 
 function loadRememberedRoute() {
@@ -245,7 +292,7 @@ function saveRememberedRoute(route) {
     destination: route.destination,
     time: route.time,
     type: route.type || "",
-    reminder: Number(route.reminder || 0),
+    reminder: Number(route.reminder ?? 30),
     status: route.status || "trabajado",
     exit: route.exit || "",
     shift: route.shift || "completa",
@@ -332,9 +379,15 @@ function cloudPayload() {
   const routes = {};
   for (let index = 0; index < localStorage.length; index += 1) {
     const key = localStorage.key(index);
-    if (key?.match(/^limasam-\d{4}-\d+$/)) routes[key] = JSON.parse(localStorage.getItem(key));
+    if (key?.match(/^limasam-\d{4}-\d+$/)) {
+      const monthRoutes = JSON.parse(localStorage.getItem(key));
+      routes[key] = Object.fromEntries(Object.entries(monthRoutes).map(([day, route]) => [day, {
+        ...route,
+        workedMinutes: workedMinutes(route.time, route.exit)
+      }]));
+    }
   }
-  return { version: 1, updatedAt: new Date().toISOString(), routes, customHolidays };
+  return { version: 2, updatedAt: new Date().toISOString(), routes, customHolidays, deletedRoutes: [...loadDeletedRoutes()] };
 }
 
 async function driveRequest(url, options = {}) {
@@ -374,6 +427,15 @@ async function syncFromDrive() {
   const contentResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
   const payload = await contentResponse.json();
   localStorage.setItem(localDriveBackupKey, JSON.stringify({ savedAt: new Date().toISOString(), payload: cloudPayload() }));
+  const deletedRoutes = new Set([...(payload.deletedRoutes || []), ...loadDeletedRoutes()]);
+  Object.keys(payload.routes || {}).forEach((key) => {
+    const routes = payload.routes[key];
+    deletedRoutes.forEach((deletedKey) => {
+      const prefix = `${key}-`;
+      if (deletedKey.startsWith(prefix)) delete routes[deletedKey.slice(prefix.length)];
+    });
+  });
+  saveDeletedRoutes(deletedRoutes);
   Object.keys(localStorage).filter((key) => key.match(/^limasam-\d{4}-\d+$/)).forEach((key) => localStorage.removeItem(key));
   Object.entries(payload.routes || {}).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value)));
   if (Array.isArray(payload.customHolidays)) {
@@ -382,7 +444,8 @@ async function syncFromDrive() {
   }
   renderHolidayList();
   renderCalendar();
-  markDriveSynced();
+  if (deletedRoutes.size) await uploadDriveFile();
+  else markDriveSynced();
 }
 
 function queueDriveSync() {
@@ -522,6 +585,26 @@ function validTime(value) {
   return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
 }
 
+function populateClockParts(hourSelect, minuteSelect) {
+  hourSelect.innerHTML = '<option value="">--</option>';
+  minuteSelect.innerHTML = '<option value="">--</option>';
+  for (let hour = 0; hour < 24; hour += 1) hourSelect.insertAdjacentHTML("beforeend", `<option value="${String(hour).padStart(2, "0")}">${String(hour).padStart(2, "0")}</option>`);
+  for (let minute = 0; minute < 60; minute += 1) minuteSelect.insertAdjacentHTML("beforeend", `<option value="${String(minute).padStart(2, "0")}">${String(minute).padStart(2, "0")}</option>`);
+}
+
+function syncClockParts(timeInput, hourSelect, minuteSelect) {
+  const [hour, minute] = validTime(timeInput.value) ? timeInput.value.split(":") : ["", ""];
+  hourSelect.value = hour;
+  minuteSelect.value = minute;
+}
+
+function syncTimeInput(timeInput, hourSelect, minuteSelect) {
+  timeInput.value = hourSelect.value && minuteSelect.value ? `${hourSelect.value}:${minuteSelect.value}` : "";
+}
+
+populateClockParts(entryHourInput, entryMinuteInput);
+populateClockParts(exitHourInput, exitMinuteInput);
+
 function addHoursToTime(value, hours) {
   if (!validTime(value)) return "";
   const [hour, minute] = value.split(":").map(Number);
@@ -529,69 +612,66 @@ function addHoursToTime(value, hours) {
   return `${String(Math.floor(totalMinutes / 60)).padStart(2, "0")}:${String(totalMinutes % 60).padStart(2, "0")}`;
 }
 
+function workedMinutes(entry, exit) {
+  if (!validTime(entry) || !validTime(exit)) return 0;
+  const [entryHour, entryMinute] = entry.split(":").map(Number);
+  const [exitHour, exitMinute] = exit.split(":").map(Number);
+  let minutes = (exitHour * 60 + exitMinute) - (entryHour * 60 + entryMinute);
+  if (minutes < 0) minutes += 24 * 60;
+  return minutes;
+}
+
+function formatWorkedTime(minutes) {
+  if (!minutes) return "Sin calcular";
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return `${hours} h${remainingMinutes ? ` ${remainingMinutes} min` : ""}`;
+}
+
+function recordEntryTime(record) {
+  return record.actualEntry || record.plannedTime || record.time || "";
+}
+
+function recordExitTime(record) {
+  return record.actualExit || record.plannedExit || record.exit || "";
+}
+
+function updateWorkDuration() {
+  workDurationValue.textContent = formatWorkedTime(workedMinutes($("#timeInput").value, exitInput.value));
+}
+
 function autoFillExit() {
   const hours = shiftInput.value === "media" ? 4 : shiftInput.value === "continua" ? 7 : 8;
   const entry = $("#timeInput").value;
   if (validTime(entry) && exitInput.dataset.manual !== "true") {
     exitInput.value = addHoursToTime(entry, hours);
+    syncClockParts(exitInput, exitHourInput, exitMinuteInput);
     exitInput.dataset.manual = "false";
   }
 }
 
-function randomBytes(size) {
-  const bytes = new Uint8Array(size);
-  crypto.getRandomValues(bytes);
-  return bytes;
-}
-
-function toBase64(bytes) {
-  return btoa(String.fromCharCode(...new Uint8Array(bytes)));
-}
-
-async function verifyBiometric() {
-  const credentialKey = "limasam-biometric-credential";
-  if (!window.PublicKeyCredential || !window.isSecureContext || !navigator.credentials) {
-    return window.confirm("Este navegador no permite usar huella. ¿Confirmas registrar la hora actual?");
+function registerCurrentTime(target) {
+  const today = new Date();
+  const selectedDate = new Date(state.year, state.month, state.selected);
+  const isToday = state.selected && selectedDate.getFullYear() === today.getFullYear()
+    && selectedDate.getMonth() === today.getMonth()
+    && selectedDate.getDate() === today.getDate();
+  if (!isToday) {
+    showToast("Aún no estás en el día de trabajo seleccionado");
+    return;
   }
-  try {
-    let credentialId = localStorage.getItem(credentialKey);
-    if (!credentialId) {
-      const credential = await navigator.credentials.create({ publicKey: {
-        challenge: randomBytes(32),
-        rp: { name: "Memoria laboral" },
-        user: { id: randomBytes(16), name: "usuario", displayName: "Usuario de Memoria laboral" },
-        pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
-        authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-        timeout: 60000
-      } });
-      if (!credential) return false;
-      credentialId = toBase64(credential.rawId);
-      localStorage.setItem(credentialKey, credentialId);
-    }
-    await navigator.credentials.get({ publicKey: {
-      challenge: randomBytes(32),
-      allowCredentials: [{ type: "public-key", id: Uint8Array.from(atob(credentialId), (character) => character.charCodeAt(0)) }],
-      userVerification: "required",
-      timeout: 60000
-    } });
-    return true;
-  } catch (error) {
-    console.warn("No se pudo validar la huella", error);
-    showToast("No se pudo validar la huella");
-    return false;
-  }
-}
-
-async function registerCurrentTime(target) {
-  if (!(await verifyBiometric())) return;
   const now = new Date();
   const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   if (target === "entry") {
     $("#timeInput").value = time;
+    $("#timeInput").dataset.punch = "true";
+    syncClockParts($("#timeInput"), entryHourInput, entryMinuteInput);
     exitInput.dataset.manual = "false";
     autoFillExit();
   } else {
     exitInput.value = time;
+    exitInput.dataset.punch = "true";
+    syncClockParts(exitInput, exitHourInput, exitMinuteInput);
     exitInput.dataset.manual = "true";
   }
   showToast(`Hora de ${target === "entry" ? "entrada" : "salida"} registrada: ${time}`);
@@ -679,9 +759,22 @@ function renderAnnualSummary() {
     const total = values.worked + values.holiday + values.vacation + values.leave + values.personal + values.extension;
     return `<div class="month-row"><span class="month-name">${month.slice(0, 3)}</span><div class="month-track" aria-label="${month}: ${total} días y ${values.extra} horas extra"><span class="month-bar bar-worked" style="--bar-size:${values.worked}"></span><span class="month-bar bar-holiday" style="--bar-size:${values.holiday}"></span><span class="month-bar bar-vacation" style="--bar-size:${values.vacation}"></span><span class="month-bar bar-leave" style="--bar-size:${values.leave}"></span><span class="month-bar bar-personal" style="--bar-size:${values.personal}"></span><span class="month-bar bar-extension" style="--bar-size:${values.extension}"></span><span class="month-bar bar-extra" style="--bar-size:${values.extra}"></span></div><strong class="month-total">${total} + ${values.extra} h</strong></div>`;
   }).join("");
+  const monthlyTotals = months.map((month, monthIndex) => records.filter((record) => record.month === monthIndex).length);
+  const totalDays = monthlyTotals.reduce((sum, value) => sum + value, 0);
+  let startAngle = 0;
+  const fanColors = ["#2f6fed", "#e09a2d", "#0f9d8a", "#d9534f", "#8b5cf6", "#5367b8", "#e06b3c", "#2f9e44", "#d6336c", "#7950f2", "#1098ad", "#f08c00"];
+  const fanSegments = monthlyTotals.map((value, index) => {
+    const endAngle = totalDays ? startAngle + (value / totalDays) * 360 : startAngle;
+    const segment = `${fanColors[index]} ${startAngle}deg ${endAngle}deg`;
+    startAngle = endAngle;
+    return segment;
+  });
+  $("#fanChart").style.background = totalDays ? `conic-gradient(${fanSegments.join(",")})` : "var(--line)";
+  $("#fanTotal").textContent = totalDays;
+  $("#fanLabels").innerHTML = months.map((month, index) => `<span style="--fan-color:${fanColors[index]}">${month.slice(0, 3)} ${monthlyTotals[index]}</span>`).join("");
   $("#recordRows").innerHTML = records.length
-    ? records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td><span class="status-pill status-${record.status || "trabajado"}">${escapeHtml(statusLabel(record))}</span></td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time ? `${record.time}${record.exit ? ` - ${record.exit}` : ""}` : "Sin horario")}</td><td>${routeExtraHours(record)} h</td></tr>`).join("")
-    : "<tr><td class=\"record-empty\" colspan=\"5\">Todavía no hay registros para este año</td></tr>";
+    ? records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td><span class="status-pill status-${record.status || "trabajado"}">${escapeHtml(statusLabel(record))}</span></td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(recordEntryTime(record) || "Sin entrada")}</td><td>${escapeHtml(recordExitTime(record) || "Sin salida")}</td><td>${formatWorkedTime(workedMinutes(recordEntryTime(record), recordExitTime(record)))}</td><td>${routeExtraHours(record)} h</td></tr>`).join("")
+    : "<tr><td class=\"record-empty\" colspan=\"7\">Todavía no hay registros para este año</td></tr>";
 }
 
 function downloadFile(content, fileName, type) {
@@ -694,11 +787,13 @@ function downloadFile(content, fileName, type) {
 
 function downloadRecordCsv() {
   const records = yearRoutes(state.year);
-  const rows = [["Fecha", "Estado", "Destino", "Horario", "Horas extra"], ...records.map((record) => [
+  const rows = [["Fecha", "Estado", "Destino", "Entrada", "Salida", "Tiempo trabajado", "Horas extra"], ...records.map((record) => [
     `${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}`,
     statusLabel(record),
     routeDisplayName(record),
-    record.time ? `${record.time}${record.exit ? ` - ${record.exit}` : ""}` : "Sin horario",
+    recordEntryTime(record) || "Sin entrada",
+    recordExitTime(record) || "Sin salida",
+    formatWorkedTime(workedMinutes(recordEntryTime(record), recordExitTime(record))),
     routeExtraHours(record)
   ])];
   const csv = `\uFEFF${rows.map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(";")).join("\n")}`;
@@ -713,8 +808,8 @@ function downloadRecordPdf() {
     showToast("Permite las ventanas emergentes para crear el PDF");
     return;
   }
-  const rows = records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td>${escapeHtml(statusLabel(record))}</td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(record.time ? `${record.time}${record.exit ? ` - ${record.exit}` : ""}` : "Sin horario")}</td><td>${routeExtraHours(record)} h</td></tr>`).join("");
-  printWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="UTF-8"><title>Expediente ${state.year}</title><style>body{font-family:Arial,sans-serif;color:#17211f;padding:32px}h1{font-size:24px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #d9e2dc;text-align:left}th{font-size:11px;text-transform:uppercase;color:#60736a}@media print{body{padding:0}}</style></head><body><h1>Expediente de ${state.year}</h1><p>Memoria laboral</p><table><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th><th>Horas extra</th></tr></thead><tbody>${rows || '<tr><td colspan="5">Sin registros</td></tr>'}</tbody></table></body></html>`);
+  const rows = records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td>${escapeHtml(statusLabel(record))}</td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(recordEntryTime(record) || "Sin entrada")}</td><td>${escapeHtml(recordExitTime(record) || "Sin salida")}</td><td>${formatWorkedTime(workedMinutes(recordEntryTime(record), recordExitTime(record)))}</td><td>${routeExtraHours(record)} h</td></tr>`).join("");
+  printWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="UTF-8"><title>Expediente ${state.year}</title><style>body{font-family:Arial,sans-serif;color:#17211f;padding:32px}h1{font-size:24px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #d9e2dc;text-align:left}th{font-size:11px;text-transform:uppercase;color:#60736a}@media print{body{padding:0}}</style></head><body><h1>Expediente de ${state.year}</h1><p>Memoria laboral</p><table><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th><th>Tiempo trabajado</th><th>Horas extra</th></tr></thead><tbody>${rows || '<tr><td colspan="6">Sin registros</td></tr>'}</tbody></table></body></html>`);
   printWindow.document.close();
   printWindow.addEventListener("load", () => printWindow.print());
   showToast("Elige “Guardar como PDF” en la ventana de impresión");
@@ -818,19 +913,25 @@ function selectDay(day) {
     .find((button) => button.querySelector(".day-number")?.textContent === String(day));
   selectedButton?.classList.add("is-selected");
 
-  const route = state.routes[day] || loadRememberedRoute() || { destination: "", time: "", type: "", reminder: 0, status: "trabajado", shift: "completa", exit: "", alarm: true };
+  const rememberedRoute = loadRememberedRoute();
+  const route = state.routes[day] || (rememberedRoute ? { ...rememberedRoute, reminder: 30 } : { destination: "", time: "", type: "", reminder: 30, status: "trabajado", shift: "completa", exit: "", alarm: true });
   $("#selectedDayBadge").textContent = day;
   $("#editorTitle").textContent = `Día ${day}`;
   $("#routeDate").textContent = dateLabel(day);
   $("#destinationInput").value = route.destination;
   $("#typeInput").value = route.type || "";
-  $("#timeInput").value = route.time;
+  $("#timeInput").value = route.actualEntry || route.plannedTime || route.time || "";
+  $("#timeInput").dataset.punch = route.actualEntry ? "true" : "false";
+  syncClockParts($("#timeInput"), entryHourInput, entryMinuteInput);
   shiftInput.value = route.shift || "completa";
-  exitInput.value = route.exit || "";
+  exitInput.value = route.actualExit || route.plannedExit || route.exit || "";
+  exitInput.dataset.punch = route.actualExit ? "true" : "false";
+  syncClockParts(exitInput, exitHourInput, exitMinuteInput);
   exitInput.dataset.manual = route.exitManual === true ? "true" : "false";
   autoFillExit();
+  updateWorkDuration();
   updateExtraHoursUi(route);
-  reminderInput.value = String(route.reminder || 0);
+  reminderInput.value = String(route.reminder ?? 30);
   const selectedDate = new Date(state.year, state.month, day);
   const isWeekend = selectedDate.getDay() === 0 || selectedDate.getDay() === 6;
   statusInput.value = isHoliday(day) || isWeekend ? "festivo-trabajado" : (route.status || "trabajado");
@@ -995,7 +1096,7 @@ function drawAgendaCanvas() {
   context.font = "700 44px Arial";
   context.fillText("Memoria laboral", margin + 28, 101);
   context.fillStyle = "#ccefe1";
-  context.font = "700 15px Arial";
+  context.font = "700 18px Arial";
   context.fillText("CALENDARIO DE RUTAS", margin + 28, 132);
   context.fillStyle = "#17211f";
   context.font = "700 58px Arial";
@@ -1064,17 +1165,17 @@ function drawAgendaCanvas() {
     context.shadowColor = "transparent";
     context.shadowBlur = 0;
     context.shadowOffsetY = 0;
-    context.fillStyle = "#17211f";
-    context.font = "700 17px Arial";
+    context.fillStyle = holiday || isWeekend ? "#ffffff" : "#17211f";
+    context.font = "700 22px Arial";
     context.fillText(String(day), x + 17, y + 29);
 
     if (route) {
       context.fillStyle = routeColor(route);
-      context.font = "700 16px Arial";
-      drawWrappedText(context, routeDisplayName(route), x + 17, y + 59, cellWidth - 34, 21);
-      context.fillStyle = "#71807a";
-      context.font = "500 14px Arial";
-      context.fillText(route.time ? `${route.time}${route.exit ? ` - ${route.exit}` : ""}` : statusLabel(route), x + 17, y + 93);
+      context.font = "700 19px Arial";
+      drawWrappedText(context, routeDisplayName(route), x + 17, y + 62, cellWidth - 34, 24);
+      context.fillStyle = holiday || isWeekend ? "#ffffff" : "#40534b";
+      context.font = "700 17px Arial";
+      context.fillText(route.time ? `${route.time}${route.exit ? ` - ${route.exit}` : ""}` : statusLabel(route), x + 17, y + 103);
       context.fillStyle = "#f27d65";
       context.beginPath();
       context.arc(x + cellWidth - 21, y + 20, 5, 0, Math.PI * 2);
@@ -1088,6 +1189,98 @@ function drawAgendaCanvas() {
   context.fillText("Calendario generado con Memoria laboral", margin, gridTop + rows * (cellHeight + gridGap) + 28);
 
   return canvas;
+}
+
+function encodeSharedAgenda(payload) {
+  const bytes = new TextEncoder().encode(JSON.stringify(payload));
+  let binary = "";
+  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+function decodeSharedAgenda(encoded) {
+  const normalized = encoded.replaceAll("-", "+").replaceAll("_", "/") + "===".slice((encoded.length + 3) % 4);
+  const binary = atob(normalized);
+  return JSON.parse(new TextDecoder().decode(Uint8Array.from(binary, (character) => character.charCodeAt(0))));
+}
+
+function sharedMonthPayload() {
+  const routes = Object.fromEntries(Object.entries(state.routes).map(([day, route]) => [day, {
+    destination: route.destination || "",
+    type: route.type || "",
+    time: route.plannedTime || route.time || "",
+    exit: route.plannedExit || route.exit || addHoursToTime(route.plannedTime || route.time || "", route.shift === "media" ? 4 : route.shift === "continua" ? 7 : 8),
+    shift: route.shift || "completa",
+    status: route.status || "trabajado",
+    extraHours: routeExtraHours(route),
+    reminder: Number(route.reminder || 0),
+    ...(sharePunchesToggle.checked ? { actualEntry: route.actualEntry || "", actualExit: route.actualExit || "" } : {})
+  }]));
+  return { app: "memoria-laboral", version: 3, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
+}
+
+function shareMonthAgenda() {
+  const encoded = encodeSharedAgenda(sharedMonthPayload());
+  const link = `${window.location.origin}${window.location.pathname}#agenda=${encoded}`;
+  const message = `Memoria laboral · ${months[state.month]} ${state.year}\nAbre este enlace para importar la agenda del mes:\n${link}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+  showToast("Enlace del mes preparado para WhatsApp");
+}
+
+function importSharedAgenda() {
+  const match = window.location.hash.match(/^#agenda=(.+)$/);
+  if (!match) return;
+  try {
+    const payload = decodeSharedAgenda(match[1]);
+    if (payload.app !== "memoria-laboral" || !Number.isInteger(payload.month) || !Number.isInteger(payload.year)) throw new Error("Enlace no válido");
+    const monthName = months[payload.month] || "mes";
+    if (window.confirm(`¿Importar la agenda de ${monthName} ${payload.year}? Tus huellas y registros de entrada/salida no se compartirán.`)) {
+      localStorage.setItem(`limasam-${payload.year}-${payload.month}`, JSON.stringify(payload.routes || {}));
+      if (Array.isArray(payload.customHolidays)) {
+        customHolidays.splice(0, customHolidays.length, ...customHolidays.filter((holiday) => !holiday.date.startsWith(`${payload.year}-${String(payload.month + 1).padStart(2, "0")}-`)), ...payload.customHolidays);
+        localStorage.setItem(customHolidayKey, JSON.stringify(customHolidays));
+      }
+      if (payload.background) {
+        customBackgroundData[payload.month] = payload.background;
+        const sharedImage = new Image();
+        sharedImage.src = payload.background;
+        customAgendaBackgrounds[payload.month] = sharedImage;
+        localStorage.setItem(customBackgroundKey, JSON.stringify(customBackgroundData));
+        sharedImage.addEventListener("load", () => drawAgendaCanvas());
+      }
+      state.month = payload.month;
+      state.year = payload.year;
+      groupInput.value = payload.group || "";
+      if (payload.weekdayColor) {
+        weekdayColorInput.value = payload.weekdayColor;
+        document.documentElement.style.setProperty("--weekday-color", payload.weekdayColor);
+        localStorage.setItem("limasam-weekday-color", payload.weekdayColor);
+      }
+      if (payload.weekendColor) {
+        weekendColorInput.value = payload.weekendColor;
+        document.documentElement.style.setProperty("--weekend-color", payload.weekendColor);
+        localStorage.setItem("limasam-weekend-color", payload.weekendColor);
+      }
+      if (["light", "dark", "night"].includes(payload.theme)) {
+        themeSelect.value = payload.theme;
+        document.body.classList.toggle("dark-mode", payload.theme === "dark");
+        document.body.classList.toggle("night-mode", payload.theme === "night");
+        localStorage.setItem("limasam-theme", payload.theme);
+      }
+      monthSelect.value = state.month;
+      yearInput.value = state.year;
+      renderPreviewDayOptions();
+      updateShareBackgroundOption();
+      renderHolidayList();
+      renderCalendar();
+      selectDay(1);
+      showToast("Agenda mensual importada");
+    }
+  } catch {
+    showToast("El enlace de agenda no es válido");
+  } finally {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 }
 
 function downloadPng() {
@@ -1132,6 +1325,7 @@ monthSelect.addEventListener("change", () => {
   state.month = Number(monthSelect.value);
   state.selected = null;
   renderPreviewDayOptions();
+  updateShareBackgroundOption();
   renderCalendar();
 });
 yearInput.addEventListener("change", () => {
@@ -1180,13 +1374,33 @@ holidayList.addEventListener("click", (event) => {
 });
 groupInput.addEventListener("input", renderCalendar);
 previewDaySelect.addEventListener("change", () => selectDay(Number(previewDaySelect.value)));
-$("#timeInput").addEventListener("input", autoFillExit);
+const syncEntryClock = () => {
+  syncTimeInput($("#timeInput"), entryHourInput, entryMinuteInput);
+  $("#timeInput").dataset.punch = "false";
+  autoFillExit();
+  updateWorkDuration();
+};
+entryHourInput.addEventListener("change", syncEntryClock);
+entryMinuteInput.addEventListener("change", syncEntryClock);
+const syncExitClock = () => {
+  syncTimeInput(exitInput, exitHourInput, exitMinuteInput);
+  exitInput.dataset.punch = "false";
+  exitInput.dataset.manual = "true";
+  updateWorkDuration();
+};
+exitHourInput.addEventListener("change", syncExitClock);
+exitMinuteInput.addEventListener("change", syncExitClock);
+$("#timeInput").addEventListener("change", () => { $("#timeInput").dataset.punch = "false"; autoFillExit(); });
+$("#timeInput").addEventListener("change", updateWorkDuration);
 shiftInput.addEventListener("change", () => {
   exitInput.dataset.manual = "false";
   autoFillExit();
+  updateWorkDuration();
 });
-exitInput.addEventListener("input", () => {
+exitInput.addEventListener("change", () => {
+  exitInput.dataset.punch = "false";
   exitInput.dataset.manual = "true";
+  updateWorkDuration();
 });
 agendaCanvas.addEventListener("click", selectCanvasDay);
 backgroundToggle.addEventListener("change", () => {
@@ -1240,6 +1454,7 @@ backgroundFiles.addEventListener("change", async () => {
       customAgendaBackgrounds[monthIndex] = image;
     });
     localStorage.setItem(customBackgroundKey, JSON.stringify(customBackgroundData));
+    updateShareBackgroundOption();
     drawAgendaCanvas();
     showToast(`${sources.length} imagen${sources.length === 1 ? "" : "es"} personalizada${sources.length === 1 ? "" : "s"}`);
   } catch {
@@ -1251,6 +1466,7 @@ backgroundReset.addEventListener("click", () => {
   customAgendaBackgrounds.fill(null);
   localStorage.removeItem(customBackgroundKey);
   backgroundFiles.value = "";
+  updateShareBackgroundOption();
   drawAgendaCanvas();
   showToast("Fondos predeterminados restaurados");
 });
@@ -1267,6 +1483,27 @@ recordButton.addEventListener("click", () => {
   recordButton.textContent = recordCard.hidden ? "Ver expediente" : "Ocultar expediente";
   if (!recordCard.hidden) renderAnnualSummary();
 });
+document.querySelectorAll(".record-tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".record-tab").forEach((item) => item.classList.toggle("is-active", item === tab));
+    const selectedPanel = tab.dataset.recordTab;
+    document.querySelectorAll(".record-tab-panel").forEach((panel) => {
+      const active = panel.id === `record${selectedPanel[0].toUpperCase()}${selectedPanel.slice(1)}Tab`;
+      panel.hidden = !active;
+      panel.classList.toggle("is-active", active);
+    });
+  });
+});
+document.querySelectorAll(".chart-view-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const fan = button.dataset.chartView === "fan";
+    const chart = document.querySelector(".annual-chart");
+    chart.classList.toggle("is-fan", fan);
+    document.querySelectorAll(".chart-view-button").forEach((item) => item.classList.toggle("is-active", item === button));
+    $("#fanChart").hidden = !fan;
+    $("#fanLabels").hidden = !fan;
+  });
+});
 extraHoursMinus.addEventListener("click", () => changeExtraHours(-1));
 extraHoursPlus.addEventListener("click", () => changeExtraHours(1));
 entryNowButton.addEventListener("click", () => registerCurrentTime("entry"));
@@ -1275,6 +1512,7 @@ exitNowButton.addEventListener("click", () => registerCurrentTime("exit"));
 $("#routeForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const selectedDay = state.selected;
+  const existingRoute = state.routes[selectedDay] || {};
   const destination = $("#destinationInput").value.trim();
   const time = $("#timeInput").value;
   const exit = exitInput.value;
@@ -1294,18 +1532,28 @@ $("#routeForm").addEventListener("submit", async (event) => {
     showToast("La salida debe tener formato HH:MM");
     return;
   }
+  const actualEntry = $("#timeInput").dataset.punch === "true" ? time : existingRoute.actualEntry || "";
+  const actualExit = exitInput.dataset.punch === "true" ? exit : existingRoute.actualExit || "";
+  const plannedTime = $("#timeInput").dataset.punch === "true" ? existingRoute.plannedTime || existingRoute.time || "" : time;
+  const plannedExit = exitInput.dataset.punch === "true" ? existingRoute.plannedExit || existingRoute.exit || "" : exit;
   state.routes[selectedDay] = {
     destination,
-    time,
+    time: actualEntry || plannedTime,
     type: $("#typeInput").value,
     shift: shiftInput.value,
-    exit,
+    exit: actualExit || plannedExit,
+    plannedTime,
+    plannedExit,
+    actualEntry,
+    actualExit,
+    workedMinutes: workedMinutes(time, exit),
     exitManual: exitInput.dataset.manual === "true",
     extraHours: Number(extraHoursValue.textContent) || 0,
     reminder: Number(reminderInput.value),
     status,
     alarm: alarmInput.checked
   };
+  unmarkRouteDeleted(selectedDay);
   saveRememberedRoute(state.routes[selectedDay]);
   saveRoutes();
   renderCalendar();
@@ -1322,6 +1570,8 @@ $("#clearRememberedButton").addEventListener("click", () => {
   $("#timeInput").value = "";
   shiftInput.value = "completa";
   exitInput.value = "";
+  syncClockParts($("#timeInput"), entryHourInput, entryMinuteInput);
+  syncClockParts(exitInput, exitHourInput, exitMinuteInput);
   exitInput.dataset.manual = "false";
   showToast("Recuerdo borrado");
 });
@@ -1330,6 +1580,7 @@ $("#clearButton").addEventListener("click", async () => {
   const selectedDay = state.selected;
   if (selectedDay && window.confirm("¿Quieres vaciar todos los datos de este día?")) {
     delete state.routes[selectedDay];
+    markRouteDeleted(selectedDay);
     saveRoutes();
     renderCalendar();
     selectDay(selectedDay);
@@ -1339,8 +1590,14 @@ $("#clearButton").addEventListener("click", async () => {
 });
 
 $("#downloadButton").addEventListener("click", downloadPng);
+$("#shareMonthButton").addEventListener("click", shareMonthAgenda);
 $("#shareButton").addEventListener("click", shareAgenda);
+importSharedAgenda();
 renderHolidayList();
 renderCalendar();
+updateShareBackgroundOption();
 selectDay(1);
+if (driveFileId) recordButton.hidden = false;
+$(".agenda-preview").appendChild($(".export-actions"));
+$(".export-actions").appendChild($(".share-punches-toggle"));
 updateSyncUi();
