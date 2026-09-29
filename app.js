@@ -1,3 +1,6 @@
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+
 const months = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -960,16 +963,28 @@ function downloadRecordCsv() {
 
 function downloadRecordPdf() {
   const records = yearRoutes(state.year);
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    showToast("Permite las ventanas emergentes para crear el PDF");
-    return;
-  }
-  const rows = records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td>${escapeHtml(statusLabel(record))}</td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(recordEntryTime(record) || "Sin entrada")}</td><td>${escapeHtml(recordExitTime(record) || "Sin salida")}</td><td>${formatWorkedTime(workedMinutes(recordEntryTime(record), recordExitTime(record)))}</td><td>${routeExtraHours(record)} h</td></tr>`).join("");
-  printWindow.document.write(`<!doctype html><html lang="es"><head><meta charset="UTF-8"><title>Expediente ${state.year}</title><style>body{font-family:Arial,sans-serif;color:#17211f;padding:32px}h1{font-size:24px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #d9e2dc;text-align:left}th{font-size:11px;text-transform:uppercase;color:#60736a}@media print{body{padding:0}}</style></head><body><h1>Expediente de ${state.year}</h1><p>Memoria laboral</p><table><thead><tr><th>Fecha</th><th>Estado</th><th>Destino</th><th>Horario</th><th>Tiempo trabajado</th><th>Horas extra</th></tr></thead><tbody>${rows || '<tr><td colspan="6">Sin registros</td></tr>'}</tbody></table></body></html>`);
-  printWindow.document.close();
-  printWindow.addEventListener("load", () => printWindow.print());
-  showToast("Elige “Guardar como PDF” en la ventana de impresión");
+  const pdf = new jsPDF({ orientation: "landscape" });
+  pdf.setFontSize(16);
+  pdf.text(`Expediente de ${state.year}`, 14, 18);
+  pdf.setFontSize(10);
+  pdf.text("Memoria laboral", 14, 25);
+  autoTable(pdf, {
+    startY: 31,
+    head: [["Fecha", "Estado", "Destino", "Entrada", "Salida", "Tiempo trabajado", "Horas extra"]],
+    body: records.length ? records.map((record) => [
+      `${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}`,
+      statusLabel(record),
+      routeDisplayName(record),
+      recordEntryTime(record) || "Sin entrada",
+      recordExitTime(record) || "Sin salida",
+      formatWorkedTime(workedMinutes(recordEntryTime(record), recordExitTime(record))),
+      `${routeExtraHours(record)} h`
+    ]) : [[{ content: "Sin registros", colSpan: 7, styles: { halign: "center" } }]],
+    styles: { fontSize: 8, cellPadding: 2.5 },
+    headStyles: { fillColor: [32, 124, 98] }
+  });
+  pdf.save(`expediente-${state.year}.pdf`);
+  showToast("PDF descargado");
 }
 
 function shareRecordSummary() {
