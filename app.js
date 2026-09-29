@@ -473,7 +473,7 @@ function updateOfflineStatus() {
 }
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch((error) => console.error("No se pudo activar el modo offline", error)));
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch((error) => console.error("No se pudo activar el modo offline", error)));
 }
 window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
