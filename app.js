@@ -628,6 +628,12 @@ function formatWorkedTime(minutes) {
   return `${hours} h${remainingMinutes ? ` ${remainingMinutes} min` : ""}`;
 }
 
+function formatTotalHours(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return `${hours} h${remainingMinutes ? ` ${remainingMinutes} min` : ""}`;
+}
+
 function recordEntryTime(record) {
   return record.actualEntry || record.plannedTime || record.time || "";
 }
@@ -731,6 +737,10 @@ function renderAnnualSummary() {
   };
   const weekdayWorked = records.filter(isWeekdayWorked).length;
   const totalExtraHours = records.reduce((sum, record) => sum + routeExtraHours(record), 0);
+  const totalNormalMinutes = records.reduce((sum, record) => sum + workedMinutes(recordEntryTime(record), recordExitTime(record)), 0);
+  const currentMonthRecords = records.filter((record) => record.month === state.month);
+  const currentMonthMinutes = currentMonthRecords.reduce((sum, record) => sum + workedMinutes(recordEntryTime(record), recordExitTime(record)), 0);
+  const currentMonthExtraHours = currentMonthRecords.reduce((sum, record) => sum + routeExtraHours(record), 0);
   const counts = records.reduce((result, record) => {
     const status = record.status || "trabajado";
     result[status] = (result[status] || 0) + 1;
@@ -745,6 +755,12 @@ function renderAnnualSummary() {
   $("#vacationCount").textContent = counts.vacaciones || 0;
   $("#extensionCount").textContent = counts.ampliaciones || 0;
   $("#extraHoursCount").textContent = totalExtraHours;
+  $("#normalHoursCount").textContent = formatTotalHours(totalNormalMinutes);
+  $("#comparisonMonthLabel").textContent = months[state.month];
+  $("#comparisonMonthDays").textContent = `${currentMonthRecords.length} días`;
+  $("#comparisonMonthHours").textContent = `${formatTotalHours(currentMonthMinutes)} normales · ${currentMonthExtraHours} h extra`;
+  $("#comparisonYearDays").textContent = `${records.length} días`;
+  $("#comparisonYearHours").textContent = `${formatTotalHours(totalNormalMinutes)} normales · ${totalExtraHours} h extra`;
   $("#monthlyStats").innerHTML = months.map((month, monthIndex) => {
     const monthRecords = records.filter((record) => record.month === monthIndex);
     const values = {
@@ -1204,6 +1220,40 @@ function decodeSharedAgenda(encoded) {
   return JSON.parse(new TextDecoder().decode(Uint8Array.from(binary, (character) => character.charCodeAt(0))));
 }
 
+function encodeBytes(bytes) {
+  let binary = "";
+  new Uint8Array(bytes).forEach((byte) => { binary += String.fromCharCode(byte); });
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+function decodeBytes(encoded) {
+  const normalized = encoded.replaceAll("-", "+").replaceAll("_", "/") + "===".slice((encoded.length + 3) % 4);
+  return Uint8Array.from(atob(normalized), (character) => character.charCodeAt(0));
+}
+
+async function deriveSharedKey(salt) {
+  const password = Uint8Array.from(atob("bWVtb3JpYWxhYm9yYWw="), (character) => character.charCodeAt(0));
+  const material = await crypto.subtle.importKey("raw", password, "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+
+async function encryptSharedAgenda(payload) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveSharedKey(salt);
+  const base64Payload = encodeSharedAgenda(payload);
+  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(base64Payload));
+  return `ml2.${encodeBytes(salt)}.${encodeBytes(iv)}.${encodeBytes(encrypted)}`;
+}
+
+async function decodeSharedAgendaSecure(encoded) {
+  if (!encoded.startsWith("ml2.")) return decodeSharedAgenda(encoded);
+  const [, saltEncoded, ivEncoded, encryptedEncoded] = encoded.split(".");
+  const key = await deriveSharedKey(decodeBytes(saltEncoded));
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: decodeBytes(ivEncoded) }, key, decodeBytes(encryptedEncoded));
+  return decodeSharedAgenda(new TextDecoder().decode(decrypted));
+}
+
 function sharedMonthPayload() {
   const routes = Object.fromEntries(Object.entries(state.routes).map(([day, route]) => [day, {
     destination: route.destination || "",
@@ -1219,19 +1269,22 @@ function sharedMonthPayload() {
   return { app: "memoria-laboral", version: 3, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
 }
 
-function shareMonthAgenda() {
-  const encoded = encodeSharedAgenda(sharedMonthPayload());
-  const link = `${window.location.origin}${window.location.pathname}#agenda=${encoded}`;
+async function shareMonthAgenda() {
+  const encoded = await encryptSharedAgenda(sharedMonthPayload());
+  const link = nativeAndroid()
+    ? `memoria-laboral://import?data=${encodeURIComponent(encoded)}`
+    : `${window.location.origin}${window.location.pathname}#agenda=${encoded}`;
   const message = `Memoria laboral · ${months[state.month]} ${state.year}\nAbre este enlace para importar la agenda del mes:\n${link}`;
   window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener");
   showToast("Enlace del mes preparado para WhatsApp");
 }
 
-function importSharedAgenda() {
+async function importSharedAgenda(encodedFromApp = null) {
   const match = window.location.hash.match(/^#agenda=(.+)$/);
-  if (!match) return;
+  const encoded = encodedFromApp || match?.[1];
+  if (!encoded) return;
   try {
-    const payload = decodeSharedAgenda(match[1]);
+    const payload = await decodeSharedAgendaSecure(encoded);
     if (payload.app !== "memoria-laboral" || !Number.isInteger(payload.month) || !Number.isInteger(payload.year)) throw new Error("Enlace no válido");
     const monthName = months[payload.month] || "mes";
     if (window.confirm(`¿Importar la agenda de ${monthName} ${payload.year}? Tus huellas y registros de entrada/salida no se compartirán.`)) {
@@ -1283,6 +1336,20 @@ function importSharedAgenda() {
   }
 }
 
+async function listenNativeAgendaLinks() {
+  if (!nativeAndroid()) return;
+  const { App } = await import("@capacitor/app");
+  App.addListener("appUrlOpen", ({ url }) => {
+    try {
+      const parsed = new URL(url);
+      const encoded = parsed.searchParams.get("data");
+      if (parsed.protocol === "memoria-laboral:" && parsed.hostname === "import" && encoded) importSharedAgenda(encoded);
+    } catch {
+      showToast("El enlace de agenda no es válido");
+    }
+  });
+}
+
 function downloadPng() {
   const canvas = drawAgendaCanvas();
   const link = document.createElement("a");
@@ -1290,35 +1357,6 @@ function downloadPng() {
   link.href = canvas.toDataURL("image/png");
   link.click();
   showToast("PNG descargado correctamente");
-}
-
-async function shareAgenda() {
-  const canvas = drawAgendaCanvas();
-  const fileName = `limasam-${months[state.month].toLowerCase()}-${state.year}.png`;
-  try {
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-    if (!blob) throw new Error("No se pudo crear la imagen");
-    const file = new File([blob], fileName, { type: "image/png" });
-    const shareData = {
-      title: "Memoria laboral",
-      text: `Agenda de ${months[state.month].toLowerCase()} de ${state.year}`,
-      files: [file]
-    };
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      await navigator.share(shareData);
-      showToast("Agenda lista para compartir");
-      return;
-    }
-    const link = document.createElement("a");
-    link.download = fileName;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    URL.revokeObjectURL(link.href);
-    window.open(`https://wa.me/?text=${encodeURIComponent(`Agenda de ${months[state.month].toLowerCase()} de ${state.year}. Adjunta el PNG descargado.`)}`, "_blank", "noopener");
-    showToast("PNG descargado. Adjunta la imagen en WhatsApp");
-  } catch (error) {
-    if (error.name !== "AbortError") showToast("No se pudo compartir la agenda");
-  }
 }
 
 monthSelect.addEventListener("change", () => {
@@ -1591,13 +1629,14 @@ $("#clearButton").addEventListener("click", async () => {
 
 $("#downloadButton").addEventListener("click", downloadPng);
 $("#shareMonthButton").addEventListener("click", shareMonthAgenda);
-$("#shareButton").addEventListener("click", shareAgenda);
 importSharedAgenda();
+listenNativeAgendaLinks();
 renderHolidayList();
 renderCalendar();
 updateShareBackgroundOption();
 selectDay(1);
 if (driveFileId) recordButton.hidden = false;
+$("#shareButton")?.remove();
 $(".agenda-preview").appendChild($(".export-actions"));
 $(".export-actions").appendChild($(".share-punches-toggle"));
 updateSyncUi();
