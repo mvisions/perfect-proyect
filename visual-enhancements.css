@@ -118,3 +118,11 @@ body.dark-mode .button-quiet,body.night-mode .button-quiet{color:var(--ink)!impo
 .topbar-actions{flex:1 1 auto;min-width:0;margin-left:30px;justify-content:flex-start;gap:clamp(16px,2.2vw,30px)}
 @media(max-width:1050px){.topbar-actions{margin-left:0;justify-content:flex-start;gap:clamp(12px,2vw,22px)}}
 @media(max-width:760px){.topbar-actions{gap:6px}}
+.topbar-actions{flex-wrap:wrap;row-gap:8px}
+.intro-actions{display:flex;align-items:center;justify-content:center;gap:10px;flex:0 0 auto}
+@media(max-width:1050px){.intro-block{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px 24px}.intro-actions{grid-column:1;grid-row:2;justify-content:flex-start}.date-stamp{grid-column:2;grid-row:1 / span 2;align-self:center}}
+@media(max-width:760px){.intro-block{grid-template-columns:1fr;gap:18px}.intro-actions{grid-column:1;grid-row:auto;flex-wrap:wrap;justify-content:flex-start}.date-stamp{display:none}}
+.install-button,.update-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--card);font-size:11px;font-weight:700;white-space:nowrap}
+.install-button:hover,.update-button:hover{border-color:var(--mint-strong);background:var(--mint)}
+.install-button:disabled,.update-button:disabled{cursor:wait;opacity:.65}
+.install-button svg,.update-button svg{width:15px;height:15px;flex:0 0 15px}

@@ -102,6 +102,8 @@ const shareRecordButton = $("#shareRecordButton");
 const shareBackgroundToggle = $("#shareBackgroundToggle");
 const sharePunchesToggle = $("#sharePunchesToggle");
 const installButton = $("#installButton");
+const updateButton = $("#updateButton");
+const updateButtonLabel = $("#updateButtonLabel");
 const offlineStatus = $("#offlineStatus");
 const previewDaySelect = $("#previewDaySelect");
 const agendaCanvas = $("#agendaCanvas");
@@ -503,14 +505,83 @@ if ("serviceWorker" in navigator) {
 window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
   deferredInstallPrompt = event;
-  installButton.hidden = false;
 });
 installButton.addEventListener("click", async () => {
-  if (!deferredInstallPrompt) return;
-  deferredInstallPrompt.prompt();
-  await deferredInstallPrompt.userChoice;
-  deferredInstallPrompt = null;
+  if (!deferredInstallPrompt) {
+    const installed = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    showToast(installed ? "La aplicación ya está instalada." : "Para instalarla, abre el menú del navegador y elige «Instalar app» o «Añadir a pantalla de inicio».");
+    return;
+  }
+  installButton.disabled = true;
+  try {
+    await deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    showToast(outcome === "accepted" ? "Instalación iniciada." : "Puedes instalarla cuando quieras desde este botón.");
+  } catch (error) {
+    console.error("No se pudo iniciar la instalación", error);
+    showToast("No se pudo iniciar la instalación. Usa el menú del navegador para añadir la app.");
+  } finally {
+    deferredInstallPrompt = null;
+    installButton.disabled = false;
+  }
+});
+window.addEventListener("appinstalled", () => {
   installButton.hidden = true;
+  showToast("Aplicación instalada.");
+});
+updateButton.addEventListener("click", async () => {
+  updateButton.disabled = true;
+  updateButtonLabel.textContent = "Comprobando...";
+  try {
+    if (!("serviceWorker" in navigator)) {
+      showToast("Este navegador no permite comprobar actualizaciones automáticamente.");
+      return;
+    }
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      showToast("No encontramos el actualizador. Recarga la página e inténtalo de nuevo.");
+      return;
+    }
+    const activeWorker = registration.active;
+    await registration.update();
+    const worker = registration.installing || registration.waiting;
+    if (!worker && registration.active === activeWorker) {
+      showToast("Estás en la última versión.");
+      return;
+    }
+    if (registration.waiting) registration.waiting.postMessage({ type: "SKIP_WAITING" });
+    const nextWorker = registration.installing || worker;
+    if (nextWorker) {
+      updateButtonLabel.textContent = "Actualizando...";
+      await new Promise((resolve) => {
+        let timeoutId;
+        const finish = () => {
+          if (!["activated", "redundant"].includes(nextWorker.state)) return;
+          clearTimeout(timeoutId);
+          nextWorker.removeEventListener("statechange", finish);
+          resolve();
+        };
+        nextWorker.addEventListener("statechange", finish);
+        timeoutId = setTimeout(() => {
+          nextWorker.removeEventListener("statechange", finish);
+          resolve();
+        }, 15000);
+        finish();
+      });
+    }
+    if (registration.active && registration.active !== activeWorker) {
+      showToast("Actualización instalada. Recargando la página...");
+      window.location.reload();
+      return;
+    }
+    showToast("La actualización sigue en curso. Vuelve a comprobarlo en unos segundos.");
+  } catch (error) {
+    console.error("No se pudo comprobar si hay actualizaciones", error);
+    showToast("No pudimos comprobar las actualizaciones. Revisa tu conexión e inténtalo de nuevo.");
+  } finally {
+    updateButton.disabled = false;
+    updateButtonLabel.textContent = "Actualizar";
+  }
 });
 window.addEventListener("online", updateOfflineStatus);
 window.addEventListener("offline", updateOfflineStatus);
