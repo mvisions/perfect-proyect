@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=27">
-  <link rel="stylesheet" href="visual-enhancements.css?v=27">
+  <link rel="stylesheet" href="visual-enhancements.css?v=31">
 </head>
 <body>
   <!-- Contenedor principal de la interfaz. -->
@@ -101,8 +101,10 @@
           <p class="editor-hint" id="editorHint">Haz clic en un día del calendario para registrar su destino y hora.</p>
           <form id="routeForm" class="route-form" hidden>
             <div class="route-date" id="routeDate"></div>
-            <label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Barrio de Salamanca" autocomplete="off">
-            <label for="typeInput">Tipo de trabajo</label><input id="typeInput" type="text" maxlength="32" placeholder="Ej. Recogida de muebles" autocomplete="off">
+            <div class="route-fields-row">
+              <div><label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Barrio de Salamanca" autocomplete="off"></div>
+              <div><label for="typeInput">Tipo de trabajo</label><input id="typeInput" type="text" maxlength="32" placeholder="Ej. Recogida de muebles" autocomplete="off"></div>
+            </div>
             <div class="time-action-field"><label for="entryHourInput">Hora de entrada (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="entryHourInput" aria-label="Hora de entrada, horas"></select><span>:</span><select id="entryMinuteInput" aria-label="Hora de entrada, minutos"></select></div><input id="timeInput" type="hidden"><button id="entryNowButton" type="button" aria-label="Usar huella de entrada"><span aria-hidden="true">⌁</span> Huella de entrada</button></div></div>
             <label for="shiftInput">Tipo de jornada</label><select id="shiftInput"><option value="completa">Jornada completa · 8 h</option><option value="continua">Jornada continua · 7 h</option><option value="media">Media jornada · 4 h</option></select>
             <div class="time-action-field"><label for="exitHourInput">Hora de salida (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="exitHourInput" aria-label="Hora de salida, horas"></select><span>:</span><select id="exitMinuteInput" aria-label="Hora de salida, minutos"></select></div><input id="exitInput" type="hidden"><button id="exitNowButton" type="button" aria-label="Usar huella de salida"><span aria-hidden="true">⌁</span> Huella de salida</button></div></div>
@@ -159,7 +161,7 @@
       </section>
     </main>
     <!-- Pie con el nombre de la aplicación y el grupo activo. -->
-    <footer class="footer"><span>Memoria laboral</span><span id="footerGroup">Grupo sin asignar</span><span class="footer-credit">Desarrollador: Miguel Ángel Sánchez Aranda © 2026</span></footer>
+    <footer class="footer"><span>Memoria laboral</span><span id="footerGroup">Grupo sin asignar</span><a class="privacy-policy-link" href="privacy-policy.html" aria-label="Política de privacidad / Privacy policy">Privacidad / Privacy</a><span class="footer-credit">Desarrollador: Miguel Ángel Sánchez Aranda © 2026</span></footer>
   </div>
   <dialog class="drive-tutorial" id="driveTutorialDialog" aria-labelledby="driveTutorialTitle">
     <div class="drive-tutorial-header">

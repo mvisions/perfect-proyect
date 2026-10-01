@@ -92,6 +92,12 @@ body.dark-mode .record-stats div,body.night-mode .record-stats div{background:rg
 @media(max-width:760px){.control-panel{grid-template-columns:1fr 1fr;gap:12px}.control-panel .calendar-color-group,.control-panel .background-toggle,.control-panel .background-options,.control-panel .solid-background,.control-panel .export-actions{grid-column:1 / -1}.control-panel .export-actions{grid-template-columns:1fr 1fr}.control-panel .export-actions .share-background-toggle{grid-column:1 / -1}}
 @media(max-width:760px){.agenda-preview .export-actions{grid-template-columns:1fr;gap:8px}.agenda-preview .export-actions .button,.agenda-preview .export-actions .share-background-toggle,.agenda-preview .export-actions .share-punches-toggle{grid-column:1 / -1;width:100%;min-height:46px}.agenda-preview .export-actions .button{white-space:nowrap}.agenda-preview .export-actions .share-background-toggle,.agenda-preview .export-actions .share-punches-toggle{justify-content:center}}
 #shareButton{display:none!important}
+.route-fields-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.route-fields-row label{margin-top:18px}
+@media(max-width:520px){.route-fields-row{grid-template-columns:minmax(0,1fr)}}
+.privacy-policy-link{color:inherit;font-size:inherit;font-weight:700;text-underline-offset:3px}
+.privacy-policy-link:focus-visible{outline:2px solid var(--mint-strong);outline-offset:3px}
+#entryNowButton,#exitNowButton{font-size:14px}
 .control-panel .background-options{grid-template-columns:repeat(2,minmax(0,1fr))}
 .agenda-preview .export-actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .agenda-preview .export-actions .share-background-toggle,.agenda-preview .export-actions .share-punches-toggle{grid-column:auto;width:100%;min-width:0;min-height:46px;padding:6px 8px;white-space:normal;text-align:center}
