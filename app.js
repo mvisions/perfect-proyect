@@ -89,6 +89,10 @@ const weekdayColorInput = $("#weekdayColorInput");
 const weekendColorInput = $("#weekendColorInput");
 const driveButton = $("#driveButton");
 const driveButtonLabel = $("#driveButtonLabel");
+const driveTutorialDialog = $("#driveTutorialDialog");
+const driveTutorialClose = $("#driveTutorialClose");
+const driveTutorialCancel = $("#driveTutorialCancel");
+const driveTutorialContinue = $("#driveTutorialContinue");
 const driveLogoutButton = $("#driveLogoutButton");
 const syncStatus = $("#syncStatus");
 const syncNowButton = $("#syncNowButton");
@@ -1718,7 +1722,25 @@ backgroundReset.addEventListener("click", () => {
   showToast("Fondos predeterminados restaurados");
 });
 
-driveButton.addEventListener("click", connectGoogleDrive);
+function openDriveTutorial() {
+  if (typeof driveTutorialDialog.showModal === "function") driveTutorialDialog.showModal();
+  else connectGoogleDrive();
+}
+
+function closeDriveTutorial() {
+  driveTutorialDialog.close();
+}
+
+driveButton.addEventListener("click", openDriveTutorial);
+driveTutorialClose.addEventListener("click", closeDriveTutorial);
+driveTutorialCancel.addEventListener("click", closeDriveTutorial);
+driveTutorialContinue.addEventListener("click", () => {
+  closeDriveTutorial();
+  connectGoogleDrive();
+});
+driveTutorialDialog.addEventListener("click", (event) => {
+  if (event.target === driveTutorialDialog) closeDriveTutorial();
+});
 syncNowButton.addEventListener("click", syncNow);
 pdfButton.addEventListener("click", downloadRecordPdf);
 csvButton.addEventListener("click", downloadRecordCsv);

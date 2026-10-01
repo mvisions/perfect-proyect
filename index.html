@@ -149,6 +149,27 @@
     <!-- Pie con el nombre de la aplicación y el grupo activo. -->
     <footer class="footer"><span>Memoria laboral</span><span id="footerGroup">Grupo sin asignar</span></footer>
   </div>
+  <dialog class="drive-tutorial" id="driveTutorialDialog" aria-labelledby="driveTutorialTitle">
+    <div class="drive-tutorial-header">
+      <div>
+        <p class="section-label">Antes de sincronizar</p>
+        <h2 id="driveTutorialTitle">Conectar Google Drive</h2>
+      </div>
+      <button class="drive-tutorial-close" id="driveTutorialClose" type="button" aria-label="Cerrar tutorial">×</button>
+    </div>
+    <p class="drive-tutorial-intro">La aplicación necesita tu permiso para guardar y recuperar tu agenda en tu Google Drive.</p>
+    <ol class="drive-tutorial-steps">
+      <li><strong>Pulsa continuar.</strong> Se abrirá la ventana segura de Google.</li>
+      <li><strong>Elige tu cuenta.</strong> Usa la cuenta donde quieras guardar la agenda.</li>
+      <li><strong>Revisa y acepta el permiso.</strong> Google permitirá a la aplicación gestionar los archivos que cree.</li>
+      <li><strong>Vuelve a la aplicación.</strong> La agenda se sincronizará automáticamente.</li>
+    </ol>
+    <p class="drive-tutorial-note">La autorización la gestiona Google. La aplicación no ve tu contraseña.</p>
+    <div class="drive-tutorial-actions">
+      <button class="button button-quiet" id="driveTutorialCancel" type="button">Cancelar</button>
+      <button class="button button-dark" id="driveTutorialContinue" type="button">Continuar con Google</button>
+    </div>
+  </dialog>
   <!-- Región accesible donde JavaScript presenta mensajes temporales. -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <!-- Punto de entrada del código JavaScript principal. -->
