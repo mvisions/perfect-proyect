@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+  <!-- Metadatos, tipografías y hojas de estilo de la aplicación. -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Memoria laboral para registrar jornadas, destinos y horas">
@@ -14,12 +15,15 @@
   <link rel="stylesheet" href="visual-enhancements.css?v=23">
 </head>
 <body>
+  <!-- Contenedor principal de la interfaz. -->
   <div class="app-shell">
+    <!-- Barra superior con identidad, idioma, conexión y acceso al expediente. -->
     <header class="topbar">
       <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"><span class="brand-lens"></span></span><span>Memoria laboral</span></a>
       <div class="topbar-actions"><div class="language-toggle" aria-label="Idioma"><button id="spanishButton" type="button" aria-label="Español">🇪🇸 ES</button><button id="englishButton" type="button" aria-label="English">🇬🇧 EN</button></div><button class="install-button" id="installButton" type="button" hidden>Instalar app</button><span class="offline-status" id="offlineStatus" hidden>Sin conexión</span><button class="drive-button" id="driveButton" type="button"><span class="drive-icon" aria-hidden="true">▣</span><span id="driveButtonLabel">Conectar Google Drive</span></button><span class="sync-status" id="syncStatus">Sin sincronizar</span><button class="sync-now-button" id="syncNowButton" type="button" hidden>Sincronizar ahora</button><button class="drive-logout-button" id="driveLogoutButton" type="button" hidden>Cerrar sesión</button><button class="record-button" id="recordButton" type="button" hidden>Ver expediente</button><div class="topbar-note"><span class="live-dot"></span> Calendario de rutas</div></div>
     </header>
     <main class="workspace">
+      <!-- Presentación del planificador y fecha activa. -->
       <section class="intro-block">
         <div>
           <p class="eyebrow">Planificador mensual</p>
@@ -28,6 +32,7 @@
         </div>
         <div class="date-stamp"><span id="stampMonth">MES ACTUAL</span><strong id="stampYear">AÑO ACTUAL</strong></div>
       </section>
+      <!-- Preferencias del calendario y acciones de exportación y uso compartido. -->
       <section class="control-panel" aria-label="Configuración del calendario">
         <div class="field-group"><label for="groupNumber">Número de grupo</label><div class="input-with-icon"><span>#</span><input id="groupNumber" type="text" placeholder="Ej. 204" maxlength="18"></div></div>
         <div class="field-group"><label for="monthSelect">Mes</label><select id="monthSelect"></select></div>
@@ -54,6 +59,7 @@
           <button class="button button-share" id="shareButton" type="button"><span class="whatsapp-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 3.5A10.5 10.5 0 0 0 3.42 16.08L2 21.2l5.24-1.37A10.5 10.5 0 1 0 20.5 3.5Zm-8 17.08a8.72 8.72 0 0 1-4.45-1.22l-.32-.19-3.11.81.83-3.03-.2-.33A8.75 8.75 0 1 1 12.5 20.58Z"/><path d="M16.85 13.43c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.04.4 1.4.51.59.19 1.12.16 1.54.1.47-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg></span><span>Compartir por WhatsApp</span></button>
         </div>
       </section>
+      <!-- Gestión de festivos y formulario para editar los detalles de cada jornada. -->
       <section class="form-panel" aria-label="Gestión de calendario y detalle del día">
       <details class="holiday-manager">
         <summary>Gestionar festivos personalizados</summary>
@@ -99,6 +105,7 @@
         </details>
       </div>
       </section>
+      <!-- Resumen anual, gráficos, detalle de días y opciones de exportación. -->
       <section class="record-card" id="recordCard" aria-labelledby="recordTitle" hidden>
         <div class="record-heading"><div><p class="section-label">Control anual</p><h2 id="recordTitle">Expediente de <span id="recordYear">2026</span></h2></div><span class="record-note">Resumen de días y actividades</span></div>
         <nav class="record-tabs" aria-label="Secciones del expediente"><button class="record-tab is-active" type="button" data-record-tab="summary">Resumen</button><button class="record-tab" type="button" data-record-tab="details">Detalle de días</button><button class="record-tab" type="button" data-record-tab="export">Exportar</button></nav>
@@ -133,14 +140,18 @@
         <div class="record-export" aria-label="Exportar expediente"><span>Exportar expediente</span><button class="button button-quiet" id="pdfButton" type="button">Descargar PDF</button><button class="button button-quiet" id="csvButton" type="button">Descargar CSV</button><button class="button button-quiet" id="shareRecordButton" type="button">Compartir resumen</button></div>
         </div>
       </section>
+      <!-- Vista previa dibujada en un lienzo para compartir o descargar. -->
       <section class="agenda-preview" aria-labelledby="previewTitle">
         <div class="preview-heading"><div><p class="section-label">Vista previa en tiempo real</p><h2 id="previewTitle">Agenda lista para compartir</h2></div><label class="preview-day-picker" for="previewDaySelect">Editar día<select id="previewDaySelect"></select></label></div>
         <canvas id="agendaCanvas" aria-label="Vista previa de la agenda"></canvas>
       </section>
     </main>
+    <!-- Pie con el nombre de la aplicación y el grupo activo. -->
     <footer class="footer"><span>Memoria laboral</span><span id="footerGroup">Grupo sin asignar</span></footer>
   </div>
+  <!-- Región accesible donde JavaScript presenta mensajes temporales. -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <!-- Punto de entrada del código JavaScript principal. -->
   <script type="module" src="app.js?v=2"></script>
 </body>
 </html>

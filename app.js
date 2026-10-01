@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
+// Catálogos de meses, días, tipos de ruta y estados de la jornada.
 const months = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -40,6 +41,7 @@ const driveFileName = "Agenda de trabajos y actividades.json";
 const lastSyncKey = "limasam-last-sync";
 const deletedRoutesKey = "limasam-deleted-routes";
 
+// Estado de navegación: mes, año, día seleccionado y rutas cargadas.
 const currentDate = new Date();
 const state = {
   month: currentDate.getMonth(),
@@ -49,6 +51,7 @@ const state = {
 };
 
 const $ = (selector) => document.querySelector(selector);
+// Referencias a los controles del documento para usarlos en toda la aplicación.
 const monthSelect = $("#monthSelect");
 const yearInput = $("#yearInput");
 const groupInput = $("#groupNumber");
@@ -111,6 +114,7 @@ let driveChangesPending = false;
 let deferredInstallPrompt = null;
 let currentLanguage = localStorage.getItem("limasam-language") || "es";
 
+// Añade los selectores de idioma que no están incluidos inicialmente en el HTML.
 [{ id: "frenchButton", label: "🇫🇷 FR", aria: "Français", language: "fr" }, { id: "italianButton", label: "🇮🇹 IT", aria: "Italiano", language: "it" }, { id: "germanButton", label: "🇩🇪 DE", aria: "Deutsch", language: "de" }].forEach(({ id, label, aria, language }) => {
   if (document.getElementById(id)) return;
   const button = document.createElement("button");
@@ -122,6 +126,7 @@ let currentLanguage = localStorage.getItem("limasam-language") || "es";
   languageToggle.appendChild(button);
 });
 
+// Traducciones base para los textos visibles y los controles de la interfaz.
 const languagePairs = {
   "Memoria laboral": "Work Memory",
   "Planificador mensual": "Monthly planner",
@@ -196,6 +201,7 @@ Object.assign(languageTranslations.fr, Object.fromEntries(months.map((month, ind
 Object.assign(languageTranslations.it, Object.fromEntries(months.map((month, index) => [month, localizedMonths.it[index]])));
 Object.assign(languageTranslations.de, Object.fromEntries(months.map((month, index) => [month, localizedMonths.de[index]])));
 
+// Traduce el contenido existente y mantiene sincronizados los controles de idioma.
 function translatePage() {
   document.documentElement.lang = currentLanguage;
   document.title = { es: "Memoria laboral", en: "Work Memory", fr: "Mémoire de travail", it: "Memoria lavorativa", de: "Arbeitsgedächtnis" }[currentLanguage] || "Memoria laboral";
@@ -223,6 +229,7 @@ function translatePage() {
   document.querySelectorAll(".language-toggle button").forEach((button) => button.classList.toggle("is-active", button.id === `${currentLanguage}Button` || (currentLanguage === "es" && button.id === "spanishButton") || (currentLanguage === "en" && button.id === "englishButton")));
 }
 
+// Guarda el idioma elegido y actualiza inmediatamente la página.
 function setLanguage(language) {
   currentLanguage = language;
   localStorage.setItem("limasam-language", language);
@@ -237,6 +244,7 @@ backgroundToggle.checked = localStorage.getItem("limasam-show-background") !== "
 backgroundColorInput.value = localStorage.getItem("limasam-background-color") || "#f5f7f3";
 weekdayColorInput.value = localStorage.getItem("limasam-weekday-color") || "#ffffff";
 weekendColorInput.value = localStorage.getItem("limasam-weekend-color") || "#e4f2ff";
+// Restaura las preferencias visuales y de sonido almacenadas en el navegador.
 const savedTheme = localStorage.getItem("limasam-theme") || (localStorage.getItem("limasam-dark-mode") === "true" ? "dark" : "light");
 themeSelect.value = savedTheme;
 soundToggle.checked = localStorage.getItem("limasam-sounds") !== "false";
@@ -248,6 +256,7 @@ document.documentElement.style.setProperty("--weekend-color", weekendColorInput.
 let audioContext;
 let welcomeSoundPlayed = false;
 
+// Reproduce una secuencia de notas con Web Audio si los sonidos están activados.
 async function playMelody(notes) {
   if (!soundToggle.checked) return;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -269,6 +278,7 @@ async function playMelody(notes) {
   });
 }
 
+// Genera el tono breve que acompaña las acciones de la interfaz.
 async function playBeep() {
   if (!soundToggle.checked) return;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -310,6 +320,7 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("button, summary")) playBeep().catch(() => {});
 }, true);
 
+// Recupera los fondos personalizados; si el almacenamiento falla, usa valores vacíos.
 function loadCustomBackgrounds() {
   try {
     const saved = JSON.parse(localStorage.getItem(customBackgroundKey) || "[]");
@@ -336,6 +347,7 @@ const agendaBackgrounds = months.map((_, index) => {
   return image;
 });
 
+// Prioriza el fondo personalizado del mes y, si no existe, usa el predeterminado.
 function currentAgendaBackground() {
   return customAgendaBackgrounds[state.month] || agendaBackgrounds[state.month];
 }
@@ -351,6 +363,7 @@ function updateBackgroundOptions() {
   solidBackground.hidden = backgroundToggle.checked;
 }
 
+// Rellena la lista de días según la cantidad de días del mes seleccionado.
 function renderPreviewDayOptions() {
   const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
   previewDaySelect.innerHTML = Array.from({ length: daysInMonth }, (_, index) => {
@@ -360,6 +373,7 @@ function renderPreviewDayOptions() {
   previewDaySelect.value = String(state.selected || 1);
 }
 
+// Convierte una imagen subida en una cadena de datos que puede guardarse localmente.
 function readImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -382,6 +396,7 @@ yearInput.value = state.year;
 holidayDateInput.value = `${state.year}-${String(state.month + 1).padStart(2, "0")}-01`;
 renderPreviewDayOptions();
 
+// Construye las claves de almacenamiento para las rutas del mes activo.
 function storageKey() {
   return `limasam-${state.year}-${state.month}`;
 }
@@ -390,6 +405,7 @@ function routeStorageId(year, month, day) {
   return `limasam-${year}-${month}-${day}`;
 }
 
+// Mantiene un registro de rutas borradas para propagar las eliminaciones a Drive.
 function loadDeletedRoutes() {
   try {
     const deleted = JSON.parse(localStorage.getItem(deletedRoutesKey) || "[]");
@@ -417,6 +433,7 @@ function unmarkRouteDeleted(day) {
 
 const rememberedRouteKey = "limasam-last-route";
 
+// Recupera los datos de la última ruta para facilitar el registro de días nuevos.
 function loadRememberedRoute() {
   try {
     return JSON.parse(localStorage.getItem(rememberedRouteKey) || "null");
@@ -438,6 +455,7 @@ function saveRememberedRoute(route) {
   }));
 }
 
+// Carga las rutas del mes y restablece el estado si los datos guardados no son válidos.
 function loadRoutes() {
   try {
     state.routes = JSON.parse(localStorage.getItem(storageKey()) || "{}");
@@ -446,6 +464,7 @@ function loadRoutes() {
   }
 }
 
+// Guarda las rutas locales y programa su sincronización con Google Drive.
 function saveRoutes() {
   localStorage.setItem(storageKey(), JSON.stringify(state.routes));
   driveChangesPending = true;
@@ -453,6 +472,7 @@ function saveRoutes() {
   queueDriveSync();
 }
 
+// Refleja en pantalla si hay cambios pendientes o cuándo se sincronizó por última vez.
 function updateSyncUi() {
   const savedAt = localStorage.getItem(lastSyncKey);
   syncNowButton.hidden = !driveAccessToken;
@@ -472,6 +492,7 @@ function updateOfflineStatus() {
   offlineStatus.hidden = navigator.onLine;
 }
 
+// Registra el service worker para permitir el uso sin conexión e instalar la aplicación.
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch((error) => console.error("No se pudo activar el modo offline", error)));
 }
@@ -497,6 +518,7 @@ function markDriveSynced() {
   updateSyncUi();
 }
 
+// Carga una biblioteca externa una sola vez y espera a que esté disponible.
 function loadExternalScript(source) {
   return new Promise((resolve, reject) => {
     const existing = document.querySelector(`script[src="${source}"]`);
@@ -513,6 +535,7 @@ function loadExternalScript(source) {
   });
 }
 
+// Prepara los datos locales que se respaldan en el archivo de Google Drive.
 function cloudPayload() {
   const routes = {};
   for (let index = 0; index < localStorage.length; index += 1) {
@@ -528,12 +551,14 @@ function cloudPayload() {
   return { version: 2, updatedAt: new Date().toISOString(), routes, customHolidays, deletedRoutes: [...loadDeletedRoutes()] };
 }
 
+// Centraliza las solicitudes autenticadas a la API de Google Drive.
 async function driveRequest(url, options = {}) {
   const response = await fetch(url, { ...options, headers: { Authorization: `Bearer ${driveAccessToken}`, ...(options.headers || {}) } });
   if (!response.ok) throw new Error(`Google Drive respondió ${response.status}`);
   return response;
 }
 
+// Crea el archivo de respaldo en Drive o actualiza el ya vinculado.
 async function uploadDriveFile() {
   const content = JSON.stringify(cloudPayload(), null, 2);
   const body = new Blob([content], { type: "application/json" });
@@ -552,6 +577,7 @@ async function uploadDriveFile() {
   markDriveSynced();
 }
 
+// Descarga el respaldo remoto, aplica eliminaciones y restaura los datos locales.
 async function syncFromDrive() {
   const query = encodeURIComponent(`name = '${driveFileName}' and trashed = false and mimeType = 'application/json'`);
   const listResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files?q=${query}&spaces=drive&fields=files(id,name)&pageSize=1`);
@@ -600,6 +626,7 @@ function queueDriveSync() {
   }, 500);
 }
 
+// Solicita autorización de Google y conecta la agenda con la cuenta del usuario.
 async function connectGoogleDrive() {
   driveButton.disabled = true;
   driveButtonLabel.textContent = "Conectando...";
@@ -668,6 +695,7 @@ async function disconnectGoogleDrive() {
   showToast("Sesión de Google cerrada");
 }
 
+// Lee y valida los festivos personalizados guardados en el navegador.
 function loadCustomHolidays() {
   try {
     const saved = JSON.parse(localStorage.getItem(customHolidayKey) || "[]");
@@ -687,6 +715,7 @@ function customHoliday(day) {
   return customHolidays.find((holiday) => holiday.date === holidayDate(day));
 }
 
+// Formatea una fecha completa usando el idioma activo.
 function dateLabel(day) {
   const month = localizedMonth(state.month);
   return currentLanguage === "es" ? `${day} de ${month.toLowerCase()} de ${state.year}` : `${day} ${month} ${state.year}`;
@@ -704,6 +733,7 @@ function holidayLabel(day) {
   return customHoliday(day)?.name || "Festivo";
 }
 
+// Muestra los festivos del año activo y sus acciones para eliminarlos.
 function renderHolidayList() {
   const currentYear = String(state.year);
   const holidays = customHolidays.filter((holiday) => holiday.date.startsWith(`${currentYear}-`)).sort((left, right) => left.date.localeCompare(right.date));
@@ -725,6 +755,7 @@ function routeDisplayName(route) {
   return route.destination || statusLabel(route);
 }
 
+// Valida y manipula horas en formato de 24 horas (HH:MM).
 function validTime(value) {
   return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
 }
@@ -749,6 +780,7 @@ function syncTimeInput(timeInput, hourSelect, minuteSelect) {
 populateClockParts(entryHourInput, entryMinuteInput);
 populateClockParts(exitHourInput, exitMinuteInput);
 
+// Calcula una hora de salida sumando la duración de la jornada a la entrada.
 function addHoursToTime(value, hours) {
   if (!validTime(value)) return "";
   const [hour, minute] = value.split(":").map(Number);
@@ -800,6 +832,7 @@ function autoFillExit() {
   }
 }
 
+// Registra la hora real de entrada o salida cuando se trabaja en el día actual.
 function registerCurrentTime(target) {
   const today = new Date();
   const selectedDate = new Date(state.year, state.month, state.selected);
@@ -831,6 +864,7 @@ function calendarColor(variable, fallback) {
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
 }
 
+// Actualiza los contadores del mes y las horas extra de cada ruta.
 function updateMonthSummary() {
   const routes = Object.values(state.routes);
   $("#routeCount").textContent = routes.length;
@@ -858,6 +892,7 @@ function changeExtraHours(amount) {
   selectDay(state.selected);
 }
 
+// Reúne y ordena las rutas almacenadas para los doce meses del año indicado.
 function yearRoutes(year) {
   const records = [];
   for (let month = 0; month < 12; month += 1) {
@@ -872,6 +907,7 @@ function yearRoutes(year) {
   return records.sort((left, right) => new Date(year, left.month, left.day) - new Date(year, right.month, right.day));
 }
 
+// Calcula los indicadores anuales, gráficos y filas del expediente.
 function renderAnnualSummary() {
   const records = yearRoutes(state.year).filter((record) => record.status !== "descanso");
   const isWeekdayWorked = (record) => {
@@ -937,6 +973,7 @@ function renderAnnualSummary() {
     : "<tr><td class=\"record-empty\" colspan=\"7\">Todavía no hay registros para este año</td></tr>";
 }
 
+// Descarga contenido generado por la aplicación como un archivo local.
 function downloadFile(content, fileName, type) {
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([content], { type }));
@@ -999,12 +1036,14 @@ function shareRecordSummary() {
   window.open(`https://wa.me/?text=${encodeURIComponent(summary)}`, "_blank", "noopener");
 }
 
+// Escapa caracteres HTML para mostrar con seguridad los datos introducidos.
 function escapeHtml(text) {
   return text.replace(/[&<>'"]/g, (character) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;"
   }[character]));
 }
 
+// Construye la cuadrícula del mes y actualiza resumen, expediente y vista previa.
 function renderCalendar() {
   loadRoutes();
   calendarGrid.classList.remove("month-enter");
@@ -1076,6 +1115,7 @@ function renderCalendar() {
   drawAgendaCanvas();
 }
 
+// Carga en el formulario los datos del día seleccionado o una ruta recordada.
 function selectDay(day) {
   state.selected = day;
   previewDaySelect.value = String(day);
@@ -1116,6 +1156,7 @@ function selectDay(day) {
   translatePage();
 }
 
+// Convierte la posición del clic en la vista previa al día correspondiente.
 function selectCanvasDay(event) {
   const rect = agendaCanvas.getBoundingClientRect();
   const scaleX = agendaCanvas.width / rect.width;
@@ -1141,6 +1182,7 @@ function selectCanvasDay(event) {
   if (day >= 1 && day <= daysInMonth) selectDay(day);
 }
 
+// Muestra mensajes temporales de confirmación o error en la interfaz.
 function showToast(message) {
   const toast = $("#toast");
   toast.textContent = message;
@@ -1152,6 +1194,7 @@ function nativeAndroid() {
   return Boolean(window.Capacitor?.isNativePlatform?.());
 }
 
+// Programa una notificación local en Android para recordar la hora de entrada.
 async function scheduleAlarm(day, route) {
   if (!nativeAndroid() || !route.alarm || !route.time || ["baja", "asuntos-propios", "descanso"].includes(route.status)) return;
   try {
@@ -1197,6 +1240,7 @@ async function cancelAlarm(day) {
   }
 }
 
+// Ajusta textos largos a un máximo de dos líneas en el lienzo de la agenda.
 function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
   const words = text.split(" ");
   const lines = [];
@@ -1214,6 +1258,7 @@ function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
   lines.slice(0, 2).forEach((currentLine, index) => context.fillText(currentLine, x, y + index * lineHeight));
 }
 
+// Dibuja la agenda mensual completa en el lienzo que se comparte o descarga.
 function drawAgendaCanvas() {
   const canvas = $("#agendaCanvas");
   const context = canvas.getContext("2d");
@@ -1364,6 +1409,7 @@ function drawAgendaCanvas() {
   return canvas;
 }
 
+// Codifica los datos de agenda para incluirlos de forma compacta en un enlace.
 function encodeSharedAgenda(payload) {
   const bytes = new TextEncoder().encode(JSON.stringify(payload));
   let binary = "";
@@ -1388,12 +1434,14 @@ function decodeBytes(encoded) {
   return Uint8Array.from(atob(normalized), (character) => character.charCodeAt(0));
 }
 
+// Deriva una clave criptográfica para proteger los datos incluidos en el enlace.
 async function deriveSharedKey(salt) {
   const password = Uint8Array.from(atob("bWVtb3JpYWxhYm9yYWw="), (character) => character.charCodeAt(0));
   const material = await crypto.subtle.importKey("raw", password, "PBKDF2", false, ["deriveKey"]);
   return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
 }
 
+// Cifra la agenda antes de compartirla para evitar exponer sus datos directamente.
 async function encryptSharedAgenda(payload) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -1411,6 +1459,7 @@ async function decodeSharedAgendaSecure(encoded) {
   return decodeSharedAgenda(new TextDecoder().decode(decrypted));
 }
 
+// Selecciona qué datos del mes se compartirán según las opciones marcadas.
 function sharedMonthPayload() {
   const routes = Object.fromEntries(Object.entries(state.routes).map(([day, route]) => [day, {
     destination: route.destination || "",
@@ -1436,6 +1485,7 @@ async function shareMonthAgenda() {
   showToast("Enlace del mes preparado para WhatsApp");
 }
 
+// Valida e importa una agenda compartida, actualizando las preferencias incluidas.
 async function importSharedAgenda(encodedFromApp = null) {
   const match = window.location.hash.match(/^#agenda=(.+)$/);
   const encoded = encodedFromApp || match?.[1];
@@ -1507,6 +1557,7 @@ async function listenNativeAgendaLinks() {
   });
 }
 
+// Exporta como PNG la vista actual de la agenda mensual.
 function downloadPng() {
   const canvas = drawAgendaCanvas();
   const link = document.createElement("a");
@@ -1516,6 +1567,7 @@ function downloadPng() {
   showToast("PNG descargado correctamente");
 }
 
+// Los siguientes manejadores conectan los controles con el estado y sus persistencias.
 monthSelect.addEventListener("change", () => {
   state.month = Number(monthSelect.value);
   state.selected = null;
@@ -1704,6 +1756,7 @@ extraHoursPlus.addEventListener("click", () => changeExtraHours(1));
 entryNowButton.addEventListener("click", () => registerCurrentTime("entry"));
 exitNowButton.addEventListener("click", () => registerCurrentTime("exit"));
 
+// Valida y guarda la ruta del día, conserva las horas fichadas y programa su alarma.
 $("#routeForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const selectedDay = state.selected;
@@ -1784,6 +1837,7 @@ $("#clearButton").addEventListener("click", async () => {
   }
 });
 
+// Inicializa la página con los datos guardados y prepara la agenda para usarla.
 $("#downloadButton").addEventListener("click", downloadPng);
 $("#shareMonthButton").addEventListener("click", shareMonthAgenda);
 importSharedAgenda();

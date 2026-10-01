@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 
-// Relative base so the build works both on GitHub Pages (served from a subpath)
-// and inside the Capacitor WebView (served from the app root).
+// Usa rutas relativas para que la compilación funcione en GitHub Pages y Capacitor.
 export default defineConfig({
   base: "./"
 });
