@@ -16,6 +16,7 @@ const localizedMonths = {
   de: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
 };
 const localizedWeekdays = { es: ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"], en: englishWeekdays, fr: ["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"], it: ["LUN", "MAR", "MER", "GIO", "VEN", "SAB", "DOM"], de: ["MO", "DI", "MI", "DO", "FR", "SA", "SO"] };
+const localizedCalendarLabels = { es: "CALENDARIO DE RUTAS", en: "ROUTE CALENDAR", fr: "CALENDRIER DES ITINÉRAIRES", it: "CALENDARIO DEI PERCORSI", de: "ROUTENKALENDER" };
 
 const routeTypes = {
   ruta: { label: "Ruta", color: "#207c62" },
@@ -203,9 +204,130 @@ const languageTranslations = {
     "Memoria laboral": "Arbeitsgedächtnis", "Planificador mensual": "Monatsplaner", "Número de grupo": "Gruppennummer", Mes: "Monat", Año: "Jahr", Tema: "Thema", Sonidos: "Töne", "Colores del calendario": "Kalenderfarben", Diarios: "Werktage", "Fines de semana": "Wochenenden", "Subir imágenes": "Bilder hochladen", "Usar fondos predeterminados": "Standardhintergründe verwenden", "Descargar PNG": "PNG herunterladen", "Compartir estructura del mes": "Monatsstruktur teilen", "Gestionar festivos personalizados": "Eigene Feiertage verwalten", "Detalle del día": "Tagesdetails", Destino: "Ziel", "Tipo de trabajo": "Arbeitsart", "Avisar": "Erinnerung", "Estado del día": "Tagesstatus", Trabajado: "Gearbeitet", "Festivo trabajado": "Gearbeiteter Feiertag", Baja: "Krankheit", Vacaciones: "Urlaub", Ampliaciones: "Erweiterungen", "Tiempo trabajado": "Arbeitszeit", Barras: "Balken", Abanico: "Fächer", "Editar día": "Tag bearbeiten", "Guardar ruta": "Tag speichern"
   }
 };
+Object.assign(languagePairs, {
+  "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Developer: Miguel Ángel Sánchez Aranda © 2026",
+  "Claro": "Light",
+  "Oscuro": "Dark",
+  "Nocturno": "Night",
+  "Sin sincronizar": "Not synced",
+  "Calendario de rutas": "Route calendar",
+  "Instalar app": "Install app",
+  "Actualizar": "Update",
+  "Comprobando...": "Checking...",
+  "Actualizando...": "Updating...",
+  "Instalar aplicación": "Install application",
+  "Comprobar actualizaciones": "Check for updates"
+});
+Object.assign(languageTranslations.fr, {
+  "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Développeur : Miguel Ángel Sánchez Aranda © 2026",
+  "Claro": "Clair",
+  "Oscuro": "Sombre",
+  "Nocturno": "Nuit",
+  "Sin sincronizar": "Non synchronisé",
+  "Calendario de rutas": "Calendrier des itinéraires",
+  "Instalar app": "Installer l’application",
+  "Actualizar": "Mettre à jour",
+  "Comprobando...": "Vérification...",
+  "Actualizando...": "Mise à jour...",
+  "Instalar aplicación": "Installer l’application",
+  "Comprobar actualizaciones": "Vérifier les mises à jour"
+});
+Object.assign(languageTranslations.it, {
+  "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Sviluppatore: Miguel Ángel Sánchez Aranda © 2026",
+  "Claro": "Chiaro",
+  "Oscuro": "Scuro",
+  "Nocturno": "Notturno",
+  "Sin sincronizar": "Non sincronizzato",
+  "Calendario de rutas": "Calendario dei percorsi",
+  "Instalar app": "Installa app",
+  "Actualizar": "Aggiorna",
+  "Comprobando...": "Verifica...",
+  "Actualizando...": "Aggiornamento...",
+  "Instalar aplicación": "Installa l’applicazione",
+  "Comprobar actualizaciones": "Verifica aggiornamenti"
+});
+Object.assign(languageTranslations.de, {
+  "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Entwickler: Miguel Ángel Sánchez Aranda © 2026",
+  "Claro": "Hell",
+  "Oscuro": "Dunkel",
+  "Nocturno": "Nacht",
+  "Sin sincronizar": "Nicht synchronisiert",
+  "Calendario de rutas": "Routenkalender",
+  "Instalar app": "App installieren",
+  "Actualizar": "Aktualisieren",
+  "Comprobando...": "Prüfe...",
+  "Actualizando...": "Aktualisierung...",
+  "Instalar aplicación": "Anwendung installieren",
+  "Comprobar actualizaciones": "Nach Updates suchen"
+});
+const installAndUpdateLabels = {
+  es: { install: "Instalar aplicación", update: "Comprobar actualizaciones" },
+  en: { install: "Install application", update: "Check for updates" },
+  fr: { install: "Installer l’application", update: "Vérifier les mises à jour" },
+  it: { install: "Installa l’applicazione", update: "Verifica aggiornamenti" },
+  de: { install: "Anwendung installieren", update: "Nach Updates suchen" }
+};
+const driveTutorialTranslations = {
+  "Antes de sincronizar": { en: "Before syncing", fr: "Avant la synchronisation", it: "Prima di sincronizzare", de: "Vor der Synchronisierung" },
+  "Conectar Google Drive": { en: "Connect Google Drive", fr: "Connecter Google Drive", it: "Connetti Google Drive", de: "Google Drive verbinden" },
+  "La aplicación necesita tu permiso para guardar y recuperar tu agenda en tu Google Drive.": {
+    en: "The app needs your permission to save and retrieve your schedule in Google Drive.",
+    fr: "L’application a besoin de votre autorisation pour enregistrer et récupérer votre agenda dans Google Drive.",
+    it: "L’applicazione ha bisogno della tua autorizzazione per salvare e recuperare l’agenda su Google Drive.",
+    de: "Die App benötigt deine Berechtigung, um deinen Kalender auf Google Drive zu speichern und abzurufen."
+  },
+  "Pulsa continuar.": { en: "Tap Continue.", fr: "Appuyez sur Continuer.", it: "Tocca Continua.", de: "Tippe auf Weiter." },
+  "Se abrirá la ventana segura de Google.": { en: "Google’s secure window will open.", fr: "La fenêtre sécurisée de Google va s’ouvrir.", it: "Si aprirà la finestra sicura di Google.", de: "Das sichere Google-Fenster wird geöffnet." },
+  "Elige tu cuenta.": { en: "Choose your account.", fr: "Choisissez votre compte.", it: "Scegli il tuo account.", de: "Wähle dein Konto aus." },
+  "Usa la cuenta donde quieras guardar la agenda.": { en: "Use the account where you want to save your schedule.", fr: "Utilisez le compte sur lequel vous souhaitez enregistrer votre agenda.", it: "Usa l’account in cui vuoi salvare l’agenda.", de: "Verwende das Konto, in dem du deinen Kalender speichern möchtest." },
+  "Revisa y acepta el permiso.": { en: "Review and accept the permission.", fr: "Vérifiez et acceptez l’autorisation.", it: "Controlla e accetta l’autorizzazione.", de: "Prüfe und bestätige die Berechtigung." },
+  "Google permitirá a la aplicación gestionar los archivos que cree.": { en: "Google will let the app manage the files it creates.", fr: "Google autorisera l’application à gérer les fichiers qu’elle crée.", it: "Google consentirà all’applicazione di gestire i file che crea.", de: "Google erlaubt der App, die von ihr erstellten Dateien zu verwalten." },
+  "Vuelve a la aplicación.": { en: "Return to the app.", fr: "Retournez dans l’application.", it: "Torna all’applicazione.", de: "Kehre zur App zurück." },
+  "La agenda se sincronizará automáticamente.": { en: "Your schedule will sync automatically.", fr: "Votre agenda sera synchronisé automatiquement.", it: "L’agenda verrà sincronizzata automaticamente.", de: "Dein Kalender wird automatisch synchronisiert." },
+  "Tu contraseña está segura y gestionada únicamente por Google.": { en: "Your password is protected and managed only by Google.", fr: "Votre mot de passe est protégé et géré uniquement par Google.", it: "La tua password è protetta e gestita solo da Google.", de: "Dein Passwort wird ausschließlich von Google geschützt und verwaltet." },
+  "Cancelar": { en: "Cancel", fr: "Annuler", it: "Annulla", de: "Abbrechen" },
+  "Continuar con Google": { en: "Continue with Google", fr: "Continuer avec Google", it: "Continua con Google", de: "Mit Google fortfahren" }
+};
+Object.entries(driveTutorialTranslations).forEach(([source, translations]) => {
+  languagePairs[source] = translations.en;
+  Object.entries(translations).forEach(([language, translation]) => {
+    languageTranslations[language][source] = translation;
+  });
+});
+const tutorialCloseLabels = {
+  es: "Cerrar tutorial",
+  en: "Close tutorial",
+  fr: "Fermer le tutoriel",
+  it: "Chiudi il tutorial",
+  de: "Tutorial schließen"
+};
+const localizedGroupLabels = {
+  es: { assigned: "Grupo", unassigned: "Grupo sin asignar" },
+  en: { assigned: "Group", unassigned: "No group assigned" },
+  fr: { assigned: "Groupe", unassigned: "Aucun groupe attribué" },
+  it: { assigned: "Gruppo", unassigned: "Nessun gruppo assegnato" },
+  de: { assigned: "Gruppe", unassigned: "Keine Gruppe zugewiesen" }
+};
+function updateFooterGroup() {
+  const labels = localizedGroupLabels[currentLanguage] || localizedGroupLabels.es;
+  const group = groupInput.value.trim();
+  $("#footerGroup").textContent = group ? `${labels.assigned} ${group}` : labels.unassigned;
+}
 Object.assign(languageTranslations.fr, Object.fromEntries(months.map((month, index) => [month, localizedMonths.fr[index]])));
 Object.assign(languageTranslations.it, Object.fromEntries(months.map((month, index) => [month, localizedMonths.it[index]])));
 Object.assign(languageTranslations.de, Object.fromEntries(months.map((month, index) => [month, localizedMonths.de[index]])));
+const fieldExampleTranslations = {
+  "Ej. 204": { en: "E.g. 204", fr: "Ex. 204", it: "Es. 204", de: "Z. B. 204" },
+  "Ej. Fiesta local": { en: "E.g. Local holiday", fr: "Ex. Fête locale", it: "Es. Festa locale", de: "Z. B. Ortsfest" },
+  "Ej. Barrio de Salamanca": { en: "E.g. Salamanca district", fr: "Ex. Quartier de Salamanca", it: "Es. Quartiere Salamanca", de: "Z. B. Viertel Salamanca" },
+  "Ej. Recogida de muebles": { en: "E.g. Furniture collection", fr: "Ex. Collecte de meubles", it: "Es. Ritiro di mobili", de: "Z. B. Möbelabholung" }
+};
+Object.entries(fieldExampleTranslations).forEach(([source, translations]) => {
+  languagePairs[source] = translations.en;
+  Object.entries(translations).forEach(([language, translation]) => {
+    languageTranslations[language][source] = translation;
+  });
+});
 
 // Traduce el contenido existente y mantiene sincronizados los controles de idioma.
 function translatePage() {
@@ -223,16 +345,23 @@ function translatePage() {
     const dayLabels = { es: "Día", en: "Day", fr: "Jour", it: "Giorno", de: "Tag" };
     const translated = dynamicDay
       ? `${dayLabels[currentLanguage] || "Día"} ${dynamicDay[2]}`
-      : dynamicMonthYear && currentLanguage === "en"
-        ? `${languagePairs[dynamicMonthYear[1]]} ${dynamicMonthYear[2]}`
+      : dynamicMonthYear
+        ? `${(localizedMonths[currentLanguage] || months)[months.indexOf(dynamicMonthYear[1])]} ${dynamicMonthYear[2]}`
         : currentLanguage === "es" ? sourceKey : activeTranslations[sourceKey] || languagePairs[sourceKey] || original;
     if (translated) node.nodeValue = node.nodeValue.replace(original, translated);
   }
   document.querySelectorAll("input[placeholder]").forEach((input) => {
-    const translated = currentLanguage === "es" ? Object.entries(languageTranslations).flatMap(([, map]) => Object.entries(map)).find(([, value]) => value === input.placeholder)?.[0] : (languageTranslations[currentLanguage]?.[input.placeholder] || languagePairs[input.placeholder]);
+    const placeholderSource = Object.entries(languageTranslations).flatMap(([, map]) => Object.entries(map)).find(([key, value]) => key === input.placeholder || value === input.placeholder)?.[0] || input.placeholder;
+    const translated = currentLanguage === "es" ? placeholderSource : languageTranslations[currentLanguage]?.[placeholderSource] || languagePairs[placeholderSource] || input.placeholder;
     if (translated) input.placeholder = translated;
   });
+  const actionLabels = installAndUpdateLabels[currentLanguage] || installAndUpdateLabels.es;
+  installButton.setAttribute("aria-label", actionLabels.install);
+  updateButton.setAttribute("aria-label", actionLabels.update);
+  updateButton.title = actionLabels.update;
+  driveTutorialClose.setAttribute("aria-label", tutorialCloseLabels[currentLanguage] || tutorialCloseLabels.es);
   document.querySelectorAll(".language-toggle button").forEach((button) => button.classList.toggle("is-active", button.id === `${currentLanguage}Button` || (currentLanguage === "es" && button.id === "spanishButton") || (currentLanguage === "en" && button.id === "englishButton")));
+  updateFooterGroup();
 }
 
 // Guarda el idioma elegido y actualiza inmediatamente la página.
@@ -240,6 +369,7 @@ function setLanguage(language) {
   currentLanguage = language;
   localStorage.setItem("limasam-language", language);
   translatePage();
+  drawAgendaCanvas();
 }
 
 spanishButton.addEventListener("click", () => setLanguage("es"));
@@ -619,6 +749,14 @@ function cloudPayload() {
       const monthRoutes = JSON.parse(localStorage.getItem(key));
       routes[key] = Object.fromEntries(Object.entries(monthRoutes).map(([day, route]) => [day, {
         ...route,
+        type: route.type || "",
+        shift: route.shift || "completa",
+        alarm: route.alarm === true,
+        reminder: Number(route.reminder ?? 30),
+        plannedTime: route.plannedTime || route.time || "",
+        plannedExit: route.plannedExit || route.exit || "",
+        actualEntry: route.actualEntry || "",
+        actualExit: route.actualExit || "",
         workedMinutes: workedMinutes(route.time, route.exit)
       }]));
     }
@@ -824,6 +962,22 @@ function routeColor(route) {
 function statusLabel(route) {
   const status = dayStatuses[route?.status] || dayStatuses.trabajado;
   return currentLanguage === "es" ? status : languageTranslations[currentLanguage]?.[status] || languagePairs[status] || status;
+}
+
+const calendarDetailLabels = {
+  es: { type: "Tipo de trabajo", shift: "Jornada", alarm: "Alarma activada" },
+  en: { type: "Work type", shift: "Shift", alarm: "Alarm enabled" },
+  fr: { type: "Type de travail", shift: "Journée", alarm: "Alarme activée" },
+  it: { type: "Tipo di lavoro", shift: "Turno", alarm: "Sveglia attiva" },
+  de: { type: "Arbeitsart", shift: "Arbeitszeit", alarm: "Alarm aktiviert" }
+};
+
+function shiftHours(shift) {
+  return ({ completa: 8, continua: 7, media: 4 })[shift] || 8;
+}
+
+function reminderOffset(reminder) {
+  return ({ 15: "-15", 30: "-30", 60: "-1H", 120: "-2" })[Number(reminder)] || "";
 }
 
 function routeDisplayName(route) {
@@ -1146,7 +1300,15 @@ function renderCalendar() {
     button.type = "button";
     button.className = "day-cell";
     button.setAttribute("role", "gridcell");
-    button.setAttribute("aria-label", `${dateLabel(day)}${route ? `, ${routeDisplayName(route)}${route.time ? ` a las ${route.time}` : ""}` : ""}`);
+    const detailLabels = calendarDetailLabels[currentLanguage] || calendarDetailLabels.es;
+    const reminderLabel = route?.alarm ? reminderOffset(route.reminder) : "";
+    const routeDescription = route ? [
+      `${routeDisplayName(route)} ${shiftHours(route.shift)}h`,
+      route.time ? route.time : "",
+      route.type?.trim() ? `${detailLabels.type}: ${route.type.trim()}` : "",
+      route.alarm ? `${detailLabels.alarm}${reminderLabel ? ` ${reminderLabel}` : ""}` : ""
+    ].filter(Boolean).join(", ") : "";
+    button.setAttribute("aria-label", `${dateLabel(day)}${routeDescription ? `, ${routeDescription}` : ""}`);
     const dayOfWeek = new Date(state.year, state.month, day).getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       button.classList.add("is-weekend");
@@ -1168,7 +1330,11 @@ function renderCalendar() {
     button.innerHTML = `<span class="day-number">${day}</span>`;
     if (isHoliday(day)) button.innerHTML += `<span class="holiday-label">${escapeHtml(holidayLabel(day))}</span>`;
     if (route) {
-      button.innerHTML += `<span class="route-dot" aria-hidden="true"></span><span class="route-preview">${escapeHtml(routeDisplayName(route))}</span><span class="route-time">${route.time || statusLabel(route)}</span>`;
+      const alarmIndicator = route.alarm
+        ? `<span class="route-alarm" title="${detailLabels.alarm}" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M12.2 6.5a4.2 4.2 0 0 0-8.4 0c0 4.8-1.6 4.8-1.6 6.1h11.6c0-1.3-1.6-1.3-1.6-6.1ZM6.4 14.1h3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${reminderLabel ? `<span class="route-reminder">(${reminderLabel})</span>` : ""}`
+        : "";
+      button.innerHTML += `<span class="route-dot" aria-hidden="true"></span><span class="route-preview">${escapeHtml(routeDisplayName(route))} ${shiftHours(route.shift)}h</span><span class="route-time-row"><span class="route-time">${escapeHtml(route.time || statusLabel(route))}</span>${alarmIndicator}</span>`;
+      if (route.type?.trim()) button.innerHTML += `<span class="route-meta">${escapeHtml(route.type.trim())}</span>`;
     }
     button.addEventListener("click", () => selectDay(day));
     calendarGrid.appendChild(button);
@@ -1182,16 +1348,14 @@ function renderCalendar() {
     calendarGrid.appendChild(emptyCell);
   }
 
-  $("#footerGroup").textContent = groupInput.value.trim()
-    ? `Grupo ${groupInput.value.trim()}`
-    : "Grupo sin asignar";
+  updateFooterGroup();
   updateMonthSummary();
   renderAnnualSummary();
   drawAgendaCanvas();
 }
 
 // Carga en el formulario los datos del día seleccionado o una ruta recordada.
-function selectDay(day) {
+function selectDay(day, { useRemembered = true } = {}) {
   state.selected = day;
   previewDaySelect.value = String(day);
   routeManager.open = true;
@@ -1201,7 +1365,8 @@ function selectDay(day) {
   selectedButton?.classList.add("is-selected");
 
   const rememberedRoute = loadRememberedRoute();
-  const route = state.routes[day] || (rememberedRoute ? { ...rememberedRoute, reminder: 30 } : { destination: "", time: "", type: "", reminder: 30, status: "trabajado", shift: "completa", exit: "", alarm: true });
+  const wasCleared = loadDeletedRoutes().has(routeStorageId(state.year, state.month, day));
+  const route = state.routes[day] || (useRemembered && rememberedRoute && !wasCleared ? { ...rememberedRoute, reminder: 30 } : { destination: "", time: "", type: "", reminder: 30, status: "trabajado", shift: "completa", exit: "", alarm: true });
   $("#selectedDayBadge").textContent = day;
   $("#editorTitle").textContent = `Día ${day}`;
   $("#routeDate").textContent = dateLabel(day);
@@ -1242,7 +1407,7 @@ function selectCanvasDay(event) {
   const gridTop = 470;
   const gridGap = 14;
   const cellWidth = (1600 - margin * 2 - gridGap * 6) / 7;
-  const cellHeight = 112;
+  const cellHeight = 148;
   if (x < margin || y < gridTop) return;
   const column = Math.floor((x - margin) / (cellWidth + gridGap));
   const row = Math.floor((y - gridTop) / (cellHeight + gridGap));
@@ -1333,18 +1498,40 @@ function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
   lines.slice(0, 2).forEach((currentLine, index) => context.fillText(currentLine, x, y + index * lineHeight));
 }
 
+function drawAlarmBell(context, centerX, centerY, color) {
+  context.save();
+  context.fillStyle = color;
+  context.beginPath();
+  context.moveTo(centerX - 9, centerY + 5);
+  context.quadraticCurveTo(centerX - 5, centerY + 2, centerX - 5, centerY - 4);
+  context.quadraticCurveTo(centerX - 4, centerY - 10, centerX, centerY - 10);
+  context.quadraticCurveTo(centerX + 5, centerY - 10, centerX + 5, centerY - 4);
+  context.lineTo(centerX + 5, centerY + 1);
+  context.quadraticCurveTo(centerX + 5, centerY + 4, centerX + 9, centerY + 5);
+  context.closePath();
+  context.fill();
+  context.beginPath();
+  context.arc(centerX, centerY + 8, 1.8, 0, Math.PI * 2);
+  context.fill();
+  context.restore();
+}
+
 // Dibuja la agenda mensual completa en el lienzo que se comparte o descarga.
 function drawAgendaCanvas() {
   const canvas = $("#agendaCanvas");
   const context = canvas.getContext("2d");
   const agendaBackground = currentAgendaBackground();
   const width = 1600;
-  const height = 1320;
   const margin = 72;
   const gridTop = 470;
   const gridGap = 14;
+  const cellHeight = 148;
+  const firstDay = new Date(state.year, state.month, 1).getDay();
+  const offset = firstDay === 0 ? 6 : firstDay - 1;
+  const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
+  const calendarRows = Math.ceil((offset + daysInMonth) / 7);
+  const height = gridTop + calendarRows * (cellHeight + gridGap) + 72;
   const cellWidth = (width - margin * 2 - gridGap * 6) / 7;
-  const cellHeight = 112;
   canvas.width = width;
   canvas.height = height;
 
@@ -1387,17 +1574,18 @@ function drawAgendaCanvas() {
   context.fillRect(0, 0, width, 17);
   context.fillStyle = "#ffffff";
   context.font = "700 44px Arial";
-  context.fillText("Memoria laboral", margin + 28, 101);
+  context.fillText(languageTranslations[currentLanguage]?.["Memoria laboral"] || "Memoria laboral", margin + 28, 101);
   context.fillStyle = "#ccefe1";
   context.font = "700 18px Arial";
-  context.fillText(currentLanguage === "en" ? "WORK CALENDAR" : "CALENDARIO DE RUTAS", margin + 28, 132);
+  context.fillText(localizedCalendarLabels[currentLanguage] || localizedCalendarLabels.es, margin + 28, 132);
   context.fillStyle = "#17211f";
   context.font = "700 58px Arial";
-  context.fillText(`${months[state.month]} ${state.year}`, margin, 218);
+  context.fillText(`${(localizedMonths[currentLanguage] || months)[state.month]} ${state.year}`, margin, 218);
   if (hasGroup) {
     context.fillStyle = "#ffffff";
     context.font = "500 20px Arial";
-    context.fillText(`Grupo ${groupName}`, margin, 260);
+    const groupLabel = localizedGroupLabels[currentLanguage]?.assigned || localizedGroupLabels.es.assigned;
+    context.fillText(`${groupLabel} ${groupName}`, margin, 260);
   }
 
   const weekdays = localizedWeekdays[currentLanguage] || localizedWeekdays.es;
@@ -1424,10 +1612,6 @@ function drawAgendaCanvas() {
     context.fillText(day, x + cellWidth / 2, weekdayY + 20);
   });
   context.textAlign = "left";
-
-  const firstDay = new Date(state.year, state.month, 1).getDay();
-  const offset = firstDay === 0 ? 6 : firstDay - 1;
-  const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
 
   for (let day = 1; day <= daysInMonth; day += 1) {
     const position = offset + day - 1;
@@ -1464,11 +1648,26 @@ function drawAgendaCanvas() {
 
     if (route) {
       context.fillStyle = routeColor(route);
-      context.font = "700 19px Arial";
-      drawWrappedText(context, routeDisplayName(route), x + 17, y + 62, cellWidth - 34, 24);
-      context.fillStyle = holiday || isWeekend ? "#ffffff" : "#40534b";
       context.font = "700 17px Arial";
-      context.fillText(route.time ? `${route.time}${route.exit ? ` - ${route.exit}` : ""}` : statusLabel(route), x + 17, y + 103);
+      drawWrappedText(context, `${routeDisplayName(route)} ${shiftHours(route.shift)}h`, x + 17, y + 58, cellWidth - 34, 21);
+      const detailLabels = calendarDetailLabels[currentLanguage] || calendarDetailLabels.es;
+      context.fillStyle = "#40534b";
+      context.font = "600 17px Arial";
+      if (route.type?.trim()) {
+        context.fillText(route.type.trim(), x + 17, y + 99, cellWidth - 34);
+      }
+      const timeText = route.time ? `${route.time}${route.exit ? ` - ${route.exit}` : ""}` : statusLabel(route);
+      const reminderText = reminderOffset(route.reminder);
+      const timeReserve = route.alarm ? (reminderText ? 94 : 56) : 34;
+      context.font = "700 17px Arial";
+      context.fillText(timeText, x + 17, y + 138, cellWidth - timeReserve);
+      if (route.alarm) {
+        drawAlarmBell(context, x + cellWidth - (reminderText ? 68 : 30), y + 132, "#d9654e");
+        if (reminderText) {
+          context.font = "700 16px Arial";
+          context.fillText(`(${reminderText})`, x + cellWidth - 50, y + 137, 42);
+        }
+      }
       context.fillStyle = "#f27d65";
       context.beginPath();
       context.arc(x + cellWidth - 21, y + 20, 5, 0, Math.PI * 2);
@@ -1479,7 +1678,8 @@ function drawAgendaCanvas() {
   const rows = Math.ceil((offset + daysInMonth) / 7);
   context.fillStyle = "#71807a";
   context.font = "500 15px Arial";
-  context.fillText(currentLanguage === "en" ? "Calendar generated with Work Memory" : "Calendario generado con Memoria laboral", margin, gridTop + rows * (cellHeight + gridGap) + 28);
+  const calendarCredit = currentLanguage === "en" ? "Calendar generated with Work Memory" : currentLanguage === "fr" ? "Calendrier généré avec Mémoire de travail" : currentLanguage === "it" ? "Calendario creato con Memoria lavorativa" : currentLanguage === "de" ? "Kalender erstellt mit Arbeitsgedächtnis" : "Calendario generado con Memoria laboral";
+  context.fillText(calendarCredit, margin, gridTop + rows * (cellHeight + gridGap) + 28);
 
   return canvas;
 }
@@ -1544,7 +1744,8 @@ function sharedMonthPayload() {
     shift: route.shift || "completa",
     status: route.status || "trabajado",
     extraHours: routeExtraHours(route),
-    reminder: Number(route.reminder || 0),
+    alarm: route.alarm === true,
+    reminder: Number(route.reminder ?? 30),
     ...(sharePunchesToggle.checked ? { actualEntry: route.actualEntry || "", actualExit: route.actualExit || "" } : {})
   }]));
   return { app: "memoria-laboral", version: 3, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
@@ -1907,13 +2108,7 @@ $("#routeForm").addEventListener("submit", async (event) => {
 $("#clearRememberedButton").addEventListener("click", () => {
   if (!window.confirm("¿Quieres borrar el recuerdo de la última ruta?")) return;
   localStorage.removeItem(rememberedRouteKey);
-  $("#destinationInput").value = "";
-  $("#timeInput").value = "";
-  shiftInput.value = "completa";
-  exitInput.value = "";
-  syncClockParts($("#timeInput"), entryHourInput, entryMinuteInput);
-  syncClockParts(exitInput, exitHourInput, exitMinuteInput);
-  exitInput.dataset.manual = "false";
+  if (state.selected) selectDay(state.selected, { useRemembered: false });
   showToast("Recuerdo borrado");
 });
 
@@ -1924,7 +2119,7 @@ $("#clearButton").addEventListener("click", async () => {
     markRouteDeleted(selectedDay);
     saveRoutes();
     renderCalendar();
-    selectDay(selectedDay);
+    selectDay(selectedDay, { useRemembered: false });
     await cancelAlarm(selectedDay);
     showToast("Día vaciado");
   }
