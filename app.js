@@ -625,7 +625,7 @@ function queueDriveSync() {
       driveButtonLabel.textContent = "Drive sincronizado";
     } catch (error) {
       console.error("No se pudo sincronizar Google Drive", error);
-      driveButtonLabel.textContent = "Error al sincronizar";
+      driveButtonLabel.textContent = "Sincronización pendiente";
     }
   }, 500);
 }
@@ -658,7 +658,7 @@ async function connectGoogleDrive() {
     console.error("No se pudo conectar Google Drive", error);
     driveButtonLabel.textContent = "Conectar Google Drive";
     updateSyncUi();
-    showToast("No se pudo conectar Google Drive");
+    showToast("No se completó la conexión con Google Drive. Revisa el permiso de Google e inténtalo de nuevo.");
   } finally {
     driveButton.disabled = false;
   }
@@ -674,8 +674,8 @@ async function syncNow() {
     showToast("Cambios sincronizados");
   } catch (error) {
     console.error("No se pudo sincronizar", error);
-    syncStatus.textContent = "Error de sincronización";
-    showToast("No se pudo sincronizar");
+    syncStatus.textContent = "Cambios pendientes";
+    showToast("No se completó la sincronización. Tus cambios siguen guardados en este dispositivo.");
   } finally {
     syncNowButton.disabled = false;
     updateSyncUi();
@@ -689,7 +689,7 @@ async function disconnectGoogleDrive() {
   if (token && window.google?.accounts?.oauth2?.revoke) {
     await new Promise((resolve) => window.google.accounts.oauth2.revoke(token, resolve));
   }
-  driveButtonLabel.textContent = "Conectar Google Drive";
+  driveButtonLabel.textContent = "Desconectado de Google Drive";
   driveLogoutButton.hidden = true;
   recordButton.hidden = true;
   recordCard.hidden = true;
@@ -844,7 +844,7 @@ function registerCurrentTime(target) {
     && selectedDate.getMonth() === today.getMonth()
     && selectedDate.getDate() === today.getDate();
   if (!isToday) {
-    showToast("Aún no estás en el día de trabajo seleccionado");
+    showToast("Para registrar la hora actual, selecciona la fecha de hoy.");
     return;
   }
   const now = new Date();
@@ -1205,14 +1205,14 @@ async function scheduleAlarm(day, route) {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
     const permission = await LocalNotifications.requestPermissions();
     if (permission.display !== "granted") {
-      showToast("Permiso de alarmas no concedido");
+      showToast("Para activar el recordatorio, permite las notificaciones en Android.");
       return;
     }
     const [hour, minute] = route.time.split(":").map(Number);
     const at = new Date(state.year, state.month, day, hour, minute);
     at.setMinutes(at.getMinutes() - Number(route.reminder || 0));
     if (at <= new Date()) {
-      showToast("La hora elegida ya ha pasado");
+      showToast("Elige una hora futura para programar el recordatorio.");
       return;
     }
     const id = state.year * 10000 + (state.month + 1) * 100 + day;
@@ -1229,7 +1229,7 @@ async function scheduleAlarm(day, route) {
     showToast("Alarma programada en Android");
   } catch (error) {
     console.error("No se pudo programar la alarma", error);
-    showToast("No se pudo programar la alarma");
+    showToast("No se completó el recordatorio. Revisa los permisos de notificación e inténtalo de nuevo.");
   }
 }
 
@@ -1541,7 +1541,7 @@ async function importSharedAgenda(encodedFromApp = null) {
       showToast("Agenda mensual importada");
     }
   } catch {
-    showToast("El enlace de agenda no es válido");
+    showToast("No pudimos importar la agenda. Comprueba que el enlace esté completo e inténtalo de nuevo.");
   } finally {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
@@ -1556,7 +1556,7 @@ async function listenNativeAgendaLinks() {
       const encoded = parsed.searchParams.get("data");
       if (parsed.protocol === "memoria-laboral:" && parsed.hostname === "import" && encoded) importSharedAgenda(encoded);
     } catch {
-      showToast("El enlace de agenda no es válido");
+      showToast("No pudimos abrir la agenda. Comprueba que el enlace esté completo e inténtalo de nuevo.");
     }
   });
 }
@@ -1593,7 +1593,7 @@ $("#addHolidayButton").addEventListener("click", () => {
   const date = holidayDateInput.value;
   const name = holidayNameInput.value.trim();
   if (!date || !name) {
-    showToast("Indica una fecha y un nombre para el festivo");
+    showToast("Completa la fecha y el nombre del festivo para guardarlo.");
     return;
   }
   const existingIndex = customHolidays.findIndex((holiday) => holiday.date === date);
@@ -1709,7 +1709,7 @@ backgroundFiles.addEventListener("change", async () => {
     drawAgendaCanvas();
     showToast(`${sources.length} imagen${sources.length === 1 ? "" : "es"} personalizada${sources.length === 1 ? "" : "s"}`);
   } catch {
-    showToast("No se pudieron cargar las imágenes");
+    showToast("No se cargaron las imágenes. Prueba con otros archivos e inténtalo de nuevo.");
   }
 });
 backgroundReset.addEventListener("click", () => {
@@ -1789,17 +1789,17 @@ $("#routeForm").addEventListener("submit", async (event) => {
   const status = statusInput.value;
   if (!destination && status === "trabajado") {
     $("#destinationInput").focus();
-    showToast("Escribe un destino para guardar la ruta");
+    showToast("Añade un destino para guardar la ruta trabajada.");
     return;
   }
   if (time && !validTime(time)) {
     $("#timeInput").focus();
-    showToast("La entrada debe tener formato HH:MM");
+    showToast("Revisa la hora de entrada y usa el formato HH:MM, por ejemplo 08:30.");
     return;
   }
   if (exit && !validTime(exit)) {
     exitInput.focus();
-    showToast("La salida debe tener formato HH:MM");
+    showToast("Revisa la hora de salida y usa el formato HH:MM, por ejemplo 17:30.");
     return;
   }
   const actualEntry = $("#timeInput").dataset.punch === "true" ? time : existingRoute.actualEntry || "";

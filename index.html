@@ -11,15 +11,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=23">
-  <link rel="stylesheet" href="visual-enhancements.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=24">
+  <link rel="stylesheet" href="visual-enhancements.css?v=24">
 </head>
 <body>
   <!-- Contenedor principal de la interfaz. -->
   <div class="app-shell">
     <!-- Barra superior con identidad, idioma, conexión y acceso al expediente. -->
     <header class="topbar">
-      <a class="brand" href="#"><span class="brand-mark" aria-hidden="true"><span class="brand-lens"></span></span><span>Memoria laboral</span><small class="brand-version">v2.6 beta</small></a>
+      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.6 beta</small></span></a>
       <div class="topbar-actions"><div class="language-toggle" aria-label="Idioma"><button id="spanishButton" type="button" aria-label="Español">🇪🇸 ES</button><button id="englishButton" type="button" aria-label="English">🇬🇧 EN</button></div><button class="install-button" id="installButton" type="button" hidden>Instalar app</button><span class="offline-status" id="offlineStatus" hidden>Sin conexión</span><button class="drive-button" id="driveButton" type="button"><span class="drive-icon" aria-hidden="true">▣</span><span id="driveButtonLabel">Conectar Google Drive</span></button><span class="sync-status" id="syncStatus">Sin sincronizar</span><button class="sync-now-button" id="syncNowButton" type="button" hidden>Sincronizar ahora</button><button class="drive-logout-button" id="driveLogoutButton" type="button" hidden>Cerrar sesión</button><button class="record-button" id="recordButton" type="button" hidden>Ver expediente</button><div class="topbar-note"><span class="live-dot"></span> Calendario de rutas</div></div>
     </header>
     <main class="workspace">
@@ -27,7 +27,6 @@
       <section class="intro-block">
         <div>
           <p class="eyebrow">Planificador mensual</p>
-          <h1>Memoria laboral</h1>
           <p class="intro-copy">Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.</p>
         </div>
         <div class="date-stamp"><span id="stampMonth">MES ACTUAL</span><strong id="stampYear">AÑO ACTUAL</strong></div>
@@ -159,12 +158,12 @@
     </div>
     <p class="drive-tutorial-intro">La aplicación necesita tu permiso para guardar y recuperar tu agenda en tu Google Drive.</p>
     <ol class="drive-tutorial-steps">
-      <li><strong>Pulsa continuar.</strong> Se abrirá la ventana segura de Google.</li>
-      <li><strong>Elige tu cuenta.</strong> Usa la cuenta donde quieras guardar la agenda.</li>
-      <li><strong>Revisa y acepta el permiso.</strong> Google permitirá a la aplicación gestionar los archivos que cree.</li>
-      <li><strong>Vuelve a la aplicación.</strong> La agenda se sincronizará automáticamente.</li>
+      <li><span><strong>Pulsa continuar.</strong> Se abrirá la ventana segura de Google.</span></li>
+      <li><span><strong>Elige tu cuenta.</strong> Usa la cuenta donde quieras guardar la agenda.</span></li>
+      <li><span><strong>Revisa y acepta el permiso.</strong> Google permitirá a la aplicación gestionar los archivos que cree.</span></li>
+      <li><span><strong>Vuelve a la aplicación.</strong> La agenda se sincronizará automáticamente.</span></li>
     </ol>
-    <p class="drive-tutorial-note">La autorización la gestiona Google. La aplicación no ve tu contraseña.</p>
+    <p class="drive-tutorial-note">Tu contraseña está segura y gestionada únicamente por Google.</p>
     <div class="drive-tutorial-actions">
       <button class="button button-quiet" id="driveTutorialCancel" type="button">Cancelar</button>
       <button class="button button-dark" id="driveTutorialContinue" type="button">Continuar con Google</button>
