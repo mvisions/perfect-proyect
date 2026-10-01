@@ -76,6 +76,7 @@ const holidayDateInput = $("#holidayDateInput");
 const holidayNameInput = $("#holidayNameInput");
 const holidayList = $("#holidayList");
 const backgroundToggle = $("#backgroundToggle");
+const backgroundThemeSelect = $("#backgroundThemeSelect");
 const backgroundFiles = $("#backgroundFiles");
 const backgroundOptions = $("#backgroundOptions");
 const solidBackground = $("#solidBackground");
@@ -110,6 +111,7 @@ const previewDaySelect = $("#previewDaySelect");
 const agendaCanvas = $("#agendaCanvas");
 const agendaPreview = $(".agenda-preview");
 const exportActions = $(".export-actions");
+const plannerDetails = $(".holiday-manager");
 const routeManager = $("#routeManager");
 const recordButton = $("#recordButton");
 const recordCard = $("#recordCard");
@@ -135,7 +137,7 @@ let currentLanguage = localStorage.getItem("limasam-language") || "es";
 
 // Traducciones base para los textos visibles y los controles de la interfaz.
 const languagePairs = {
-  "Memoria laboral": "Work Memory",
+  "Memoria laboral": "Work Log",
   "Planificador mensual": "Monthly planner",
   "Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.": "Organize destinations and entry times for each day. Then download a clean image ready to share.",
   "Número de grupo": "Group number",
@@ -146,7 +148,7 @@ const languagePairs = {
   "Colores del calendario": "Calendar colors",
   "Diarios": "Weekdays",
   "Fines de semana": "Weekends",
-  "Mostrar fondo de barrenderos": "Show street-cleaning background",
+  "Mostrar tema": "Show theme",
   "Subir imágenes": "Upload images",
   "Usar fondos predeterminados": "Use default backgrounds",
   "Descargar PNG": "Download PNG",
@@ -181,6 +183,15 @@ const languagePairs = {
   "Tiempo trabajado": "Worked time",
   "Barras": "Bars",
   "Abanico": "Fan",
+  "Tema del fondo": "Background theme",
+  "Limpieza viaria": "Street cleaning",
+  "Jardinería": "Gardening",
+  "Transportes": "Transport",
+  "Extraescolares": "After-school activities",
+  "Seguridad": "Security",
+  "Deportes": "Sports",
+  "Animales": "Animals",
+  "Desplegar": "Expand",
   "Exportar expediente": "Export record"
 };
 
@@ -195,15 +206,33 @@ Object.assign(languagePairs, {
 const languageTranslations = {
   en: languagePairs,
   fr: {
-    "Memoria laboral": "Mémoire de travail", "Planificador mensual": "Planificateur mensuel", "Número de grupo": "Numéro de groupe", Mes: "Mois", Año: "Année", Tema: "Thème", Sonidos: "Sons", "Colores del calendario": "Couleurs du calendrier", Diarios: "Jours ouvrés", "Fines de semana": "Week-ends", "Subir imágenes": "Télécharger des images", "Usar fondos predeterminados": "Utiliser les fonds par défaut", "Descargar PNG": "Télécharger PNG", "Compartir estructura del mes": "Partager la structure du mois", "Gestionar festivos personalizados": "Gérer les jours fériés", "Detalle del día": "Détails du jour", Destino: "Destination", "Tipo de trabajo": "Type de travail", "Avisar": "Rappel", "Estado del día": "Statut du jour", Trabajado: "Travaillé", "Festivo trabajado": "Jour férié travaillé", Baja: "Arrêt maladie", Vacaciones: "Congés", Ampliaciones: "Extensions", "Tiempo trabajado": "Temps travaillé", Barras: "Barres", Abanico: "Éventail", "Editar día": "Modifier le jour", "Guardar ruta": "Enregistrer la journée"
+    "Memoria laboral": "Journal de travail", "Planificador mensual": "Planificateur mensuel", "Número de grupo": "Numéro de groupe", Mes: "Mois", Año: "Année", Tema: "Thème", Sonidos: "Sons", "Colores del calendario": "Couleurs du calendrier", Diarios: "Jours ouvrés", "Fines de semana": "Week-ends", "Subir imágenes": "Télécharger des images", "Usar fondos predeterminados": "Utiliser les fonds par défaut", "Descargar PNG": "Télécharger PNG", "Compartir estructura del mes": "Partager la structure du mois", "Gestionar festivos personalizados": "Gérer les jours fériés", Desplegar: "Déployer", "Tema del fondo": "Thème du fond", "Limpieza viaria": "Nettoyage des rues", "Jardinería": "Jardinage", Transportes: "Transports", Extraescolares: "Activités périscolaires", Seguridad: "Sécurité", "Detalle del día": "Détails du jour", Destino: "Destination", "Tipo de trabajo": "Type de travail", "Avisar": "Rappel", "Estado del día": "Statut du jour", Trabajado: "Travaillé", "Festivo trabajado": "Jour férié travaillé", Baja: "Arrêt maladie", Vacaciones: "Congés", Ampliaciones: "Extensions", "Tiempo trabajado": "Temps travaillé", Barras: "Barres", Abanico: "Éventail", "Editar día": "Modifier le jour", "Guardar ruta": "Enregistrer la journée"
   },
   it: {
-    "Memoria laboral": "Memoria lavorativa", "Planificador mensual": "Pianificatore mensile", "Número de grupo": "Numero gruppo", Mes: "Mese", Año: "Anno", Tema: "Tema", Sonidos: "Suoni", "Colores del calendario": "Colori del calendario", Diarios: "Giorni lavorativi", "Fines de semana": "Fine settimana", "Subir imágenes": "Carica immagini", "Usar fondos predeterminados": "Usa sfondi predefiniti", "Descargar PNG": "Scarica PNG", "Compartir estructura del mes": "Condividi struttura del mese", "Gestionar festivos personalizados": "Gestisci festività personalizzate", "Detalle del día": "Dettagli del giorno", Destino: "Destinazione", "Tipo de trabajo": "Tipo di lavoro", "Avisar": "Promemoria", "Estado del día": "Stato del giorno", Trabajado: "Lavorato", "Festivo trabajado": "Festivo lavorato", Baja: "Malattia", Vacaciones: "Ferie", Ampliaciones: "Estensioni", "Tiempo trabajado": "Tempo lavorato", Barras: "Barre", Abanico: "Ventaglio", "Editar día": "Modifica giorno", "Guardar ruta": "Salva giornata"
+    "Memoria laboral": "Diario di lavoro", "Planificador mensual": "Pianificatore mensile", "Número de grupo": "Numero gruppo", Mes: "Mese", Año: "Anno", Tema: "Tema", Sonidos: "Suoni", "Colores del calendario": "Colori del calendario", Diarios: "Giorni lavorativi", "Fines de semana": "Fine settimana", "Subir imágenes": "Carica immagini", "Usar fondos predeterminados": "Usa sfondi predefiniti", "Descargar PNG": "Scarica PNG", "Compartir estructura del mes": "Condividi struttura del mese", "Gestionar festivos personalizados": "Gestisci festività personalizzate", Desplegar: "Espandi", "Tema del fondo": "Tema dello sfondo", "Limpieza viaria": "Pulizia stradale", "Jardinería": "Giardinaggio", Transportes: "Trasporti", Extraescolares: "Attività extrascolastiche", Seguridad: "Sicurezza", "Detalle del día": "Dettagli del giorno", Destino: "Destinazione", "Tipo de trabajo": "Tipo di lavoro", "Avisar": "Promemoria", "Estado del día": "Stato del giorno", Trabajado: "Lavorato", "Festivo trabajado": "Festivo lavorato", Baja: "Malattia", Vacaciones: "Ferie", Ampliaciones: "Estensioni", "Tiempo trabajado": "Tempo lavorato", Barras: "Barre", Abanico: "Ventaglio", "Editar día": "Modifica giorno", "Guardar ruta": "Salva giornata"
   },
   de: {
-    "Memoria laboral": "Arbeitsgedächtnis", "Planificador mensual": "Monatsplaner", "Número de grupo": "Gruppennummer", Mes: "Monat", Año: "Jahr", Tema: "Thema", Sonidos: "Töne", "Colores del calendario": "Kalenderfarben", Diarios: "Werktage", "Fines de semana": "Wochenenden", "Subir imágenes": "Bilder hochladen", "Usar fondos predeterminados": "Standardhintergründe verwenden", "Descargar PNG": "PNG herunterladen", "Compartir estructura del mes": "Monatsstruktur teilen", "Gestionar festivos personalizados": "Eigene Feiertage verwalten", "Detalle del día": "Tagesdetails", Destino: "Ziel", "Tipo de trabajo": "Arbeitsart", "Avisar": "Erinnerung", "Estado del día": "Tagesstatus", Trabajado: "Gearbeitet", "Festivo trabajado": "Gearbeiteter Feiertag", Baja: "Krankheit", Vacaciones: "Urlaub", Ampliaciones: "Erweiterungen", "Tiempo trabajado": "Arbeitszeit", Barras: "Balken", Abanico: "Fächer", "Editar día": "Tag bearbeiten", "Guardar ruta": "Tag speichern"
+    "Memoria laboral": "Arbeitsprotokoll", "Planificador mensual": "Monatsplaner", "Número de grupo": "Gruppennummer", Mes: "Monat", Año: "Jahr", Tema: "Thema", Sonidos: "Töne", "Colores del calendario": "Kalenderfarben", Diarios: "Werktage", "Fines de semana": "Wochenenden", "Subir imágenes": "Bilder hochladen", "Usar fondos predeterminados": "Standardhintergründe verwenden", "Descargar PNG": "PNG herunterladen", "Compartir estructura del mes": "Monatsstruktur teilen", "Gestionar festivos personalizados": "Eigene Feiertage verwalten", Desplegar: "Ausklappen", "Tema del fondo": "Hintergrundthema", "Limpieza viaria": "Straßenreinigung", "Jardinería": "Gartenpflege", Transportes: "Verkehr", Extraescolares: "Außerschulische Aktivitäten", Seguridad: "Sicherheit", "Detalle del día": "Tagesdetails", Destino: "Ziel", "Tipo de trabajo": "Arbeitsart", "Avisar": "Erinnerung", "Estado del día": "Tagesstatus", Trabajado: "Gearbeitet", "Festivo trabajado": "Gearbeiteter Feiertag", Baja: "Krankheit", Vacaciones: "Urlaub", Ampliaciones: "Erweiterungen", "Tiempo trabajado": "Arbeitszeit", Barras: "Balken", Abanico: "Fächer", "Editar día": "Tag bearbeiten", "Guardar ruta": "Tag speichern"
   }
 };
+Object.assign(languageTranslations.fr, { Deportes: "Sports", Animales: "Animaux" });
+Object.assign(languageTranslations.it, { Deportes: "Sport", Animales: "Animali" });
+Object.assign(languageTranslations.de, { Deportes: "Sport", Animales: "Tiere" });
+Object.assign(languageTranslations.fr, {
+  "Tipo de jornada": "Type de journée",
+  "Incluir fondo del mes": "Inclure l’arrière-plan du mois",
+  "Incluir horas fichadas": "Inclure les heures pointées"
+});
+Object.assign(languageTranslations.it, {
+  "Tipo de jornada": "Tipo di giornata",
+  "Incluir fondo del mes": "Includi lo sfondo del mese",
+  "Incluir horas fichadas": "Includi le ore registrate"
+});
+Object.assign(languageTranslations.de, {
+  "Tipo de jornada": "Art der Schicht",
+  "Incluir fondo del mes": "Monatshintergrund einbeziehen",
+  "Incluir horas fichadas": "Erfasste Zeiten einbeziehen"
+});
 Object.assign(languagePairs, {
   "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Developer: Miguel Ángel Sánchez Aranda © 2026",
   "Claro": "Light",
@@ -219,6 +248,7 @@ Object.assign(languagePairs, {
   "Comprobar actualizaciones": "Check for updates"
 });
 Object.assign(languageTranslations.fr, {
+  "Mostrar tema": "Afficher le thème",
   "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Développeur : Miguel Ángel Sánchez Aranda © 2026",
   "Claro": "Clair",
   "Oscuro": "Sombre",
@@ -233,6 +263,7 @@ Object.assign(languageTranslations.fr, {
   "Comprobar actualizaciones": "Vérifier les mises à jour"
 });
 Object.assign(languageTranslations.it, {
+  "Mostrar tema": "Mostra tema",
   "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Sviluppatore: Miguel Ángel Sánchez Aranda © 2026",
   "Claro": "Chiaro",
   "Oscuro": "Scuro",
@@ -247,6 +278,7 @@ Object.assign(languageTranslations.it, {
   "Comprobar actualizaciones": "Verifica aggiornamenti"
 });
 Object.assign(languageTranslations.de, {
+  "Mostrar tema": "Thema anzeigen",
   "Desarrollador: Miguel Ángel Sánchez Aranda © 2026": "Entwickler: Miguel Ángel Sánchez Aranda © 2026",
   "Claro": "Hell",
   "Oscuro": "Dunkel",
@@ -329,10 +361,137 @@ Object.entries(fieldExampleTranslations).forEach(([source, translations]) => {
   });
 });
 
+Object.assign(languagePairs, {
+  "Configuración del calendario": "Calendar settings",
+  "Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.": "Plan destinations and start times for each day, then download a clean image to share.",
+  Fecha: "Date", Nombre: "Name", "Añadir festivo": "Add holiday", "No hay festivos personalizados este año": "No custom holidays this year",
+  "Vista mensual": "Monthly view", "Mes actual": "Current month", "Día con ruta": "Scheduled route",
+  "Selecciona un día": "Select a day", "Haz clic en un día del calendario para registrar su destino y hora.": "Select a calendar day to enter its destination and time.",
+  "Selecciona cualquier día para añadir o editar una ruta": "Select a day to add or edit a route", rutas: "routes", "horas con entrada": "scheduled starts", festivos: "holidays",
+  "Tu ruta aparecerá aquí": "Your route will appear here", Festivo: "Holiday", "Hora de entrada (24 h)": "Entry time (24 h)",
+  "Hora de salida (24 h)": "Exit time (24 h)", "Huella de entrada": "Entry punch", "Huella de salida": "Exit punch",
+  "Jornada completa · 8 h": "Full day · 8 h", "Jornada continua · 7 h": "Continuous day · 7 h", "Media jornada · 4 h": "Half day · 4 h",
+  "Sin calcular": "Not calculated", "Horas extra": "Overtime", "Se suma de una en una": "Added one at a time",
+  "30 minutos antes": "30 minutes before", "A la hora de entrada": "At entry time", "15 minutos antes": "15 minutes before", "1 hora antes": "1 hour before", "2 horas antes": "2 hours before",
+  "Asuntos propios": "Personal days", Descanso: "Rest day", "Activar alarma en Android": "Enable Android alarm",
+  "Vaciar día": "Clear day", "Borrar recuerdo": "Clear remembered route", "Resumen del mes": "Monthly summary", "rutas": "routes",
+  "horas con entrada": "scheduled starts", "festivos": "holidays", "Vista previa en tiempo real": "Live preview", "Agenda lista para compartir": "Agenda ready to share",
+  "Editar día": "Edit day", "Días y horas extra por mes": "Days and overtime by month", "días registrados": "recorded days",
+  "Total registrados": "Total recorded", "Festivos trabajados": "Worked holidays", Bajas: "Sick leave", "Horas normales": "Regular hours",
+  "Año completo": "Full year", "Detalle de días": "Daily details", Resumen: "Summary", Exportar: "Export", Fecha: "Date", Estado: "Status",
+  Entrada: "Start", Salida: "End", "Tiempo trabajado": "Time worked", "Horas extra": "Overtime", "Descargar PDF": "Download PDF", "Descargar CSV": "Download CSV",
+  "Compartir resumen": "Share summary", "Todavía no hay registros para este año": "No records for this year yet", "Ver expediente": "View record", "Ocultar expediente": "Hide record",
+  "Conectar Google Drive": "Connect Google Drive", "Sincronizado ahora": "Synced just now", "Sincronización pendiente": "Sync pending", "Desconectado de Google Drive": "Disconnected from Google Drive"
+});
+
+Object.assign(languageTranslations.fr, {
+  "Configuración del calendario": "Paramètres du calendrier",
+  "Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.": "Planifiez les destinations et les heures de début, puis téléchargez une image à partager.",
+  Fecha: "Date", Nombre: "Nom", "Añadir festivo": "Ajouter un jour férié", "No hay festivos personalizados este año": "Aucun jour férié personnalisé cette année",
+  "Vista mensual": "Vue mensuelle", "Mes actual": "Mois actuel", "Día con ruta": "Tournée prévue",
+  "Selecciona un día": "Choisissez un jour", "Haz clic en un día del calendario para registrar su destino y hora.": "Choisissez une date pour saisir la destination et l’heure.",
+  "Selecciona cualquier día para añadir o editar una ruta": "Choisissez une date pour ajouter ou modifier une tournée", rutas: "tournées", "horas con entrada": "heures de début", festivos: "jours fériés",
+  "Tu ruta aparecerá aquí": "Votre tournée apparaîtra ici", Festivo: "Jour férié", "Hora de entrada (24 h)": "Heure de début (24 h)",
+  "Hora de salida (24 h)": "Heure de fin (24 h)", "Huella de entrada": "Pointage d’entrée", "Huella de salida": "Pointage de sortie",
+  "Jornada completa · 8 h": "Journée complète · 8 h", "Jornada continua · 7 h": "Journée continue · 7 h", "Media jornada · 4 h": "Demi-journée · 4 h",
+  "Sin calcular": "Non calculé", "Horas extra": "Heures supplémentaires", "Se suma de una en una": "Ajoutées une par une",
+  "30 minutos antes": "30 minutes avant", "A la hora de entrada": "À l’heure de début", "15 minutos antes": "15 minutes avant", "1 hora antes": "1 heure avant", "2 horas antes": "2 heures avant",
+  "Asuntos propios": "Congés personnels", Descanso: "Repos", "Activar alarma en Android": "Activer l’alarme sur Android",
+  "Vaciar día": "Effacer la journée", "Borrar recuerdo": "Effacer la tournée mémorisée", "Resumen del mes": "Résumé du mois", "rutas": "tournées",
+  "horas con entrada": "heures de début", "festivos": "jours fériés", "Vista previa en tiempo real": "Aperçu en temps réel", "Agenda lista para compartir": "Agenda prête à partager",
+  "Editar día": "Modifier le jour", "Días y horas extra por mes": "Jours et heures supplémentaires par mois", "días registrados": "jours enregistrés",
+  "Total registrados": "Total enregistré", "Festivos trabajados": "Jours fériés travaillés", Bajas: "Arrêts maladie", "Horas normales": "Heures normales",
+  "Año completo": "Année complète", "Detalle de días": "Détail des journées", Resumen: "Résumé", Exportar: "Exporter", Estado: "Statut",
+  Entrada: "Début", Salida: "Fin", "Tiempo trabajado": "Temps travaillé", "Descargar PDF": "Télécharger le PDF", "Descargar CSV": "Télécharger le CSV",
+  "Compartir resumen": "Partager le résumé", "Todavía no hay registros para este año": "Aucun enregistrement pour cette année", "Ver expediente": "Voir le dossier", "Ocultar expediente": "Masquer le dossier",
+  "Conectar Google Drive": "Connecter Google Drive", "Sincronizado ahora": "Synchronisé à l’instant", "Sincronización pendiente": "Synchronisation en attente", "Desconectado de Google Drive": "Déconnecté de Google Drive"
+});
+
+Object.assign(languageTranslations.it, {
+  "Configuración del calendario": "Impostazioni del calendario",
+  "Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.": "Organizza destinazioni e orari di ingresso, poi scarica un’immagine da condividere.",
+  Fecha: "Data", Nombre: "Nome", "Añadir festivo": "Aggiungi festività", "No hay festivos personalizados este año": "Nessuna festività personalizzata quest’anno",
+  "Vista mensual": "Vista mensile", "Mes actual": "Mese corrente", "Día con ruta": "Percorso programmato",
+  "Selecciona un día": "Seleziona un giorno", "Haz clic en un día del calendario para registrar su destino y hora.": "Seleziona un giorno per inserire destinazione e orario.",
+  "Selecciona cualquier día para añadir o editar una ruta": "Seleziona un giorno per aggiungere o modificare un percorso", rutas: "percorsi", "horas con entrada": "ingressi programmati", festivos: "festività",
+  "Tu ruta aparecerá aquí": "Il percorso apparirà qui", Festivo: "Festività", "Hora de entrada (24 h)": "Ora di ingresso (24 h)",
+  "Hora de salida (24 h)": "Ora di uscita (24 h)", "Huella de entrada": "Timbro ingresso", "Huella de salida": "Timbro uscita",
+  "Jornada completa · 8 h": "Giornata completa · 8 h", "Jornada continua · 7 h": "Giornata continuata · 7 h", "Media jornada · 4 h": "Mezza giornata · 4 h",
+  "Sin calcular": "Non calcolato", "Horas extra": "Straordinari", "Se suma de una en una": "Si aggiungono una alla volta",
+  "30 minutos antes": "30 minuti prima", "A la hora de entrada": "All’ora di ingresso", "15 minutos antes": "15 minuti prima", "1 hora antes": "1 ora prima", "2 horas antes": "2 ore prima",
+  "Asuntos propios": "Permessi personali", Descanso: "Riposo", "Activar alarma en Android": "Attiva la sveglia su Android",
+  "Vaciar día": "Svuota giornata", "Borrar recuerdo": "Elimina percorso memorizzato", "Resumen del mes": "Riepilogo mensile", "rutas": "percorsi",
+  "horas con entrada": "ingressi programmati", "festivos": "festività", "Vista previa en tiempo real": "Anteprima in tempo reale", "Agenda lista para compartir": "Agenda pronta da condividere",
+  "Editar día": "Modifica giorno", "Días y horas extra por mes": "Giorni e straordinari per mese", "días registrados": "giorni registrati",
+  "Total registrados": "Totale registrato", "Festivos trabajados": "Festività lavorate", Bajas: "Malattia", "Horas normales": "Ore ordinarie",
+  "Año completo": "Anno completo", "Detalle de días": "Dettaglio giornaliero", Resumen: "Riepilogo", Exportar: "Esporta", Estado: "Stato",
+  Entrada: "Ingresso", Salida: "Uscita", "Tiempo trabajado": "Tempo lavorato", "Descargar PDF": "Scarica PDF", "Descargar CSV": "Scarica CSV",
+  "Compartir resumen": "Condividi riepilogo", "Todavía no hay registros para este año": "Nessun dato registrato per quest’anno", "Ver expediente": "Visualizza fascicolo", "Ocultar expediente": "Nascondi fascicolo",
+  "Conectar Google Drive": "Connetti Google Drive", "Sincronizado ahora": "Sincronizzato ora", "Sincronización pendiente": "Sincronizzazione in sospeso", "Desconectado de Google Drive": "Disconnesso da Google Drive"
+});
+
+Object.assign(languageTranslations.de, {
+  "Configuración del calendario": "Kalendereinstellungen",
+  "Organiza destinos y horas de entrada para cada día. Después descarga una imagen limpia, lista para compartir.": "Plane deine Ziele und Startzeiten und lade anschließend ein teilbares Kalenderbild herunter.",
+  Fecha: "Datum", Nombre: "Name", "Añadir festivo": "Feiertag hinzufügen", "No hay festivos personalizados este año": "Keine eigenen Feiertage in diesem Jahr",
+  "Vista mensual": "Monatsübersicht", "Mes actual": "Aktueller Monat", "Día con ruta": "Geplante Route",
+  "Selecciona un día": "Tag auswählen", "Haz clic en un día del calendario para registrar su destino y hora.": "Wähle einen Kalendertag, um Ziel und Uhrzeit einzutragen.",
+  "Selecciona cualquier día para añadir o editar una ruta": "Wähle einen Tag, um eine Route hinzuzufügen oder zu bearbeiten", rutas: "Routen", "horas con entrada": "geplante Starts", festivos: "Feiertage",
+  "Tu ruta aparecerá aquí": "Deine Route erscheint hier", Festivo: "Feiertag", "Hora de entrada (24 h)": "Startzeit (24 Std.)",
+  "Hora de salida (24 h)": "Endzeit (24 Std.)", "Huella de entrada": "Einstempeln", "Huella de salida": "Ausstempeln",
+  "Jornada completa · 8 h": "Ganztags · 8 Std.", "Jornada continua · 7 h": "Durchgehend · 7 Std.", "Media jornada · 4 h": "Halbtags · 4 Std.",
+  "Sin calcular": "Nicht berechnet", "Horas extra": "Überstunden", "Se suma de una en una": "Wird stundenweise addiert",
+  "30 minutos antes": "30 Minuten vorher", "A la hora de entrada": "Zur Startzeit", "15 minutos antes": "15 Minuten vorher", "1 hora antes": "1 Stunde vorher", "2 horas antes": "2 Stunden vorher",
+  "Asuntos propios": "Sonderurlaub", Descanso: "Ruhetag", "Activar alarma en Android": "Android-Erinnerung aktivieren",
+  "Vaciar día": "Tag leeren", "Borrar recuerdo": "Gespeicherte Route löschen", "Resumen del mes": "Monatsübersicht", "rutas": "Routen",
+  "horas con entrada": "geplante Starts", "festivos": "Feiertage", "Vista previa en tiempo real": "Live-Vorschau", "Agenda lista para compartir": "Kalender zum Teilen bereit",
+  "Editar día": "Tag bearbeiten", "Días y horas extra por mes": "Tage und Überstunden pro Monat", "días registrados": "erfasste Tage",
+  "Total registrados": "Insgesamt erfasst", "Festivos trabajados": "Gearbeitete Feiertage", Bajas: "Krankheitstage", "Horas normales": "Reguläre Stunden",
+  "Año completo": "Ganzes Jahr", "Detalle de días": "Tagesdetails", Resumen: "Übersicht", Exportar: "Exportieren", Estado: "Status",
+  Entrada: "Start", Salida: "Ende", "Tiempo trabajado": "Arbeitszeit", "Descargar PDF": "PDF herunterladen", "Descargar CSV": "CSV herunterladen",
+  "Compartir resumen": "Zusammenfassung teilen", "Todavía no hay registros para este año": "Für dieses Jahr liegen noch keine Einträge vor", "Ver expediente": "Jahresübersicht anzeigen", "Ocultar expediente": "Jahresübersicht ausblenden",
+  "Conectar Google Drive": "Google Drive verbinden", "Sincronizado ahora": "Gerade synchronisiert", "Sincronización pendiente": "Synchronisierung ausstehend", "Desconectado de Google Drive": "Von Google Drive getrennt"
+});
+
+Object.assign(languagePairs, {
+  "Control anual": "Annual record", "Expediente de": "Record for", "Resumen de días y actividades": "Days and activities summary",
+  Trabajados: "Worked", Festivos: "Holidays", "Total registrados": "Total recorded", "Festivos trabajados": "Worked holidays",
+  Bajas: "Sick leave", "Horas normales": "Regular hours", "Año completo": "Full year", "Comparación mensual y anual": "Monthly and yearly comparison",
+  "Días y horas extra por mes": "Days and overtime by month", "días registrados": "recorded days", "Descargar PDF": "Download PDF",
+  "Descargar CSV": "Download CSV", "Compartir resumen": "Share summary", "Todavía no hay registros para este año": "No records for this year yet",
+  "Total registrados": "Total recorded", Estado: "Status", Entrada: "Start", Salida: "End", "Horas extra": "Overtime",
+  "Incluir fondo del mes": "Include month background", "Incluir horas fichadas": "Include clocked hours", "No sincronizado": "Not synced",
+  "Ningún festivo personalizado": "No custom holidays"
+});
+Object.assign(languageTranslations.fr, {
+  "Control anual": "Suivi annuel", "Expediente de": "Dossier de", "Resumen de días y actividades": "Résumé des jours et activités",
+  Trabajados: "Jours travaillés", Festivos: "Jours fériés", "Total registrados": "Total enregistré", "Festivos trabajados": "Jours fériés travaillés",
+  Bajas: "Arrêts maladie", "Horas normales": "Heures normales", "Año completo": "Année complète", "Comparación mensual y anual": "Comparaison mensuelle et annuelle",
+  "Días y horas extra por mes": "Jours et heures supplémentaires par mois", "días registrados": "jours enregistrés", "Descargar PDF": "Télécharger le PDF",
+  "Descargar CSV": "Télécharger le CSV", "Compartir resumen": "Partager le résumé", "Todavía no hay registros para este año": "Aucun enregistrement pour cette année",
+  Estado: "Statut", Entrada: "Début", Salida: "Fin", "Incluir fondo del mes": "Inclure l’arrière-plan du mois", "Incluir horas fichadas": "Inclure les heures pointées"
+});
+Object.assign(languageTranslations.it, {
+  "Control anual": "Riepilogo annuale", "Expediente de": "Registro di", "Resumen de días y actividades": "Riepilogo di giorni e attività",
+  Trabajados: "Giorni lavorati", Festivos: "Festività", "Total registrados": "Totale registrato", "Festivos trabajados": "Festività lavorate",
+  Bajas: "Malattia", "Horas normales": "Ore ordinarie", "Año completo": "Anno intero", "Comparación mensual y anual": "Confronto mensile e annuale",
+  "Días y horas extra por mes": "Giorni e straordinari per mese", "días registrados": "giorni registrati", "Descargar PDF": "Scarica PDF",
+  "Descargar CSV": "Scarica CSV", "Compartir resumen": "Condividi riepilogo", "Todavía no hay registros para este año": "Nessun dato registrato per quest’anno",
+  Estado: "Stato", Entrada: "Ingresso", Salida: "Uscita", "Incluir fondo del mes": "Includi lo sfondo del mese", "Incluir horas fichadas": "Includi le ore registrate"
+});
+Object.assign(languageTranslations.de, {
+  "Control anual": "Jahresübersicht", "Expediente de": "Jahresbericht für", "Resumen de días y actividades": "Übersicht über Tage und Aktivitäten",
+  Trabajados: "Gearbeitete Tage", Festivos: "Feiertage", "Total registrados": "Insgesamt erfasst", "Festivos trabajados": "Gearbeitete Feiertage",
+  Bajas: "Krankheitstage", "Horas normales": "Reguläre Stunden", "Año completo": "Ganzes Jahr", "Comparación mensual y anual": "Monats- und Jahresvergleich",
+  "Días y horas extra por mes": "Tage und Überstunden pro Monat", "días registrados": "erfasste Tage", "Descargar PDF": "PDF herunterladen",
+  "Descargar CSV": "CSV herunterladen", "Compartir resumen": "Zusammenfassung teilen", "Todavía no hay registros para este año": "Für dieses Jahr liegen noch keine Einträge vor",
+  Estado: "Status", Entrada: "Start", Salida: "Ende", "Incluir fondo del mes": "Monatshintergrund einbeziehen", "Incluir horas fichadas": "Erfasste Zeiten einbeziehen"
+});
+
 // Traduce el contenido existente y mantiene sincronizados los controles de idioma.
 function translatePage() {
   document.documentElement.lang = currentLanguage;
-  document.title = { es: "Memoria laboral", en: "Work Memory", fr: "Mémoire de travail", it: "Memoria lavorativa", de: "Arbeitsgedächtnis" }[currentLanguage] || "Memoria laboral";
+  document.title = { es: "Memoria laboral", en: "Work Log", fr: "Journal de travail", it: "Diario di lavoro", de: "Arbeitsprotokoll" }[currentLanguage] || "Memoria laboral";
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   let node;
   while ((node = walker.nextNode())) {
@@ -350,6 +509,10 @@ function translatePage() {
         : currentLanguage === "es" ? sourceKey : activeTranslations[sourceKey] || languagePairs[sourceKey] || original;
     if (translated) node.nodeValue = node.nodeValue.replace(original, translated);
   }
+  (localizedWeekdays[currentLanguage] || localizedWeekdays.es).forEach((weekday, index) => {
+    const weekdayElement = document.querySelectorAll(".weekdays span")[index];
+    if (weekdayElement) weekdayElement.textContent = weekday;
+  });
   document.querySelectorAll("input[placeholder]").forEach((input) => {
     const placeholderSource = Object.entries(languageTranslations).flatMap(([, map]) => Object.entries(map)).find(([key, value]) => key === input.placeholder || value === input.placeholder)?.[0] || input.placeholder;
     const translated = currentLanguage === "es" ? placeholderSource : languageTranslations[currentLanguage]?.[placeholderSource] || languagePairs[placeholderSource] || input.placeholder;
@@ -368,6 +531,9 @@ function translatePage() {
 function setLanguage(language) {
   currentLanguage = language;
   localStorage.setItem("limasam-language", language);
+  renderCalendar();
+  renderHolidayList();
+  if (state.selected) $("#routeDate").textContent = dateLabel(state.selected);
   translatePage();
   drawAgendaCanvas();
 }
@@ -377,6 +543,10 @@ englishButton.addEventListener("click", () => setLanguage("en"));
 
 agendaPreview.append(exportActions);
 backgroundToggle.checked = localStorage.getItem("limasam-show-background") !== "false";
+const backgroundThemes = ["cleaning", "gardening", "transport", "school", "security", "sports", "animals"];
+let selectedBackgroundTheme = localStorage.getItem("limasam-background-theme") || "cleaning";
+if (!backgroundThemes.includes(selectedBackgroundTheme)) selectedBackgroundTheme = "cleaning";
+backgroundThemeSelect.value = selectedBackgroundTheme;
 backgroundColorInput.value = localStorage.getItem("limasam-background-color") || "#f5f7f3";
 weekdayColorInput.value = localStorage.getItem("limasam-weekday-color") || "#ffffff";
 weekendColorInput.value = localStorage.getItem("limasam-weekend-color") || "#e4f2ff";
@@ -467,6 +637,11 @@ function loadCustomBackgrounds() {
 }
 
 const customBackgroundData = loadCustomBackgrounds();
+const themeBackgroundAssets = import.meta.glob("./assets/background-themes/*/*.{jpg,webp}", {
+  eager: true,
+  query: "?url",
+  import: "default"
+});
 const customAgendaBackgrounds = customBackgroundData.map((source) => {
   if (!source) return null;
   const image = new Image();
@@ -474,14 +649,22 @@ const customAgendaBackgrounds = customBackgroundData.map((source) => {
   image.addEventListener("load", () => drawAgendaCanvas());
   return image;
 });
-const agendaBackgrounds = months.map((_, index) => {
-  const image = new Image();
-  image.src = index === 0
-    ? "assets/barrenderos.webp"
-    : `assets/barrenderos-${String(index + 1).padStart(2, "0")}.jpg`;
-  image.addEventListener("load", () => drawAgendaCanvas());
-  return image;
-});
+function createAgendaBackgrounds(theme) {
+  return months.map((_, index) => {
+    const image = new Image();
+    const assetPath = theme === "cleaning"
+      ? index === 0
+        ? "./assets/background-themes/cleaning/barrenderos.webp"
+        : `./assets/background-themes/cleaning/barrenderos-${String(index + 1).padStart(2, "0")}.jpg`
+      : `./assets/background-themes/${theme}/month-${String(index + 1).padStart(2, "0")}.jpg`;
+    const assetUrl = themeBackgroundAssets[assetPath];
+    if (assetUrl) image.src = assetUrl;
+    image.addEventListener("load", () => drawAgendaCanvas());
+    return image;
+  });
+}
+
+let agendaBackgrounds = createAgendaBackgrounds(selectedBackgroundTheme);
 
 // Prioriza el fondo personalizado del mes y, si no existe, usa el predeterminado.
 function currentAgendaBackground() {
@@ -930,8 +1113,9 @@ function customHoliday(day) {
 
 // Formatea una fecha completa usando el idioma activo.
 function dateLabel(day) {
-  const month = localizedMonth(state.month);
-  return currentLanguage === "es" ? `${day} de ${month.toLowerCase()} de ${state.year}` : `${day} ${month} ${state.year}`;
+  const locale = { es: "es-ES", en: "en-US", fr: "fr-FR", it: "it-IT", de: "de-DE" }[currentLanguage] || "es-ES";
+  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", year: "numeric" })
+    .format(new Date(state.year, state.month, day));
 }
 
 function localizedMonth(index) {
@@ -1039,6 +1223,14 @@ function formatTotalHours(minutes) {
   return `${hours} h${remainingMinutes ? ` ${remainingMinutes} min` : ""}`;
 }
 
+const annualSummaryLocale = {
+  es: { days: "días", regular: "normales", extra: "extra" },
+  en: { days: "days", regular: "regular", extra: "overtime" },
+  fr: { days: "jours", regular: "normales", extra: "supplémentaires" },
+  it: { days: "giorni", regular: "ordinarie", extra: "straordinari" },
+  de: { days: "Tage", regular: "reguläre", extra: "Überstunden" }
+};
+
 function recordEntryTime(record) {
   return record.actualEntry || record.plannedTime || record.time || "";
 }
@@ -1138,6 +1330,8 @@ function yearRoutes(year) {
 
 // Calcula los indicadores anuales, gráficos y filas del expediente.
 function renderAnnualSummary() {
+  const locale = annualSummaryLocale[currentLanguage] || annualSummaryLocale.es;
+  const reportMonths = localizedMonths[currentLanguage] || months;
   const records = yearRoutes(state.year).filter((record) => record.status !== "descanso");
   const isWeekdayWorked = (record) => {
     if ((record.status || "trabajado") !== "trabajado") return false;
@@ -1165,12 +1359,13 @@ function renderAnnualSummary() {
   $("#extensionCount").textContent = counts.ampliaciones || 0;
   $("#extraHoursCount").textContent = totalExtraHours;
   $("#normalHoursCount").textContent = formatTotalHours(totalNormalMinutes);
-  $("#comparisonMonthLabel").textContent = months[state.month];
-  $("#comparisonMonthDays").textContent = `${currentMonthRecords.length} días`;
-  $("#comparisonMonthHours").textContent = `${formatTotalHours(currentMonthMinutes)} normales · ${currentMonthExtraHours} h extra`;
-  $("#comparisonYearDays").textContent = `${records.length} días`;
-  $("#comparisonYearHours").textContent = `${formatTotalHours(totalNormalMinutes)} normales · ${totalExtraHours} h extra`;
+  $("#comparisonMonthLabel").textContent = reportMonths[state.month];
+  $("#comparisonMonthDays").textContent = `${currentMonthRecords.length} ${locale.days}`;
+  $("#comparisonMonthHours").textContent = `${formatTotalHours(currentMonthMinutes)} ${locale.regular} · ${currentMonthExtraHours} h ${locale.extra}`;
+  $("#comparisonYearDays").textContent = `${records.length} ${locale.days}`;
+  $("#comparisonYearHours").textContent = `${formatTotalHours(totalNormalMinutes)} ${locale.regular} · ${totalExtraHours} h ${locale.extra}`;
   $("#monthlyStats").innerHTML = months.map((month, monthIndex) => {
+    const reportMonth = reportMonths[monthIndex];
     const monthRecords = records.filter((record) => record.month === monthIndex);
     const values = {
       worked: monthRecords.filter(isWeekdayWorked).length,
@@ -1182,7 +1377,7 @@ function renderAnnualSummary() {
       ,extra: monthRecords.reduce((sum, record) => sum + routeExtraHours(record), 0)
     };
     const total = values.worked + values.holiday + values.vacation + values.leave + values.personal + values.extension;
-    return `<div class="month-row"><span class="month-name">${month.slice(0, 3)}</span><div class="month-track" aria-label="${month}: ${total} días y ${values.extra} horas extra"><span class="month-bar bar-worked" style="--bar-size:${values.worked}"></span><span class="month-bar bar-holiday" style="--bar-size:${values.holiday}"></span><span class="month-bar bar-vacation" style="--bar-size:${values.vacation}"></span><span class="month-bar bar-leave" style="--bar-size:${values.leave}"></span><span class="month-bar bar-personal" style="--bar-size:${values.personal}"></span><span class="month-bar bar-extension" style="--bar-size:${values.extension}"></span><span class="month-bar bar-extra" style="--bar-size:${values.extra}"></span></div><strong class="month-total">${total} + ${values.extra} h</strong></div>`;
+    return `<div class="month-row"><span class="month-name">${reportMonth.slice(0, 3)}</span><div class="month-track" aria-label="${reportMonth}: ${total} ${locale.days}, ${values.extra} ${locale.extra}"><span class="month-bar bar-worked" style="--bar-size:${values.worked}"></span><span class="month-bar bar-holiday" style="--bar-size:${values.holiday}"></span><span class="month-bar bar-vacation" style="--bar-size:${values.vacation}"></span><span class="month-bar bar-leave" style="--bar-size:${values.leave}"></span><span class="month-bar bar-personal" style="--bar-size:${values.personal}"></span><span class="month-bar bar-extension" style="--bar-size:${values.extension}"></span><span class="month-bar bar-extra" style="--bar-size:${values.extra}"></span></div><strong class="month-total">${total} + ${values.extra} h</strong></div>`;
   }).join("");
   const monthlyTotals = months.map((month, monthIndex) => records.filter((record) => record.month === monthIndex).length);
   const totalDays = monthlyTotals.reduce((sum, value) => sum + value, 0);
@@ -1196,7 +1391,7 @@ function renderAnnualSummary() {
   });
   $("#fanChart").style.background = totalDays ? `conic-gradient(${fanSegments.join(",")})` : "var(--line)";
   $("#fanTotal").textContent = totalDays;
-  $("#fanLabels").innerHTML = months.map((month, index) => `<span style="--fan-color:${fanColors[index]}">${month.slice(0, 3)} ${monthlyTotals[index]}</span>`).join("");
+  $("#fanLabels").innerHTML = reportMonths.map((month, index) => `<span style="--fan-color:${fanColors[index]}">${month.slice(0, 3)} ${monthlyTotals[index]}</span>`).join("");
   $("#recordRows").innerHTML = records.length
     ? records.map((record) => `<tr><td>${String(record.day).padStart(2, "0")}/${String(record.month + 1).padStart(2, "0")}/${state.year}</td><td><span class="status-pill status-${record.status || "trabajado"}">${escapeHtml(statusLabel(record))}</span></td><td>${escapeHtml(routeDisplayName(record))}</td><td>${escapeHtml(recordEntryTime(record) || "Sin entrada")}</td><td>${escapeHtml(recordExitTime(record) || "Sin salida")}</td><td>${formatWorkedTime(workedMinutes(recordEntryTime(record), recordExitTime(record)))}</td><td>${routeExtraHours(record)} h</td></tr>`).join("")
     : "<tr><td class=\"record-empty\" colspan=\"7\">Todavía no hay registros para este año</td></tr>";
@@ -1355,9 +1550,10 @@ function renderCalendar() {
 }
 
 // Carga en el formulario los datos del día seleccionado o una ruta recordada.
-function selectDay(day, { useRemembered = true } = {}) {
+function selectDay(day, { useRemembered = true, revealPlanner = true } = {}) {
   state.selected = day;
   previewDaySelect.value = String(day);
+  if (revealPlanner) plannerDetails.open = true;
   routeManager.open = true;
   calendarGrid.querySelectorAll("button").forEach((button) => button.classList.remove("is-selected"));
   const selectedButton = [...calendarGrid.querySelectorAll("button")]
@@ -1931,6 +2127,12 @@ backgroundToggle.addEventListener("change", () => {
   updateBackgroundOptions();
   drawAgendaCanvas();
 });
+backgroundThemeSelect.addEventListener("change", () => {
+  selectedBackgroundTheme = backgroundThemeSelect.value;
+  localStorage.setItem("limasam-background-theme", selectedBackgroundTheme);
+  agendaBackgrounds = createAgendaBackgrounds(selectedBackgroundTheme);
+  drawAgendaCanvas();
+});
 backgroundColorInput.addEventListener("input", () => {
   localStorage.setItem("limasam-background-color", backgroundColorInput.value);
   drawAgendaCanvas();
@@ -2133,7 +2335,7 @@ listenNativeAgendaLinks();
 renderHolidayList();
 renderCalendar();
 updateShareBackgroundOption();
-selectDay(1);
+selectDay(1, { revealPlanner: false });
 translatePage();
 if (driveFileId) recordButton.hidden = false;
 $("#shareButton")?.remove();

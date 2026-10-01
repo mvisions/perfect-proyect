@@ -56,11 +56,14 @@
           <label class="calendar-color" for="weekdayColorInput"><span>Diarios</span><input id="weekdayColorInput" type="color" value="#ffffff"></label>
           <label class="calendar-color" for="weekendColorInput"><span>Fines de semana</span><input id="weekendColorInput" type="color" value="#e4f2ff"></label>
         </div>
-        <label class="background-toggle"><input id="backgroundToggle" type="checkbox" checked><span>Mostrar fondo de barrenderos</span></label>
-        <div class="background-options" id="backgroundOptions">
-          <label class="background-file" for="backgroundFiles">Subir imágenes</label>
-          <input id="backgroundFiles" type="file" accept="image/*" multiple>
-          <button class="button button-quiet background-reset" id="backgroundReset" type="button">Usar fondos predeterminados</button>
+        <div class="background-controls">
+          <label class="background-toggle"><input id="backgroundToggle" type="checkbox" checked><span>Mostrar tema</span></label>
+          <div class="background-options" id="backgroundOptions">
+            <label class="background-theme" for="backgroundThemeSelect"><select id="backgroundThemeSelect" aria-label="Tema del fondo"><option value="cleaning">Limpieza viaria</option><option value="gardening">Jardinería</option><option value="transport">Transportes</option><option value="school">Extraescolares</option><option value="security">Seguridad</option><option value="sports">Deportes</option><option value="animals">Animales</option></select></label>
+            <label class="background-file" for="backgroundFiles">Subir imágenes</label>
+            <input id="backgroundFiles" type="file" accept="image/*" multiple>
+            <button class="button button-quiet background-reset" id="backgroundReset" type="button">Usar fondos predeterminados</button>
+          </div>
         </div>
         <label class="solid-background" id="solidBackground" for="backgroundColorInput"><span>Color sólido</span><input id="backgroundColorInput" type="color" value="#f5f7f3"></label>
         <div class="export-actions">
@@ -74,7 +77,7 @@
       <!-- Gestión de festivos y formulario para editar los detalles de cada jornada. -->
       <section class="form-panel" aria-label="Gestión de calendario y detalle del día">
       <details class="holiday-manager">
-        <summary>Gestionar festivos personalizados</summary>
+        <summary>Desplegar</summary>
         <div class="holiday-manager-body">
           <div class="holiday-fields">
             <label for="holidayDateInput">Fecha<input id="holidayDateInput" type="date"></label>
@@ -83,7 +86,6 @@
           </div>
           <ul class="holiday-list" id="holidayList"></ul>
         </div>
-      </details>
       <div class="content-grid">
         <section class="calendar-card" aria-labelledby="calendarTitle">
           <div class="calendar-heading"><div><p class="section-label">Vista mensual</p><h2 id="calendarTitle">Mes actual</h2></div><div class="calendar-legend"><span class="legend-swatch"></span> Día con ruta</div></div>
@@ -105,9 +107,11 @@
               <div><label for="destinationInput">Destino</label><input id="destinationInput" type="text" maxlength="40" placeholder="Ej. Barrio de Salamanca" autocomplete="off"></div>
               <div><label for="typeInput">Tipo de trabajo</label><input id="typeInput" type="text" maxlength="32" placeholder="Ej. Recogida de muebles" autocomplete="off"></div>
             </div>
-            <div class="time-action-field"><label for="entryHourInput">Hora de entrada (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="entryHourInput" aria-label="Hora de entrada, horas"></select><span>:</span><select id="entryMinuteInput" aria-label="Hora de entrada, minutos"></select></div><input id="timeInput" type="hidden"><button id="entryNowButton" type="button" aria-label="Usar huella de entrada"><span aria-hidden="true">⌁</span> Huella de entrada</button></div></div>
-            <label for="shiftInput">Tipo de jornada</label><select id="shiftInput"><option value="completa">Jornada completa · 8 h</option><option value="continua">Jornada continua · 7 h</option><option value="media">Media jornada · 4 h</option></select>
-            <div class="time-action-field"><label for="exitHourInput">Hora de salida (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="exitHourInput" aria-label="Hora de salida, horas"></select><span>:</span><select id="exitMinuteInput" aria-label="Hora de salida, minutos"></select></div><input id="exitInput" type="hidden"><button id="exitNowButton" type="button" aria-label="Usar huella de salida"><span aria-hidden="true">⌁</span> Huella de salida</button></div></div>
+            <div class="work-schedule-row">
+              <div class="time-action-field"><label for="entryHourInput">Hora de entrada (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="entryHourInput" aria-label="Hora de entrada, horas"></select><span>:</span><select id="entryMinuteInput" aria-label="Hora de entrada, minutos"></select></div><input id="timeInput" type="hidden"><button id="entryNowButton" type="button" aria-label="Usar huella de entrada"><span aria-hidden="true">⌁</span> Huella de entrada</button></div></div>
+              <div class="shift-field"><label for="shiftInput">Tipo de jornada</label><select id="shiftInput"><option value="completa">Jornada completa · 8 h</option><option value="continua">Jornada continua · 7 h</option><option value="media">Media jornada · 4 h</option></select></div>
+              <div class="time-action-field"><label for="exitHourInput">Hora de salida (24 h)</label><div class="time-action-row"><div class="clock-picker"><select id="exitHourInput" aria-label="Hora de salida, horas"></select><span>:</span><select id="exitMinuteInput" aria-label="Hora de salida, minutos"></select></div><input id="exitInput" type="hidden"><button id="exitNowButton" type="button" aria-label="Usar huella de salida"><span aria-hidden="true">⌁</span> Huella de salida</button></div></div>
+            </div>
             <div class="work-duration"><span>Tiempo trabajado</span><strong id="workDurationValue">Sin calcular</strong></div>
             <div class="extra-hours-control"><span>Horas extra</span><div><button id="extraHoursMinus" type="button" aria-label="Restar una hora extra">−</button><strong id="extraHoursValue">0</strong><button id="extraHoursPlus" type="button" aria-label="Añadir una hora extra">+</button></div><small>Se suma de una en una</small></div>
             <label for="reminderInput">Avisar</label><select id="reminderInput"><option value="30">30 minutos antes</option><option value="0">A la hora de entrada</option><option value="15">15 minutos antes</option><option value="60">1 hora antes</option><option value="120">2 horas antes</option></select>
@@ -118,6 +122,7 @@
           <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><span>Tu ruta aparecerá aquí</span></div>
         </details>
       </div>
+      </details>
       </section>
       <!-- Resumen anual, gráficos, detalle de días y opciones de exportación. -->
       <section class="record-card" id="recordCard" aria-labelledby="recordTitle" hidden>

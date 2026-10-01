@@ -1,0 +1,686 @@
+{
+  "gardening": [
+    {
+      "month": 1,
+      "file": "assets/background-themes/gardening/month-01.jpg",
+      "title": "Butterfly in Conservatory Garden, Central Park, New York City, 20231004 1539 2071.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Butterfly_in_Conservatory_Garden,_Central_Park,_New_York_City,_20231004_1539_2071.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Jakubhal\" title=\"User:Jakubhal\">Jakub Hałun</a>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 2,
+      "file": "assets/background-themes/gardening/month-02.jpg",
+      "title": "Brooklyn Botanic Garden New York May 2015 panorama 2.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Brooklyn_Botanic_Garden_New_York_May_2015_panorama_2.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:King_of_Hearts\" title=\"User:King of Hearts\">King of Hearts</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 3,
+      "file": "assets/background-themes/gardening/month-03.jpg",
+      "title": "Nymphaea Laydekeri Purpurata (park Tivoli).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Nymphaea_Laydekeri_Purpurata_(park_Tivoli).jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:PetarM\" title=\"User:PetarM\">Petar Milošević</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 4,
+      "file": "assets/background-themes/gardening/month-04.jpg",
+      "title": "Butterfly in Conservatory Garden, Central Park, New York City, 20231004 1540 2074.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Butterfly_in_Conservatory_Garden,_Central_Park,_New_York_City,_20231004_1540_2074.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Jakubhal\" title=\"User:Jakubhal\">Jakub Hałun</a>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 5,
+      "file": "assets/background-themes/gardening/month-05.jpg",
+      "title": "Flowers, Kitchen Garden, Osterley Park, London - geograph.org.uk - 4634000.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Flowers,_Kitchen_Garden,_Osterley_Park,_London_-_geograph.org.uk_-_4634000.jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/1777\">Christine Matthews</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Flowers,_Kitchen_Garden,_Osterley_Park,_London_-_geograph.org.uk_-_4634000.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    {
+      "month": 6,
+      "file": "assets/background-themes/gardening/month-06.jpg",
+      "title": "Flowers in community gardens Aarhus City Park Pier 2 Aarhus Denmark 1.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Flowers_in_community_gardens_Aarhus_City_Park_Pier_2_Aarhus_Denmark_1.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ciara_N%C3%AD_Riain\" title=\"User:Ciara Ní Riain\">Ciara Ní Riain</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 7,
+      "file": "assets/background-themes/gardening/month-07.jpg",
+      "title": "Flowers in community gardens Aarhus City Park Pier 2 Aarhus Ø Denmark 2.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Flowers_in_community_gardens_Aarhus_City_Park_Pier_2_Aarhus_%C3%98_Denmark_2.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ciara_N%C3%AD_Riain\" title=\"User:Ciara Ní Riain\">Ciara Ní Riain</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 8,
+      "file": "assets/background-themes/gardening/month-08.jpg",
+      "title": "City Park Peristyle and Rose garden, New Orleans June 2022.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:City_Park_Peristyle_and_Rose_garden,_New_Orleans_June_2022.jpg",
+      "author": "abbeyprivate",
+      "license": "Public domain",
+      "licenseUrl": ""
+    },
+    {
+      "month": 9,
+      "file": "assets/background-themes/gardening/month-09.jpg",
+      "title": "City gardening community garden plots Langenæs park Aarhus Denmark 01.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:City_gardening_community_garden_plots_Langen%C3%A6s_park_Aarhus_Denmark_01.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ciara_N%C3%AD_Riain\" title=\"User:Ciara Ní Riain\">Ciara Ní Riain</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 10,
+      "file": "assets/background-themes/gardening/month-10.jpg",
+      "title": "City gardening community garden plots Langenæs park Aarhus Denmark 02.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:City_gardening_community_garden_plots_Langen%C3%A6s_park_Aarhus_Denmark_02.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ciara_N%C3%AD_Riain\" title=\"User:Ciara Ní Riain\">Ciara Ní Riain</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 11,
+      "file": "assets/background-themes/gardening/month-11.jpg",
+      "title": "City gardening community garden plots Langenæs park Aarhus Denmark 03.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:City_gardening_community_garden_plots_Langen%C3%A6s_park_Aarhus_Denmark_03.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ciara_N%C3%AD_Riain\" title=\"User:Ciara Ní Riain\">Ciara Ní Riain</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 12,
+      "file": "assets/background-themes/gardening/month-12.jpg",
+      "title": "Annie L. Pressland garden features flowers statue steps.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Annie_L._Pressland_garden_features_flowers_statue_steps.jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q131864049\" class=\"extiw\" title=\"d:Q131864049\"><span title=\"British artist\">Annie Pressland</span></a></bdi>",
+      "license": "Public domain",
+      "licenseUrl": ""
+    }
+  ],
+  "transport": [
+    {
+      "month": 1,
+      "file": "assets/background-themes/transport/month-01.jpg",
+      "title": "MTA New York City Bus 5740 in Select Bus Service Bx12.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:MTA_New_York_City_Bus_5740_in_Select_Bus_Service_Bx12.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:AEMoreira042281\" title=\"User:AEMoreira042281\">AEMoreira042281</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 2,
+      "file": "assets/background-themes/transport/month-02.jpg",
+      "title": "MTA New York City Bus +SelectBusService 5741 at Grand Concourse.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:MTA_New_York_City_Bus_%2BSelectBusService_5741_at_Grand_Concourse.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:AEMoreira042281\" title=\"User:AEMoreira042281\">Adam E. Moreira</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 3,
+      "file": "assets/background-themes/transport/month-03.jpg",
+      "title": "NYC Transit Select Bus Service New Flyer D60HF 5739.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:NYC_Transit_Select_Bus_Service_New_Flyer_D60HF_5739.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:AEMoreira042281\" title=\"User:AEMoreira042281\">Adam E. Moreira</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 4,
+      "file": "assets/background-themes/transport/month-04.jpg",
+      "title": "Landskrona City bus 1.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Landskrona_City_bus_1.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Barcaviktor25&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Barcaviktor25 (page does not exist)\">Barcaviktor25</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 5,
+      "file": "assets/background-themes/transport/month-05.jpg",
+      "title": "Ex-Rose City Transit bus, Tri-Met 575, in 1985.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Ex-Rose_City_Transit_bus,_Tri-Met_575,_in_1985.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Steve_Morgan\" title=\"User:Steve Morgan\">Steve Morgan</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 6,
+      "file": "assets/background-themes/transport/month-06.jpg",
+      "title": "MTA New York City Bus Orion V CNG 9831.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:MTA_New_York_City_Bus_Orion_V_CNG_9831.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:AEMoreira042281\" title=\"User:AEMoreira042281\">AEMoreira042281</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 7,
+      "file": "assets/background-themes/transport/month-07.jpg",
+      "title": "New York City Transit NovaBus LFS 1254 M15 SBS.JPG",
+      "source": "https://commons.wikimedia.org/wiki/File:New_York_City_Transit_NovaBus_LFS_1254_M15_SBS.JPG",
+      "author": "<a href=\"https://en.wikipedia.org/wiki/User:Fan_Railer\" class=\"extiw\" title=\"en:User:Fan Railer\">Fan Railer</a> (<a href=\"https://en.wikipedia.org/wiki/User_talk:Fan_Railer\" class=\"extiw\" title=\"en:User talk:Fan Railer\">talk</a>)",
+      "license": "Public domain",
+      "licenseUrl": ""
+    },
+    {
+      "month": 8,
+      "file": "assets/background-themes/transport/month-08.jpg",
+      "title": "Public Advocate Bill de Blasio Protests Bus Service Cuts in the Rockaways (8663656912).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Public_Advocate_Bill_de_Blasio_Protests_Bus_Service_Cuts_in_the_Rockaways_(8663656912).jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/46088529@N07\">Bill de Blasio</a>",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    {
+      "month": 9,
+      "file": "assets/background-themes/transport/month-09.jpg",
+      "title": "Montebello Bus Lines bus at City Hall.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Montebello_Bus_Lines_bus_at_City_Hall.jpg",
+      "author": "City of Montebello",
+      "license": "Public domain",
+      "licenseUrl": ""
+    },
+    {
+      "month": 10,
+      "file": "assets/background-themes/transport/month-10.jpg",
+      "title": "A Toronto city bus runs through the historic district (27864868186).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:A_Toronto_city_bus_runs_through_the_historic_district_(27864868186).jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/77742560@N06\">shankar s.</a> from Dubai, united arab emirates",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+    },
+    {
+      "month": 11,
+      "file": "assets/background-themes/transport/month-11.jpg",
+      "title": "Černivci vul. Franka city bus.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:%C4%8Cernivci_vul._Franka_city_bus.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Tuirse\" title=\"User:Tuirse\">Tuirse</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 12,
+      "file": "assets/background-themes/transport/month-12.jpg",
+      "title": "Calgary Transit bus 7867, route 304 City Centre, NB Woodview Stn., 15-06-2023.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Calgary_Transit_bus_7867,_route_304_City_Centre,_NB_Woodview_Stn.,_15-06-2023.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:St_Clair_Witch\" title=\"User:St Clair Witch\">St Clair Witch</a>",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    }
+  ],
+  "school": [
+    {
+      "month": 1,
+      "file": "assets/background-themes/school/month-01.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61798013).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61798013).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 2,
+      "file": "assets/background-themes/school/month-02.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61798118).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61798118).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 3,
+      "file": "assets/background-themes/school/month-03.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61797868).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61797868).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 4,
+      "file": "assets/background-themes/school/month-04.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61797978).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61797978).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 5,
+      "file": "assets/background-themes/school/month-05.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61797933).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61797933).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 6,
+      "file": "assets/background-themes/school/month-06.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61797878).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61797878).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 7,
+      "file": "assets/background-themes/school/month-07.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61798068).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61798068).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 8,
+      "file": "assets/background-themes/school/month-08.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61797993).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61797993).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 9,
+      "file": "assets/background-themes/school/month-09.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61798058).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61798058).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 10,
+      "file": "assets/background-themes/school/month-10.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61798148).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61798148).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 11,
+      "file": "assets/background-themes/school/month-11.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61797913).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61797913).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 12,
+      "file": "assets/background-themes/school/month-12.jpg",
+      "title": "School children in a classroom in Tel Aviv (FL61797893).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:School_children_in_a_classroom_in_Tel_Aviv_(FL61797893).jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q123250780\" class=\"extiw\" title=\"d:Q123250780\"><span title=\"photographer of the Israel Press and Photo Agency\">IPPA photographer</span></a></bdi>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    }
+  ],
+  "security": [
+    {
+      "month": 1,
+      "file": "assets/background-themes/security/month-01.jpg",
+      "title": "Jakarta Indonesia Police-officers-01.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Jakarta_Indonesia_Police-officers-01.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Cccefalon\" title=\"User:Cccefalon\">CEphoto, Uwe Aranas</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 2,
+      "file": "assets/background-themes/security/month-02.jpg",
+      "title": "Three Toronto police officers.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Three_Toronto_police_officers.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Maksimsokolov\" title=\"User:Maksimsokolov\">Maksim Sokolov (Maxergon)</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 3,
+      "file": "assets/background-themes/security/month-03.jpg",
+      "title": "NSW Police officers in a Sydenham street.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:NSW_Police_officers_in_a_Sydenham_street.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:J03098&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:J03098 (page does not exist)\">J03098</a>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 4,
+      "file": "assets/background-themes/security/month-04.jpg",
+      "title": "Glasgow, two police officers enter Holland Street from Sauchiehall Street - geograph.org.uk - 1534139.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Glasgow,_two_police_officers_enter_Holland_Street_from_Sauchiehall_Street_-_geograph.org.uk_-_1534139.jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/14700\">Chris Downer</a>",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    {
+      "month": 5,
+      "file": "assets/background-themes/security/month-05.jpg",
+      "title": "Police officers at Downing Street.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Police_officers_at_Downing_Street.jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/71214463@N00\">Vards Uzvards</a> from San Francisco, CA",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    {
+      "month": 6,
+      "file": "assets/background-themes/security/month-06.jpg",
+      "title": "Police officers on Independence Day 2013 in Kraków.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Police_officers_on_Independence_Day_2013_in_Krak%C3%B3w.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Misiek2\" title=\"User:Misiek2\">Mateusz Giełczyński</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 7,
+      "file": "assets/background-themes/security/month-07.jpg",
+      "title": "Dublin woman with police officers (26288304601).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Dublin_woman_with_police_officers_(26288304601).jpg",
+      "author": "chucknado",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+    },
+    {
+      "month": 8,
+      "file": "assets/background-themes/security/month-08.jpg",
+      "title": "Penampang Sabah PDRM-Sabah-Police-Officers-01.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Penampang_Sabah_PDRM-Sabah-Police-Officers-01.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Cccefalon\" title=\"User:Cccefalon\">CEphoto, Uwe Aranas</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 9,
+      "file": "assets/background-themes/security/month-09.jpg",
+      "title": "Bampton - Back Street & Police Officers - geograph.org.uk - 1493812.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Bampton_-_Back_Street_%26_Police_Officers_-_geograph.org.uk_-_1493812.jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.geograph.org.uk/profile/11775\">Lewis Clarke</a>",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    {
+      "month": 10,
+      "file": "assets/background-themes/security/month-10.jpg",
+      "title": "BG police officers 05.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:BG_police_officers_05.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ivanov_id\" title=\"User:Ivanov id\">Иван</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 11,
+      "file": "assets/background-themes/security/month-11.jpg",
+      "title": "BG police officers 04.jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:BG_police_officers_04.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ivanov_id\" title=\"User:Ivanov id\">Иван</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 12,
+      "file": "assets/background-themes/security/month-12.jpg",
+      "title": "Armed police officers (London, 2014).jpg",
+      "source": "https://commons.wikimedia.org/wiki/File:Armed_police_officers_(London,_2014).jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Ctac\" title=\"User:Ctac\">Stanislav Kozlovskiy</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    }
+  ],
+  "sports": [
+    {
+      "month": 1,
+      "file": "assets/background-themes/sports/month-01.jpg",
+      "title": "Coin tossing before before a football match between players and referees.jpg",
+      "subject": "Fútbol",
+      "source": "https://commons.wikimedia.org/wiki/File:Coin_tossing_before_before_a_football_match_between_players_and_referees.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Samson_Ssemakadde&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Samson Ssemakadde (page does not exist)\">Samson Ssemakadde</a>",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    {
+      "month": 2,
+      "file": "assets/background-themes/sports/month-02.jpg",
+      "title": "Bryant Bulldog basketball player Earl Timberlake.jpg",
+      "subject": "Baloncesto",
+      "source": "https://commons.wikimedia.org/wiki/File:Bryant_Bulldog_basketball_player_Earl_Timberlake.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Kzirkel\" title=\"User:Kzirkel\">Kenneth C. Zirkel</a>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 3,
+      "file": "assets/background-themes/sports/month-03.jpg",
+      "title": "StateLibQld 2 294243 Tennis player hitting a forehand during a match in Brisbane, 1933.jpg",
+      "subject": "Tenis",
+      "source": "https://commons.wikimedia.org/wiki/File:StateLibQld_2_294243_Tennis_player_hitting_a_forehand_during_a_match_in_Brisbane,_1933.jpg",
+      "author": "Contributor(s): Queensland Newspapers Pty. Ltd.",
+      "license": "Public domain",
+      "licenseUrl": ""
+    },
+    {
+      "month": 4,
+      "file": "assets/background-themes/sports/month-04.jpg",
+      "title": "Swimming relay exchange.jpg",
+      "subject": "Natación",
+      "source": "https://commons.wikimedia.org/wiki/File:Swimming_relay_exchange.jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/11931852@N00\">Rob</a>",
+      "license": "CC BY-SA 1.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/1.0"
+    },
+    {
+      "month": 5,
+      "file": "assets/background-themes/sports/month-05.jpg",
+      "title": "Track and Field - 2015 Armory Invitational.jpg",
+      "subject": "Atletismo",
+      "source": "https://commons.wikimedia.org/wiki/File:Track_and_Field_-_2015_Armory_Invitational.jpg",
+      "author": "Steven Pisano",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+    },
+    {
+      "month": 6,
+      "file": "assets/background-themes/sports/month-06.jpg",
+      "title": "Olympic Games Men's Cycling Road Race; Second Group.jpg",
+      "subject": "Ciclismo",
+      "source": "https://commons.wikimedia.org/wiki/File:Olympic_Games_Men%27s_Cycling_Road_Race;_Second_Group.jpg",
+      "author": "<a href=\"//www.flickr.com/people/41279068@N08\" class=\"extiw\" title=\"flickruser:41279068@N08\">Adrian ...</a>",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+    },
+    {
+      "month": 7,
+      "file": "assets/background-themes/sports/month-07.jpg",
+      "title": "2017 Nuevo Laredo volleyball player for Irish Institute.jpg",
+      "subject": "Voleibol",
+      "source": "https://commons.wikimedia.org/wiki/File:2017_Nuevo_Laredo_volleyball_player_for_Irish_Institute.jpg",
+      "author": "<bdi>Miguel Angel Omaña Rojas</bdi>",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    {
+      "month": 8,
+      "file": "assets/background-themes/sports/month-08.jpg",
+      "title": "USA rugby team for the october 1920 test match vs France.jpg",
+      "subject": "Rugby",
+      "source": "https://commons.wikimedia.org/wiki/File:USA_rugby_team_for_the_october_1920_test_match_vs_France.jpg",
+      "author": "Unknown author<span style=\"display: none;\">Unknown author</span>",
+      "license": "Public domain",
+      "licenseUrl": ""
+    },
+    {
+      "month": 9,
+      "file": "assets/background-themes/sports/month-09.jpg",
+      "title": "Congressional Baseball Game 2017 (35213567481).jpg",
+      "subject": "Béisbol",
+      "source": "https://commons.wikimedia.org/wiki/File:Congressional_Baseball_Game_2017_(35213567481).jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/58533574@N04\">repmobrooks</a>",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    {
+      "month": 10,
+      "file": "assets/background-themes/sports/month-10.jpg",
+      "title": "2019-06-28 1st FIG Artistic Gymnastics JWCH Women's All-around competition Subdivision 1 Floor exercise (Martin Rulsch) 174.jpg",
+      "subject": "Gimnasia",
+      "source": "https://commons.wikimedia.org/wiki/File:2019-06-28_1st_FIG_Artistic_Gymnastics_JWCH_Women%27s_All-around_competition_Subdivision_1_Floor_exercise_(Martin_Rulsch)_174.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:DerHexer\" title=\"User:DerHexer\">Martin Rulsch</a>, Wikimedia Commons",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 11,
+      "file": "assets/background-themes/sports/month-11.jpg",
+      "title": "Max Baer referees a boxing match 1937.jpg",
+      "subject": "Boxeo",
+      "source": "https://commons.wikimedia.org/wiki/File:Max_Baer_referees_a_boxing_match_1937.jpg",
+      "author": "Los Angeles Daily News",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 12,
+      "file": "assets/background-themes/sports/month-12.jpg",
+      "title": "Ten participants awaiting start of a ski race, Anchorage, March 4, 1917 (AL+CA 974).jpg",
+      "subject": "Esquí",
+      "source": "https://commons.wikimedia.org/wiki/File:Ten_participants_awaiting_start_of_a_ski_race,_Anchorage,_March_4,_1917_(AL%2BCA_974).jpg",
+      "author": "<div class=\"fn value\">\nUnknown author<span style=\"display: none;\">Unknown author</span></div>",
+      "license": "Public domain",
+      "licenseUrl": ""
+    }
+  ],
+  "animals": [
+    {
+      "month": 1,
+      "file": "assets/background-themes/animals/month-01.jpg",
+      "title": "Cat playing with a lizard.jpg",
+      "subject": "Gatos",
+      "source": "https://commons.wikimedia.org/wiki/File:Cat_playing_with_a_lizard.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Basile_Morin\" title=\"User:Basile Morin\">Basile Morin</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 2,
+      "file": "assets/background-themes/animals/month-02.jpg",
+      "title": "Human–canine friendship - girl hugging her dog tightly at golden hour in Laos.jpg",
+      "subject": "Perros",
+      "source": "https://commons.wikimedia.org/wiki/File:Human%E2%80%93canine_friendship_-_girl_hugging_her_dog_tightly_at_golden_hour_in_Laos.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Basile_Morin\" title=\"User:Basile Morin\">Basile Morin</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 3,
+      "file": "assets/background-themes/animals/month-03.jpg",
+      "title": "Biandintz eta zaldiak - modified2.jpg",
+      "subject": "Caballos",
+      "source": "https://commons.wikimedia.org/wiki/File:Biandintz_eta_zaldiak_-_modified2.jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/58922703@N00\">Mikel Ortega</a> from Errenteria, Basque Country, Spain, with a retouche by <a href=\"//commons.wikimedia.org/wiki/User:Richard_Bartz\" title=\"User:Richard Bartz\">Richard Bartz</a>. See the <a href=\"//commons.wikimedia.org/wiki/File:Biandintz_eta_zaldiak.jpg\" title=\"File:Biandintz eta zaldiak.jpg\">original file</a> here.",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    {
+      "month": 4,
+      "file": "assets/background-themes/animals/month-04.jpg",
+      "title": "Indian elephant in Kaziranga National Park March 2025 by Tisha Mukherjee 06.jpg",
+      "subject": "Elefantes",
+      "source": "https://commons.wikimedia.org/wiki/File:Indian_elephant_in_Kaziranga_National_Park_March_2025_by_Tisha_Mukherjee_06.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Tisha_Mukherjee\" title=\"User:Tisha Mukherjee\">Tisha Mukherjee</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 5,
+      "file": "assets/background-themes/animals/month-05.jpg",
+      "title": "Lion (Panthera leo) male 6y.jpg",
+      "subject": "Leones",
+      "source": "https://commons.wikimedia.org/wiki/File:Lion_(Panthera_leo)_male_6y.jpg",
+      "author": "<bdi><a href=\"https://www.wikidata.org/wiki/Q54800218\" class=\"extiw\" title=\"d:Q54800218\"><span title=\"Scottish wildlife photographer\">Charles J. Sharp</span></a></bdi>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 6,
+      "file": "assets/background-themes/animals/month-06.jpg",
+      "title": "Bird at Wingham Wildlife Park.jpg",
+      "subject": "Aves",
+      "source": "https://commons.wikimedia.org/wiki/File:Bird_at_Wingham_Wildlife_Park.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Salwa_Farwaneh_Dameh\" title=\"User:Salwa Farwaneh Dameh\">Salwa Farwaneh Dameh</a>",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    {
+      "month": 7,
+      "file": "assets/background-themes/animals/month-07.jpg",
+      "title": "Eilat Dolphin Reef (3).jpg",
+      "subject": "Delfines",
+      "source": "https://commons.wikimedia.org/wiki/File:Eilat_Dolphin_Reef_(3).jpg",
+      "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:%D7%98%D7%9C_%D7%A9%D7%9E%D7%A2&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:טל שמע (page does not exist)\">טל שמע</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 8,
+      "file": "assets/background-themes/animals/month-08.jpg",
+      "title": "2010-kodiak-bear-1.jpg",
+      "subject": "Osos",
+      "source": "https://commons.wikimedia.org/wiki/File:2010-kodiak-bear-1.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Yathin_sk\" title=\"User:Yathin sk\">Yathin S Krishnappa</a>",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    {
+      "month": 9,
+      "file": "assets/background-themes/animals/month-09.jpg",
+      "title": "Red Fox drinking from a lake in Gennevilliers, France.jpg",
+      "subject": "Zorros",
+      "source": "https://commons.wikimedia.org/wiki/File:Red_Fox_drinking_from_a_lake_in_Gennevilliers,_France.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Alexis_Lours\" title=\"User:Alexis Lours\">Alexis Lours</a>",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+    },
+    {
+      "month": 10,
+      "file": "assets/background-themes/animals/month-10.jpg",
+      "title": "Odocoileus virginianus leucurus, Julia Butler Hansen Refuge for the Columbian White-tailed Deer.jpg",
+      "subject": "Ciervos",
+      "source": "https://commons.wikimedia.org/wiki/File:Odocoileus_virginianus_leucurus,_Julia_Butler_Hansen_Refuge_for_the_Columbian_White-tailed_Deer.jpg",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/usfwspacific/\">USFWS - Pacific Region</a> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:Odocoileus_virginianus_leucurus,_Julia_Butler_Hansen_Refuge_for_the_Columbian_White-tailed_Deer.jpg#P170\" title=\"Edit this at Structured Data on Commons\"><img alt=\"Edit this at Structured Data on Commons\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+      "license": "Public domain",
+      "licenseUrl": ""
+    },
+    {
+      "month": 11,
+      "file": "assets/background-themes/animals/month-11.jpg",
+      "title": "Tiger Zoo Vienna.jpg",
+      "subject": "Tigres",
+      "source": "https://commons.wikimedia.org/wiki/File:Tiger_Zoo_Vienna.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Alexander_Leisser\" title=\"User:Alexander Leisser\">Alexander Leisser</a>",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "month": 12,
+      "file": "assets/background-themes/animals/month-12.jpg",
+      "title": "Eudyptula novaehollandiae family exiting burrow.jpg",
+      "subject": "Pingüinos",
+      "source": "https://commons.wikimedia.org/wiki/File:Eudyptula_novaehollandiae_family_exiting_burrow.jpg",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:JJ_Harrison\" title=\"User:JJ Harrison\">JJ Harrison</a> (<a rel=\"nofollow\" class=\"external free\" href=\"https://www.jjharrison.com.au/\">https://www.jjharrison.com.au/</a>)",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+    }
+  ]
+}
