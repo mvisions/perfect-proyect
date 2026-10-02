@@ -110,6 +110,9 @@ const updateButtonLabel = $("#updateButtonLabel");
 const offlineStatus = $("#offlineStatus");
 const previewDaySelect = $("#previewDaySelect");
 const agendaCanvas = $("#agendaCanvas");
+const agendaZoomDialog = $("#agendaZoomDialog");
+const agendaZoomCanvas = $("#agendaZoomCanvas");
+const agendaZoomClose = $("#agendaZoomClose");
 const agendaPreview = $(".agenda-preview");
 const exportActions = $(".export-actions");
 const plannerDetails = $(".holiday-manager");
@@ -1566,29 +1569,56 @@ function selectDay(day, { useRemembered = true, revealPlanner = true } = {}) {
 }
 
 // Convierte la posición del clic en la vista previa al día correspondiente.
+function openAgendaZoom() {
+  if (agendaZoomDialog.open) return;
+  agendaZoomCanvas.width = agendaCanvas.width;
+  agendaZoomCanvas.height = agendaCanvas.height;
+  agendaZoomCanvas.getContext("2d").drawImage(agendaCanvas, 0, 0);
+  agendaZoomDialog.showModal();
+}
+
 function selectCanvasDay(event) {
-  const rect = agendaCanvas.getBoundingClientRect();
-  const scaleX = agendaCanvas.width / rect.width;
-  const scaleY = agendaCanvas.height / rect.height;
+  const canvas = event.currentTarget;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
   const x = (event.clientX - rect.left) * scaleX;
   const y = (event.clientY - rect.top) * scaleY;
+  const onBackground = () => {
+    if (canvas === agendaCanvas) openAgendaZoom();
+    else agendaZoomDialog.close();
+  };
   const margin = 72;
   const gridTop = 470;
   const gridGap = 14;
   const cellWidth = (1600 - margin * 2 - gridGap * 6) / 7;
   const cellHeight = 148;
-  if (x < margin || y < gridTop) return;
+  if (x < margin || y < gridTop) {
+    onBackground();
+    return;
+  }
   const column = Math.floor((x - margin) / (cellWidth + gridGap));
   const row = Math.floor((y - gridTop) / (cellHeight + gridGap));
-  if (column > 6 || row < 0 || row > 5) return;
+  if (column > 6 || row < 0 || row > 5) {
+    onBackground();
+    return;
+  }
   const cellX = margin + column * (cellWidth + gridGap);
   const cellY = gridTop + row * (cellHeight + gridGap);
-  if (x > cellX + cellWidth || y > cellY + cellHeight) return;
+  if (x > cellX + cellWidth || y > cellY + cellHeight) {
+    onBackground();
+    return;
+  }
   const firstDay = new Date(state.year, state.month, 1).getDay();
   const offset = firstDay === 0 ? 6 : firstDay - 1;
   const day = row * 7 + column - offset + 1;
   const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
-  if (day >= 1 && day <= daysInMonth) selectDay(day);
+  if (day >= 1 && day <= daysInMonth) {
+    selectDay(day);
+    if (canvas === agendaZoomCanvas) agendaZoomDialog.close();
+  } else {
+    onBackground();
+  }
 }
 
 // Muestra mensajes temporales de confirmación o error en la interfaz.
@@ -2129,6 +2159,8 @@ exitInput.addEventListener("change", () => {
   updateWorkDuration();
 });
 agendaCanvas.addEventListener("click", selectCanvasDay);
+agendaZoomCanvas.addEventListener("click", selectCanvasDay);
+agendaZoomClose.addEventListener("click", () => agendaZoomDialog.close());
 backgroundToggle.addEventListener("change", () => {
   localStorage.setItem("limasam-show-background", String(backgroundToggle.checked));
   updateBackgroundOptions();

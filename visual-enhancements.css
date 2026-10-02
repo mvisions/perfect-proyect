@@ -66,6 +66,13 @@ body.dark-mode .record-stats div,body.night-mode .record-stats div{background:rg
 .route-manager.editor-card{background:var(--card)!important;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0;min-height:0}
 .route-manager.editor-card{width:min(100%,1260px);max-width:1260px;margin:22px auto 0}
 .agenda-preview canvas{cursor:pointer}
+.agenda-zoom-dialog{position:fixed;inset:0;width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;padding:0;border:0;border-radius:0;color:var(--ink);background:var(--paper);overflow:hidden}
+.agenda-zoom-dialog[open]{display:flex;flex-direction:column;gap:0}
+.agenda-zoom-dialog::backdrop{background:rgba(16,24,21,.9)}
+.agenda-zoom-toolbar{display:flex;flex:0 0 48px;align-items:center;justify-content:space-between;padding:0 12px}
+.agenda-zoom-close{display:grid;place-items:center;width:40px;height:40px;padding:0;border:1px solid var(--line);border-radius:50%;color:var(--ink);background:var(--card);font-size:27px;line-height:1}
+.agenda-zoom-scroll{flex:1 1 auto;min-height:0;width:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y}
+.agenda-zoom-scroll canvas{display:block;width:auto;height:100%;max-width:none;margin:0 auto}
 .form-panel{width:min(100%,1260px);margin:22px auto 0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}.form-panel .holiday-manager{margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}.form-panel .content-grid{display:contents}.form-panel .route-manager.editor-card{width:100%;max-width:none;margin:0;border:0;border-radius:0;background:transparent!important}.form-panel .route-summary{border-radius:0}.form-panel .route-manager .editor-hint,.form-panel .route-manager .route-form,.form-panel .route-manager .empty-state{margin-left:18px;margin-right:18px}
 .calendar-color-group .calendar-color{display:grid;grid-template-columns:minmax(0,1fr) 28px;width:100%;min-width:0;justify-content:stretch;align-items:center;gap:8px}.calendar-color-group .calendar-color input{flex:0 0 28px;justify-self:end}
 @media(max-width:380px){.calendar-color-group{grid-template-columns:minmax(0,1fr)}.calendar-color-group .calendar-color{grid-column:1 / -1}}

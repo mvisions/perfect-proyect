@@ -19,7 +19,7 @@
   <div class="app-shell">
     <!-- Barra superior con identidad, idioma, conexión y acceso al expediente. -->
     <header class="topbar">
-      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.1</small></span></a>
+      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.2</small></span></a>
       <div class="topbar-actions">
         <div class="language-toggle" aria-label="Idioma"><button id="spanishButton" type="button" aria-label="Español">🇪🇸 ES</button><button id="englishButton" type="button" aria-label="English">🇬🇧 EN</button></div>
         <span class="offline-status" id="offlineStatus" hidden>Sin conexión</span>
@@ -165,6 +165,13 @@
         <canvas id="agendaCanvas" aria-label="Vista previa de la agenda"></canvas>
       </section>
     </main>
+    <dialog class="agenda-zoom-dialog" id="agendaZoomDialog" aria-label="Calendario ampliado">
+      <div class="agenda-zoom-toolbar">
+        <span class="section-label">Agenda mensual</span>
+        <button class="agenda-zoom-close" id="agendaZoomClose" type="button" aria-label="Cerrar calendario ampliado">×</button>
+      </div>
+      <div class="agenda-zoom-scroll"><canvas id="agendaZoomCanvas" aria-label="Agenda mensual ampliada"></canvas></div>
+    </dialog>
     <!-- Pie con el nombre de la aplicación y el grupo activo. -->
     <footer class="footer"><span>Memoria laboral</span><span id="footerGroup">Grupo sin asignar</span><a class="privacy-policy-link" href="privacy-policy.html" aria-label="Política de privacidad / Privacy policy">Privacidad / Privacy</a><span class="footer-credit">Desarrollador: Miguel Ángel Sánchez Aranda © 2026</span></footer>
   </div>
