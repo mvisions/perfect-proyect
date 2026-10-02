@@ -38,6 +38,7 @@ const nationalHolidays = new Set(["1-1", "1-6", "5-1", "8-15", "10-12", "11-1", 
 const customHolidayKey = "limasam-custom-holidays";
 const localDriveBackupKey = "limasam-drive-local-backup";
 const googleClientId = "673366304553-dgg8pgu9u8hb4ocfs8p1as5imkt6ht1v.apps.googleusercontent.com";
+const publicAppUrl = "https://mvisions.github.io/perfect-proyect/";
 const driveFileName = "Agenda de trabajos y actividades.json";
 const lastSyncKey = "limasam-last-sync";
 const deletedRoutesKey = "limasam-deleted-routes";
@@ -120,7 +121,6 @@ let driveAccessToken = null;
 let driveFileId = localStorage.getItem("limasam-drive-file-id");
 let driveSyncTimer = null;
 let driveChangesPending = false;
-let deferredInstallPrompt = null;
 let currentLanguage = localStorage.getItem("limasam-language") || "es";
 
 // Añade los selectores de idioma que no están incluidos inicialmente en el HTML.
@@ -672,7 +672,7 @@ function currentAgendaBackground() {
 }
 
 function updateShareBackgroundOption() {
-  const available = Boolean(customBackgroundData[state.month]);
+  const available = backgroundToggle.checked && Boolean(customBackgroundData[state.month] || currentAgendaBackground()?.src);
   shareBackgroundToggle.disabled = !available;
   if (!available) shareBackgroundToggle.checked = false;
 }
@@ -811,37 +811,10 @@ function updateOfflineStatus() {
   offlineStatus.hidden = navigator.onLine;
 }
 
-// Registra el service worker para permitir el uso sin conexión e instalar la aplicación.
+// Registra el service worker para permitir el uso sin conexión.
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch((error) => console.error("No se pudo activar el modo offline", error)));
 }
-window.addEventListener("beforeinstallprompt", (event) => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-});
-installButton.addEventListener("click", async () => {
-  if (!deferredInstallPrompt) {
-    const installed = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-    showToast(installed ? "La aplicación ya está instalada." : "Para instalarla, abre el menú del navegador y elige «Instalar app» o «Añadir a pantalla de inicio».");
-    return;
-  }
-  installButton.disabled = true;
-  try {
-    await deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    showToast(outcome === "accepted" ? "Instalación iniciada." : "Puedes instalarla cuando quieras desde este botón.");
-  } catch (error) {
-    console.error("No se pudo iniciar la instalación", error);
-    showToast("No se pudo iniciar la instalación. Usa el menú del navegador para añadir la app.");
-  } finally {
-    deferredInstallPrompt = null;
-    installButton.disabled = false;
-  }
-});
-window.addEventListener("appinstalled", () => {
-  installButton.hidden = true;
-  showToast("Aplicación instalada.");
-});
 updateButton.addEventListener("click", async () => {
   updateButton.disabled = true;
   updateButtonLabel.textContent = "Comprobando...";
@@ -1944,14 +1917,14 @@ function sharedMonthPayload() {
     reminder: Number(route.reminder ?? 30),
     ...(sharePunchesToggle.checked ? { actualEntry: route.actualEntry || "", actualExit: route.actualExit || "" } : {})
   }]));
-  return { app: "memoria-laboral", version: 3, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
+  return { app: "memoria-laboral", version: 4, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, backgroundTheme: shareBackgroundToggle.checked ? selectedBackgroundTheme : null, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
 }
 
 async function shareMonthAgenda() {
   const encoded = await encryptSharedAgenda(sharedMonthPayload());
-  const link = nativeAndroid()
-    ? `memoria-laboral://import?data=${encodeURIComponent(encoded)}`
-    : `${window.location.origin}${window.location.pathname}#agenda=${encoded}`;
+  const shareUrl = new URL(publicAppUrl);
+  shareUrl.searchParams.set("import", encoded);
+  const link = shareUrl.toString();
   const message = `Memoria laboral · ${months[state.month]} ${state.year}\nAbre este enlace para importar la agenda del mes:\n${link}`;
   window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener");
   showToast("Enlace del mes preparado para WhatsApp");
@@ -1960,7 +1933,7 @@ async function shareMonthAgenda() {
 // Valida e importa una agenda compartida, actualizando las preferencias incluidas.
 async function importSharedAgenda(encodedFromApp = null) {
   const match = window.location.hash.match(/^#agenda=(.+)$/);
-  const encoded = encodedFromApp || match?.[1];
+  const encoded = encodedFromApp || new URLSearchParams(window.location.search).get("import") || match?.[1];
   if (!encoded) return;
   try {
     const payload = await decodeSharedAgendaSecure(encoded);
@@ -1978,7 +1951,19 @@ async function importSharedAgenda(encodedFromApp = null) {
         sharedImage.src = payload.background;
         customAgendaBackgrounds[payload.month] = sharedImage;
         localStorage.setItem(customBackgroundKey, JSON.stringify(customBackgroundData));
+        backgroundToggle.checked = true;
+        localStorage.setItem("limasam-show-background", "true");
+        updateBackgroundOptions();
         sharedImage.addEventListener("load", () => drawAgendaCanvas());
+      }
+      if (payload.backgroundTheme && backgroundThemes.includes(payload.backgroundTheme)) {
+        selectedBackgroundTheme = payload.backgroundTheme;
+        backgroundThemeSelect.value = selectedBackgroundTheme;
+        agendaBackgrounds = createAgendaBackgrounds(selectedBackgroundTheme);
+        backgroundToggle.checked = true;
+        localStorage.setItem("limasam-background-theme", selectedBackgroundTheme);
+        localStorage.setItem("limasam-show-background", "true");
+        updateBackgroundOptions();
       }
       state.month = payload.month;
       state.year = payload.year;
@@ -2018,22 +2003,44 @@ async function importSharedAgenda(encodedFromApp = null) {
 async function listenNativeAgendaLinks() {
   if (!nativeAndroid()) return;
   const { App } = await import("@capacitor/app");
-  App.addListener("appUrlOpen", ({ url }) => {
+  const handleAgendaUrl = ({ url }) => {
     try {
       const parsed = new URL(url);
-      const encoded = parsed.searchParams.get("data");
-      if (parsed.protocol === "memoria-laboral:" && parsed.hostname === "import" && encoded) importSharedAgenda(encoded);
+      const encoded = parsed.searchParams.get("data") || parsed.searchParams.get("import");
+      const isCustomImport = parsed.protocol === "memoria-laboral:" && parsed.hostname === "import";
+      const isWebImport = parsed.protocol === "https:" && parsed.hostname === "mvisions.github.io" && parsed.pathname.startsWith("/perfect-proyect/");
+      if ((isCustomImport || isWebImport) && encoded) importSharedAgenda(encoded);
     } catch {
       showToast("No pudimos abrir la agenda. Comprueba que el enlace esté completo e inténtalo de nuevo.");
     }
-  });
+  };
+  await App.addListener("appUrlOpen", handleAgendaUrl);
+  const launchUrl = await App.getLaunchUrl();
+  if (launchUrl?.url) handleAgendaUrl(launchUrl);
 }
 
 // Exporta como PNG la vista actual de la agenda mensual.
-function downloadPng() {
+async function downloadPng() {
   const canvas = drawAgendaCanvas();
+  const fileName = `memoria-laboral-${months[state.month].toLowerCase()}-${state.year}.png`;
+  if (nativeAndroid()) {
+    try {
+      const [{ Filesystem, Directory }, { Share }] = await Promise.all([
+        import("@capacitor/filesystem"),
+        import("@capacitor/share")
+      ]);
+      const base64 = canvas.toDataURL("image/png").split(",")[1];
+      const { uri } = await Filesystem.writeFile({ path: fileName, data: base64, directory: Directory.Cache });
+      await Share.share({ title: fileName, text: "Agenda mensual de Memoria laboral", files: [uri], dialogTitle: "Guardar o compartir PNG" });
+      showToast("Elige dónde guardar o compartir el PNG");
+    } catch (error) {
+      console.error("No se pudo exportar el PNG", error);
+      showToast("No se pudo guardar el PNG. Inténtalo de nuevo.");
+    }
+    return;
+  }
   const link = document.createElement("a");
-  link.download = `limasam-${months[state.month].toLowerCase()}-${state.year}.png`;
+  link.download = fileName;
   link.href = canvas.toDataURL("image/png");
   link.click();
   showToast("PNG descargado correctamente");
@@ -2125,12 +2132,14 @@ agendaCanvas.addEventListener("click", selectCanvasDay);
 backgroundToggle.addEventListener("change", () => {
   localStorage.setItem("limasam-show-background", String(backgroundToggle.checked));
   updateBackgroundOptions();
+  updateShareBackgroundOption();
   drawAgendaCanvas();
 });
 backgroundThemeSelect.addEventListener("change", () => {
   selectedBackgroundTheme = backgroundThemeSelect.value;
   localStorage.setItem("limasam-background-theme", selectedBackgroundTheme);
   agendaBackgrounds = createAgendaBackgrounds(selectedBackgroundTheme);
+  updateShareBackgroundOption();
   drawAgendaCanvas();
 });
 backgroundColorInput.addEventListener("input", () => {
