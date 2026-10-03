@@ -2,5 +2,15 @@
   "appId": "com.memorialaboral.rutas",
   "appName": "Memoria laboral",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SocialLogin": {
+      "providers": {
+        "google": true,
+        "facebook": false,
+        "apple": false,
+        "twitter": false
+      }
+    }
+  }
 }

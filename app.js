@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { Capacitor } from "@capacitor/core";
 
 // Catálogos de meses, días, tipos de ruta y estados de la jornada.
 const months = [
@@ -37,7 +38,7 @@ const dayStatuses = {
 const nationalHolidays = new Set(["1-1", "1-6", "5-1", "8-15", "10-12", "11-1", "12-6", "12-8", "12-25"]);
 const customHolidayKey = "limasam-custom-holidays";
 const localDriveBackupKey = "limasam-drive-local-backup";
-const googleClientId = "673366304553-dgg8pgu9u8hb4ocfs8p1as5imkt6ht1v.apps.googleusercontent.com";
+const googleClientId = "129023096829-69s79kbie7pkc43gqf02qr175hhni3jm.apps.googleusercontent.com";
 const publicAppUrl = "https://mvisions.github.io/perfect-proyect/";
 const driveFileName = "Agenda de trabajos y actividades.json";
 const lastSyncKey = "limasam-last-sync";
@@ -124,6 +125,7 @@ let driveAccessToken = null;
 let driveFileId = localStorage.getItem("limasam-drive-file-id");
 let driveSyncTimer = null;
 let driveChangesPending = false;
+let nativeGoogleAuthPromise = null;
 const browserAlarmTimers = new Map();
 let currentLanguage = localStorage.getItem("limasam-language") || "es";
 
@@ -153,6 +155,7 @@ const languagePairs = {
   "Diarios": "Weekdays",
   "Fines de semana": "Weekends",
   "Mostrar tema": "Show theme",
+  "Opciones avanzadas": "Advanced options",
   "Subir imágenes": "Upload images",
   "Usar fondos predeterminados": "Use default backgrounds",
   "Descargar PNG": "Download PNG",
@@ -223,16 +226,19 @@ Object.assign(languageTranslations.fr, { Deportes: "Sports", Animales: "Animaux"
 Object.assign(languageTranslations.it, { Deportes: "Sport", Animales: "Animali" });
 Object.assign(languageTranslations.de, { Deportes: "Sport", Animales: "Tiere" });
 Object.assign(languageTranslations.fr, {
+  "Opciones avanzadas": "Options avancées",
   "Tipo de jornada": "Type de journée",
   "Incluir fondo del mes": "Inclure l’arrière-plan du mois",
   "Incluir horas fichadas": "Inclure les heures pointées"
 });
 Object.assign(languageTranslations.it, {
+  "Opciones avanzadas": "Opzioni avanzate",
   "Tipo de jornada": "Tipo di giornata",
   "Incluir fondo del mes": "Includi lo sfondo del mese",
   "Incluir horas fichadas": "Includi le ore registrate"
 });
 Object.assign(languageTranslations.de, {
+  "Opciones avanzadas": "Erweiterte Optionen",
   "Tipo de jornada": "Art der Schicht",
   "Incluir fondo del mes": "Monatshintergrund einbeziehen",
   "Incluir horas fichadas": "Erfasste Zeiten einbeziehen"
@@ -883,6 +889,55 @@ function markDriveSynced() {
   updateSyncUi();
 }
 
+async function getNativeGoogleAuth() {
+  if (!nativeGoogleAuthPromise) {
+    nativeGoogleAuthPromise = import("@capgo/capacitor-social-login")
+      .then(async ({ SocialLogin }) => {
+        await SocialLogin.initialize({ google: { webClientId: googleClientId } });
+        return SocialLogin;
+      })
+      .catch((error) => {
+        nativeGoogleAuthPromise = null;
+        throw error;
+      });
+  }
+  return nativeGoogleAuthPromise;
+}
+
+async function requestDriveAccessToken() {
+  if (nativeAndroid()) {
+    const socialLogin = await getNativeGoogleAuth();
+    const response = await socialLogin.login({
+      provider: "google",
+      options: { scopes: ["https://www.googleapis.com/auth/drive.file"] }
+    });
+    const token = response.result.accessToken?.token;
+    if (!token) throw new Error("Google no devolvió un token de acceso a Drive");
+    return token;
+  }
+
+  await loadExternalScript("https://accounts.google.com/gsi/client");
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error("Google tardó demasiado en responder")), 60000);
+    const finish = (callback) => (value) => {
+      clearTimeout(timeout);
+      callback(value);
+    };
+    try {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: googleClientId,
+        scope: "https://www.googleapis.com/auth/drive.file",
+        callback: finish(resolve),
+        error_callback: finish(reject)
+      });
+      client.requestAccessToken({ prompt: driveFileId ? "" : "consent" });
+    } catch (error) {
+      clearTimeout(timeout);
+      reject(error);
+    }
+  });
+}
+
 // Carga una biblioteca externa una sola vez y espera a que esté disponible.
 function loadExternalScript(source) {
   return new Promise((resolve, reject) => {
@@ -1006,18 +1061,9 @@ async function connectGoogleDrive() {
   driveButtonLabel.textContent = "Conectando...";
   syncStatus.textContent = "Conectando con Drive...";
   try {
-    await loadExternalScript("https://accounts.google.com/gsi/client");
-    const token = await new Promise((resolve, reject) => {
-      const client = google.accounts.oauth2.initTokenClient({
-        client_id: googleClientId,
-        scope: "https://www.googleapis.com/auth/drive.file",
-        callback: resolve,
-        error_callback: reject
-      });
-      client.requestAccessToken({ prompt: driveFileId ? "" : "consent" });
-    });
-    if (!token.access_token) throw new Error("No se recibió el permiso de Google");
-    driveAccessToken = token.access_token;
+    const token = await requestDriveAccessToken();
+    driveAccessToken = typeof token === "string" ? token : token?.access_token;
+    if (!driveAccessToken) throw new Error("No se recibió el permiso de Google");
     await syncFromDrive();
     driveButtonLabel.textContent = "Drive conectado";
     driveLogoutButton.hidden = false;
@@ -1056,7 +1102,14 @@ async function disconnectGoogleDrive() {
   const token = driveAccessToken;
   driveAccessToken = null;
   clearTimeout(driveSyncTimer);
-  if (token && window.google?.accounts?.oauth2?.revoke) {
+  if (nativeAndroid() && nativeGoogleAuthPromise) {
+    try {
+      const socialLogin = await nativeGoogleAuthPromise;
+      await socialLogin.logout({ provider: "google" });
+    } catch (error) {
+      console.error("No se pudo cerrar la sesión de Google", error);
+    }
+  } else if (token && window.google?.accounts?.oauth2?.revoke) {
     await new Promise((resolve) => window.google.accounts.oauth2.revoke(token, resolve));
   }
   driveButtonLabel.textContent = "Desconectado de Google Drive";
@@ -1689,7 +1742,7 @@ function showToast(message) {
 }
 
 function nativeAndroid() {
-  return Boolean(window.Capacitor?.isNativePlatform?.());
+  return Capacitor.isNativePlatform();
 }
 
 function browserAlarmKey(year, month, day) {
