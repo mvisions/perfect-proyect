@@ -19,7 +19,7 @@
   <div class="app-shell">
     <!-- Barra superior con identidad, idioma, conexión y acceso al expediente. -->
     <header class="topbar">
-      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.4</small></span></a>
+      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.5</small></span></a>
       <div class="topbar-actions">
         <div class="language-toggle" aria-label="Idioma"><button id="spanishButton" type="button" aria-label="Español">🇪🇸 ES</button><button id="englishButton" type="button" aria-label="English">🇬🇧 EN</button></div>
         <span class="offline-status" id="offlineStatus" hidden>Sin conexión</span>
@@ -131,7 +131,7 @@
       </section>
       <!-- Resumen anual, gráficos, detalle de días y opciones de exportación. -->
       <section class="record-card" id="recordCard" aria-labelledby="recordTitle" hidden>
-        <div class="record-heading"><div><p class="section-label">Control anual</p><h2 id="recordTitle">Expediente de <span id="recordYear">2026</span></h2></div><span class="record-note">Resumen de días y actividades</span></div>
+        <div class="record-heading"><div><p class="section-label">Control anual</p><h2 id="recordTitle">Expediente de <span id="recordYear">2026</span></h2></div><div class="record-year-nav" aria-label="Cambiar de año"><button class="button button-quiet" id="recordYearPrev" type="button" aria-label="Año anterior">‹</button><select id="recordYearSelect" aria-label="Año del expediente"></select><button class="button button-quiet" id="recordYearNext" type="button" aria-label="Año siguiente">›</button></div><span class="record-note">Resumen de días y actividades</span></div>
         <nav class="record-tabs" aria-label="Secciones del expediente"><button class="record-tab is-active" type="button" data-record-tab="summary">Resumen</button><button class="record-tab" type="button" data-record-tab="details">Detalle de días</button><button class="record-tab" type="button" data-record-tab="export">Exportar</button></nav>
         <div class="record-tab-panel is-active" id="recordSummaryTab">
         <div class="record-stats">
@@ -161,7 +161,7 @@
         </div>
         </div>
         <div class="record-tab-panel" id="recordExportTab" hidden>
-        <div class="record-export" aria-label="Exportar expediente"><span>Exportar expediente</span><button class="button button-quiet" id="pdfButton" type="button">Descargar PDF</button><button class="button button-quiet" id="csvButton" type="button">Descargar CSV</button><button class="button button-quiet" id="shareRecordButton" type="button">Compartir resumen</button></div>
+        <div class="record-export" aria-label="Exportar expediente"><span>Exportar expediente</span><button class="button button-quiet" id="pdfButton" type="button">Descargar PDF</button><button class="button button-quiet" id="csvButton" type="button">Descargar CSV</button><button class="button button-quiet" id="shareRecordButton" type="button">Compartir resumen</button><button class="button button-quiet" id="googleCalendarButton" type="button">Importar a Google Calendar</button></div>
         </div>
       </section>
       <!-- Vista previa dibujada en un lienzo para compartir o descargar. -->

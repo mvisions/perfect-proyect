@@ -103,6 +103,7 @@ const syncNowButton = $("#syncNowButton");
 const pdfButton = $("#pdfButton");
 const csvButton = $("#csvButton");
 const shareRecordButton = $("#shareRecordButton");
+const googleCalendarButton = $("#googleCalendarButton");
 const shareBackgroundToggle = $("#shareBackgroundToggle");
 const sharePunchesToggle = $("#sharePunchesToggle");
 const installButton = $("#installButton");
@@ -160,6 +161,7 @@ const languagePairs = {
   "Usar fondos predeterminados": "Use default backgrounds",
   "Descargar PNG": "Download PNG",
   "Compartir estructura del mes": "Share month structure",
+  "Importar a Google Calendar": "Import to Google Calendar",
   "Incluir horas fichadas": "Include clocked hours",
   "Incluir fondo del mes": "Include month background",
   "Gestionar festivos personalizados": "Manage custom holidays",
@@ -497,6 +499,10 @@ Object.assign(languageTranslations.de, {
   "Descargar CSV": "CSV herunterladen", "Compartir resumen": "Zusammenfassung teilen", "Todavía no hay registros para este año": "Für dieses Jahr liegen noch keine Einträge vor",
   Estado: "Status", Entrada: "Start", Salida: "Ende", "Incluir fondo del mes": "Monatshintergrund einbeziehen", "Incluir horas fichadas": "Erfasste Zeiten einbeziehen"
 });
+
+Object.assign(languageTranslations.fr, { "Importar a Google Calendar": "Importer dans Google Agenda" });
+Object.assign(languageTranslations.it, { "Importar a Google Calendar": "Importa in Google Calendar" });
+Object.assign(languageTranslations.de, { "Importar a Google Calendar": "In Google Kalender importieren" });
 
 // Traduce el contenido existente y mantiene sincronizados los controles de idioma.
 function translatePage() {
@@ -938,6 +944,116 @@ async function requestDriveAccessToken() {
   });
 }
 
+async function requestCalendarAccessToken() {
+  const scope = "https://www.googleapis.com/auth/calendar.events";
+  if (nativeAndroid()) {
+    const socialLogin = await getNativeGoogleAuth();
+    const response = await socialLogin.login({ provider: "google", options: { scopes: [scope] } });
+    const token = response.result.accessToken?.token;
+    if (!token) throw new Error("Google no devolvió un token de Calendar");
+    return token;
+  }
+
+  await loadExternalScript("https://accounts.google.com/gsi/client");
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error("Google tardó demasiado en responder")), 60000);
+    const finish = (callback) => (value) => {
+      clearTimeout(timeout);
+      callback(value);
+    };
+    try {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: googleClientId,
+        scope,
+        callback: finish((response) => response.access_token ? resolve(response.access_token) : reject(new Error("Google no devolvió un token de Calendar"))),
+        error_callback: finish(reject)
+      });
+      client.requestAccessToken({ prompt: "consent" });
+    } catch (error) {
+      clearTimeout(timeout);
+      reject(error);
+    }
+  });
+}
+
+function calendarDateString(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function calendarEventForRoute(day, route, timeZone) {
+  const date = calendarDateString(new Date(state.year, state.month, Number(day)));
+  const entry = recordEntryTime(route);
+  const exit = recordExitTime(route);
+  const eventId = `limasam${state.year}m${String(state.month + 1).padStart(2, "0")}d${String(day).padStart(2, "0")}`;
+  const description = [
+    `Destino: ${route.destination || "Sin destino"}`,
+    `Estado: ${statusLabel(route)}`,
+    `Tipo de trabajo: ${routeTypes[route.type]?.label || "Ruta"}`,
+    `Jornada: ${route.shift || "completa"} (${shiftHours(route)} h)`,
+    `Entrada planificada: ${route.plannedTime || route.time || "Sin registrar"}`,
+    `Entrada fichada: ${route.actualEntry || "Sin registrar"}`,
+    `Salida planificada: ${route.plannedExit || route.exit || "Sin registrar"}`,
+    `Salida fichada: ${route.actualExit || "Sin registrar"}`,
+    `Tiempo trabajado: ${workedMinutes(entry, exit)} min`,
+    `Horas extra: ${routeExtraHours(route)}`,
+    `Recordatorio: ${Number(route.reminder ?? 30)} min`,
+    `Alarma activada: ${route.alarm === true ? "Sí" : "No"}`
+  ].join("\n");
+  const event = {
+    id: eventId,
+    summary: `${route.destination || statusLabel(route)} · ${localizedMonth(state.month)} ${state.year}`,
+    description
+  };
+
+  if (validTime(entry)) {
+    const start = new Date(`${date}T${entry}:00`);
+    let end = validTime(exit) ? new Date(`${date}T${exit}:00`) : new Date(start.getTime() + Math.max(shiftHours(route) * 60, workedMinutes(entry, exit)) * 60000);
+    if (end <= start) end.setDate(end.getDate() + 1);
+    event.start = { dateTime: `${date}T${entry}:00`, timeZone };
+    event.end = { dateTime: `${calendarDateString(end)}T${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}:00`, timeZone };
+  } else {
+    const nextDay = new Date(state.year, state.month, Number(day) + 1);
+    event.start = { date };
+    event.end = { date: calendarDateString(nextDay) };
+  }
+  return event;
+}
+
+async function importSelectedMonthToGoogleCalendar() {
+  const routes = Object.entries(state.routes).filter(([, route]) => route && typeof route === "object");
+  if (!routes.length) {
+    showToast("No hay rutas guardadas en el mes seleccionado.");
+    return;
+  }
+
+  googleCalendarButton.disabled = true;
+  try {
+    const accessToken = await requestCalendarAccessToken();
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    let imported = 0;
+    for (const [day, route] of routes) {
+      const event = calendarEventForRoute(day, route, timeZone);
+      const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events`;
+      const headers = { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" };
+      const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(event) });
+      if (response.status === 409) {
+        const update = await fetch(`${url}/${event.id}`, { method: "PATCH", headers, body: JSON.stringify(event) });
+        if (!update.ok) throw new Error(`Calendar respondió ${update.status}`);
+      } else if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error?.message || `Calendar respondió ${response.status}`);
+      }
+      imported += 1;
+    }
+    showToast(`Se importaron ${imported} rutas de ${localizedMonth(state.month)} ${state.year} en Google Calendar.`);
+  } catch (error) {
+    console.error("No se pudo importar el mes en Google Calendar", error);
+    showToast(`No se pudo importar el mes: ${error.message}`);
+  } finally {
+    googleCalendarButton.disabled = false;
+  }
+}
+
 // Carga una biblioteca externa una sola vez y espera a que esté disponible.
 function loadExternalScript(source) {
   return new Promise((resolve, reject) => {
@@ -955,13 +1071,15 @@ function loadExternalScript(source) {
   });
 }
 
-// Prepara los datos locales que se respaldan en el archivo de Google Drive.
-function cloudPayload() {
+// Prepara un respaldo anual para mantener cada archivo de Drive ligero.
+function cloudPayload(year) {
   const routes = {};
   for (let index = 0; index < localStorage.length; index += 1) {
     const key = localStorage.key(index);
-    if (key?.match(/^limasam-\d{4}-\d+$/)) {
-      const monthRoutes = JSON.parse(localStorage.getItem(key));
+    const match = key?.match(/^limasam-(\d{4})-\d+$/);
+    if (!match || (Number.isInteger(year) && Number(match[1]) !== year)) continue;
+    try {
+      const monthRoutes = JSON.parse(localStorage.getItem(key) || "{}");
       routes[key] = Object.fromEntries(Object.entries(monthRoutes).map(([day, route]) => [day, {
         ...route,
         type: route.type || "",
@@ -974,9 +1092,31 @@ function cloudPayload() {
         actualExit: route.actualExit || "",
         workedMinutes: workedMinutes(route.time, route.exit)
       }]));
+    } catch (error) {
+      console.warn(`No se pudo preparar el respaldo de ${key}`, error);
     }
   }
-  return { version: 2, updatedAt: new Date().toISOString(), routes, customHolidays, deletedRoutes: [...loadDeletedRoutes()] };
+  const holidays = Number.isInteger(year) ? customHolidays.filter((holiday) => holiday.date.startsWith(`${year}-`)) : customHolidays;
+  const deletedRoutes = [...loadDeletedRoutes()].filter((key) => !Number.isInteger(year) || key.startsWith(`limasam-${year}-`));
+  return { version: 3, ...(Number.isInteger(year) ? { year } : {}), updatedAt: new Date().toISOString(), routes, customHolidays: holidays, deletedRoutes };
+}
+
+function driveBackupYears() {
+  const years = new Set([state.year]);
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const match = localStorage.key(index)?.match(/^limasam-(\d{4})-\d+$/);
+    if (match) years.add(Number(match[1]));
+  }
+  customHolidays.forEach((holiday) => years.add(Number(holiday.date.slice(0, 4))));
+  loadDeletedRoutes().forEach((key) => {
+    const match = key.match(/^limasam-(\d{4})-/);
+    if (match) years.add(Number(match[1]));
+  });
+  return [...years].filter(Number.isFinite).sort((left, right) => left - right);
+}
+
+function driveYearFileName(year) {
+  return `Agenda de trabajos y actividades ${year}.json`;
 }
 
 // Centraliza las solicitudes autenticadas a la API de Google Drive.
@@ -986,59 +1126,98 @@ async function driveRequest(url, options = {}) {
   return response;
 }
 
-// Crea el archivo de respaldo en Drive o actualiza el ya vinculado.
 async function uploadDriveFile() {
-  const content = JSON.stringify(cloudPayload(), null, 2);
-  const body = new Blob([content], { type: "application/json" });
-  if (!driveFileId) {
-    const metadata = new Blob([JSON.stringify({ name: driveFileName, mimeType: "application/json" })], { type: "application/json" });
-    const form = new FormData();
-    form.append("metadata", metadata);
-    form.append("file", body);
-    const response = await driveRequest("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", { method: "POST", body: form });
-    driveFileId = (await response.json()).id;
-    localStorage.setItem("limasam-drive-file-id", driveFileId);
-    markDriveSynced();
-    return;
+  const query = encodeURIComponent(`name contains 'Agenda de trabajos y actividades' and trashed = false and mimeType = 'application/json'`);
+  const listResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files?q=${query}&spaces=drive&fields=files(id,name,modifiedTime)&pageSize=1000`);
+  const files = (await listResponse.json()).files || [];
+  const latestByName = new Map();
+  files.sort((left, right) => (right.modifiedTime || "").localeCompare(left.modifiedTime || "")).forEach((file) => {
+    if (!latestByName.has(file.name)) latestByName.set(file.name, file);
+  });
+
+  for (const year of driveBackupYears()) {
+    const name = driveYearFileName(year);
+    const content = JSON.stringify(cloudPayload(year), null, 2);
+    const body = new Blob([content], { type: "application/json" });
+    const existingFile = latestByName.get(name);
+    if (existingFile) {
+      await driveRequest(`https://www.googleapis.com/upload/drive/v3/files/${existingFile.id}?uploadType=media`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body });
+      driveFileId = existingFile.id;
+    } else {
+      const metadata = new Blob([JSON.stringify({ name, mimeType: "application/json" })], { type: "application/json" });
+      const form = new FormData();
+      form.append("metadata", metadata);
+      form.append("file", body);
+      const response = await driveRequest("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id", { method: "POST", body: form });
+      driveFileId = (await response.json()).id;
+      latestByName.set(name, { id: driveFileId, name });
+    }
   }
-  await driveRequest(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body });
+  if (driveFileId) localStorage.setItem("limasam-drive-file-id", driveFileId);
   markDriveSynced();
 }
 
-// Descarga el respaldo remoto, aplica eliminaciones y restaura los datos locales.
+// Descarga respaldos anuales, migra el archivo combinado antiguo y restaura los datos.
 async function syncFromDrive() {
-  const query = encodeURIComponent(`name = '${driveFileName}' and trashed = false and mimeType = 'application/json'`);
-  const listResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files?q=${query}&spaces=drive&fields=files(id,name)&pageSize=1`);
+  const query = encodeURIComponent(`name contains 'Agenda de trabajos y actividades' and trashed = false and mimeType = 'application/json'`);
+  const listResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files?q=${query}&spaces=drive&fields=files(id,name,modifiedTime)&pageSize=1000`);
   const files = (await listResponse.json()).files || [];
-  if (!files.length) {
+  const legacyFiles = files.filter((file) => file.name === driveFileName).sort((left, right) => (right.modifiedTime || "").localeCompare(left.modifiedTime || ""));
+  const annualFiles = files.filter((file) => /^Agenda de trabajos y actividades \d{4}\.json$/.test(file.name));
+  const filesToRead = [...legacyFiles.slice(0, 1), ...annualFiles];
+  if (!filesToRead.length) {
     await uploadDriveFile();
     return;
   }
-  driveFileId = files[0].id;
-  localStorage.setItem("limasam-drive-file-id", driveFileId);
-  const contentResponse = await driveRequest(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
-  const payload = await contentResponse.json();
+
+  driveFileId = annualFiles[0]?.id || legacyFiles[0]?.id || driveFileId;
+  if (driveFileId) localStorage.setItem("limasam-drive-file-id", driveFileId);
+  const payloads = await Promise.all(filesToRead.map(async (file) => {
+    const response = await driveRequest(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`);
+    return { file, payload: await response.json() };
+  }));
   localStorage.setItem(localDriveBackupKey, JSON.stringify({ savedAt: new Date().toISOString(), payload: cloudPayload() }));
-  const deletedRoutes = new Set([...(payload.deletedRoutes || []), ...loadDeletedRoutes()]);
-  Object.keys(payload.routes || {}).forEach((key) => {
-    const routes = payload.routes[key];
+
+  const routes = {};
+  const holidays = new Map();
+  const deletedRoutes = new Set(loadDeletedRoutes());
+  payloads.forEach(({ payload }) => {
+    Object.entries(payload.routes || {}).forEach(([key, monthRoutes]) => {
+      routes[key] = { ...(routes[key] || {}), ...(monthRoutes || {}) };
+    });
+    (payload.customHolidays || []).forEach((holiday) => holidays.set(holiday.date, holiday));
+    (payload.deletedRoutes || []).forEach((key) => deletedRoutes.add(key));
+  });
+
+  Object.entries(routes).forEach(([key, monthRoutes]) => {
     deletedRoutes.forEach((deletedKey) => {
       const prefix = `${key}-`;
-      if (deletedKey.startsWith(prefix)) delete routes[deletedKey.slice(prefix.length)];
+      if (deletedKey.startsWith(prefix)) delete monthRoutes[deletedKey.slice(prefix.length)];
     });
   });
   saveDeletedRoutes(deletedRoutes);
   Object.keys(localStorage).filter((key) => key.match(/^limasam-\d{4}-\d+$/)).forEach((key) => localStorage.removeItem(key));
-  Object.entries(payload.routes || {}).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value)));
-  if (Array.isArray(payload.customHolidays)) {
-    customHolidays.splice(0, customHolidays.length, ...payload.customHolidays);
-    localStorage.setItem(customHolidayKey, JSON.stringify(customHolidays));
-  }
+  Object.entries(routes).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value)));
+  customHolidays.splice(0, customHolidays.length, ...holidays.values());
+  localStorage.setItem(customHolidayKey, JSON.stringify(customHolidays));
+
   renderHolidayList();
   renderCalendar();
   await refreshAndroidAlarms({ requestPermission: true });
-  if (deletedRoutes.size) await uploadDriveFile();
-  else markDriveSynced();
+  await uploadDriveFile();
+
+  const legacyFile = legacyFiles[0];
+  if (legacyFile) {
+    try {
+      await driveRequest(`https://www.googleapis.com/drive/v3/files/${legacyFile.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trashed: true })
+      });
+    } catch (error) {
+      console.warn("Los respaldos anuales se guardaron, pero no se pudo retirar el JSON combinado antiguo", error);
+    }
+  }
 }
 
 function queueDriveSync() {
@@ -1437,6 +1616,7 @@ function renderAnnualSummary() {
     return result;
   }, {});
   $("#recordYear").textContent = state.year;
+  renderRecordYearOptions();
   $("#annualTotalCount").textContent = records.length;
   $("#workedCount").textContent = weekdayWorked;
   $("#holidayWorkedCount").textContent = counts["festivo-trabajado"] || 0;
@@ -2352,8 +2532,30 @@ yearInput.addEventListener("change", () => {
     renderPreviewDayOptions();
     renderCalendar();
     renderHolidayList();
+    if (!recordCard.hidden) renderAnnualSummary();
   }
 });
+
+// Años con datos guardados más el año activo y el siguiente.
+function renderRecordYearOptions() {
+  const years = new Set([state.year, state.year + 1, new Date().getFullYear()]);
+  Object.keys(localStorage).forEach((key) => {
+    const match = key.match(/^limasam-(\d{4})-\d+$/);
+    if (match) years.add(Number(match[1]));
+  });
+  const select = $("#recordYearSelect");
+  select.innerHTML = [...years].filter((year) => year >= 2000 && year <= 2100).sort((a, b) => a - b).map((year) => `<option value="${year}">${year}</option>`).join("");
+  select.value = state.year;
+}
+
+function changeRecordYear(year) {
+  if (!(year >= 2000 && year <= 2100)) return;
+  yearInput.value = year;
+  yearInput.dispatchEvent(new Event("change"));
+}
+$("#recordYearSelect").addEventListener("change", (event) => changeRecordYear(Number(event.target.value)));
+$("#recordYearPrev").addEventListener("click", () => changeRecordYear(state.year - 1));
+$("#recordYearNext").addEventListener("click", () => changeRecordYear(state.year + 1));
 $("#addHolidayButton").addEventListener("click", () => {
   const date = holidayDateInput.value;
   const name = holidayNameInput.value.trim();
@@ -2520,6 +2722,7 @@ syncNowButton.addEventListener("click", syncNow);
 pdfButton.addEventListener("click", downloadRecordPdf);
 csvButton.addEventListener("click", downloadRecordCsv);
 shareRecordButton.addEventListener("click", shareRecordSummary);
+googleCalendarButton.addEventListener("click", importSelectedMonthToGoogleCalendar);
 driveLogoutButton.addEventListener("click", disconnectGoogleDrive);
 recordButton.addEventListener("click", () => {
   recordCard.hidden = !recordCard.hidden;

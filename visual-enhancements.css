@@ -190,3 +190,5 @@ body.dark-mode .button-quiet,body.night-mode .button-quiet{color:var(--ink)!impo
 .day-cell.has-route{min-height:126px}
 .route-preview,.route-time,.route-meta{font-size:12px}
 @media(max-width:760px){.day-cell.has-route{min-height:112px}.route-preview,.route-time,.route-meta{font-size:10px}}
+
+.record-year-nav{display:flex;align-items:center;gap:8px}.record-year-nav select{min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:inherit;font:inherit}
