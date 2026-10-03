@@ -124,6 +124,7 @@ let driveAccessToken = null;
 let driveFileId = localStorage.getItem("limasam-drive-file-id");
 let driveSyncTimer = null;
 let driveChangesPending = false;
+const browserAlarmTimers = new Map();
 let currentLanguage = localStorage.getItem("limasam-language") || "es";
 
 // Añade los selectores de idioma que no están incluidos inicialmente en el HTML.
@@ -168,7 +169,7 @@ const languagePairs = {
   "Horas extra": "Overtime hours",
   "Avisar": "Reminder",
   "Estado del día": "Day status",
-  "Activar alarma en Android": "Enable Android alarm",
+  "Activar recordatorio": "Enable reminder",
   "Vaciar día": "Clear day",
   "Borrar recuerdo": "Clear remembered route",
   "Guardar ruta": "Save route",
@@ -376,7 +377,7 @@ Object.assign(languagePairs, {
   "Jornada completa · 8 h": "Full day · 8 h", "Jornada continua · 7 h": "Continuous day · 7 h", "Media jornada · 4 h": "Half day · 4 h",
   "Sin calcular": "Not calculated", "Horas extra": "Overtime", "Se suma de una en una": "Added one at a time",
   "30 minutos antes": "30 minutes before", "A la hora de entrada": "At entry time", "15 minutos antes": "15 minutes before", "1 hora antes": "1 hour before", "2 horas antes": "2 hours before",
-  "Asuntos propios": "Personal days", Descanso: "Rest day", "Activar alarma en Android": "Enable Android alarm",
+  "Asuntos propios": "Personal days", Descanso: "Rest day", "Activar recordatorio": "Enable reminder",
   "Vaciar día": "Clear day", "Borrar recuerdo": "Clear remembered route", "Resumen del mes": "Monthly summary", "rutas": "routes",
   "horas con entrada": "scheduled starts", "festivos": "holidays", "Vista previa en tiempo real": "Live preview", "Agenda lista para compartir": "Agenda ready to share",
   "Editar día": "Edit day", "Días y horas extra por mes": "Days and overtime by month", "días registrados": "recorded days",
@@ -399,7 +400,7 @@ Object.assign(languageTranslations.fr, {
   "Jornada completa · 8 h": "Journée complète · 8 h", "Jornada continua · 7 h": "Journée continue · 7 h", "Media jornada · 4 h": "Demi-journée · 4 h",
   "Sin calcular": "Non calculé", "Horas extra": "Heures supplémentaires", "Se suma de una en una": "Ajoutées une par une",
   "30 minutos antes": "30 minutes avant", "A la hora de entrada": "À l’heure de début", "15 minutos antes": "15 minutes avant", "1 hora antes": "1 heure avant", "2 horas antes": "2 heures avant",
-  "Asuntos propios": "Congés personnels", Descanso: "Repos", "Activar alarma en Android": "Activer l’alarme sur Android",
+  "Asuntos propios": "Congés personnels", Descanso: "Repos", "Activar recordatorio": "Activer le rappel",
   "Vaciar día": "Effacer la journée", "Borrar recuerdo": "Effacer la tournée mémorisée", "Resumen del mes": "Résumé du mois", "rutas": "tournées",
   "horas con entrada": "heures de début", "festivos": "jours fériés", "Vista previa en tiempo real": "Aperçu en temps réel", "Agenda lista para compartir": "Agenda prête à partager",
   "Editar día": "Modifier le jour", "Días y horas extra por mes": "Jours et heures supplémentaires par mois", "días registrados": "jours enregistrés",
@@ -422,7 +423,7 @@ Object.assign(languageTranslations.it, {
   "Jornada completa · 8 h": "Giornata completa · 8 h", "Jornada continua · 7 h": "Giornata continuata · 7 h", "Media jornada · 4 h": "Mezza giornata · 4 h",
   "Sin calcular": "Non calcolato", "Horas extra": "Straordinari", "Se suma de una en una": "Si aggiungono una alla volta",
   "30 minutos antes": "30 minuti prima", "A la hora de entrada": "All’ora di ingresso", "15 minutos antes": "15 minuti prima", "1 hora antes": "1 ora prima", "2 horas antes": "2 ore prima",
-  "Asuntos propios": "Permessi personali", Descanso: "Riposo", "Activar alarma en Android": "Attiva la sveglia su Android",
+  "Asuntos propios": "Permessi personali", Descanso: "Riposo", "Activar recordatorio": "Attiva promemoria",
   "Vaciar día": "Svuota giornata", "Borrar recuerdo": "Elimina percorso memorizzato", "Resumen del mes": "Riepilogo mensile", "rutas": "percorsi",
   "horas con entrada": "ingressi programmati", "festivos": "festività", "Vista previa en tiempo real": "Anteprima in tempo reale", "Agenda lista para compartir": "Agenda pronta da condividere",
   "Editar día": "Modifica giorno", "Días y horas extra por mes": "Giorni e straordinari per mese", "días registrados": "giorni registrati",
@@ -445,7 +446,7 @@ Object.assign(languageTranslations.de, {
   "Jornada completa · 8 h": "Ganztags · 8 Std.", "Jornada continua · 7 h": "Durchgehend · 7 Std.", "Media jornada · 4 h": "Halbtags · 4 Std.",
   "Sin calcular": "Nicht berechnet", "Horas extra": "Überstunden", "Se suma de una en una": "Wird stundenweise addiert",
   "30 minutos antes": "30 Minuten vorher", "A la hora de entrada": "Zur Startzeit", "15 minutos antes": "15 Minuten vorher", "1 hora antes": "1 Stunde vorher", "2 horas antes": "2 Stunden vorher",
-  "Asuntos propios": "Sonderurlaub", Descanso: "Ruhetag", "Activar alarma en Android": "Android-Erinnerung aktivieren",
+  "Asuntos propios": "Sonderurlaub", Descanso: "Ruhetag", "Activar recordatorio": "Erinnerung aktivieren",
   "Vaciar día": "Tag leeren", "Borrar recuerdo": "Gespeicherte Route löschen", "Resumen del mes": "Monatsübersicht", "rutas": "Routen",
   "horas con entrada": "geplante Starts", "festivos": "Feiertage", "Vista previa en tiempo real": "Live-Vorschau", "Agenda lista para compartir": "Kalender zum Teilen bereit",
   "Editar día": "Tag bearbeiten", "Días y horas extra por mes": "Tage und Überstunden pro Monat", "días registrados": "erfasste Tage",
@@ -980,6 +981,7 @@ async function syncFromDrive() {
   }
   renderHolidayList();
   renderCalendar();
+  await refreshAndroidAlarms({ requestPermission: true });
   if (deletedRoutes.size) await uploadDriveFile();
   else markDriveSynced();
 }
@@ -1131,6 +1133,62 @@ const calendarDetailLabels = {
   it: { type: "Tipo di lavoro", shift: "Turno", alarm: "Sveglia attiva" },
   de: { type: "Arbeitsart", shift: "Arbeitszeit", alarm: "Alarm aktiviert" }
 };
+
+const alarmMessages = {
+  es: {
+    title: "Memoria laboral · Recordatorio de jornada", day: "Jornada", entry: "entrada a las", reminder: "aviso", minutes: "min antes",
+    browserUnsupported: "Este navegador no admite notificaciones.", browserPermission: "Permite las notificaciones del navegador para recibir recordatorios mientras la página esté abierta.",
+    androidPermission: "Para activar el recordatorio, permite las notificaciones en Android.", syncPermission: "Permite las notificaciones de Android para activar los recordatorios sincronizados.",
+    futureTime: "Elige una hora futura para programar el recordatorio.", browserScheduled: "Recordatorio programado. Mantén esta página abierta.", androidScheduled: "Recordatorio programado en Android",
+    scheduleError: "No se completó el recordatorio. Revisa los permisos de notificación e inténtalo de nuevo.",
+    importPrompt: "¿Importar la agenda de {month} {year}? También se importarán las preferencias de alarma. Los fichajes reales solo se incluirán si se compartieron."
+  },
+  en: {
+    title: "Work Log · Shift reminder", day: "Shift", entry: "starts at", reminder: "reminder", minutes: "min before",
+    browserUnsupported: "This browser does not support notifications.", browserPermission: "Allow browser notifications to receive reminders while this page is open.",
+    androidPermission: "Allow notifications on Android to enable this reminder.", syncPermission: "Allow Android notifications to enable synced reminders.",
+    futureTime: "Choose a future time to schedule the reminder.", browserScheduled: "Reminder scheduled. Keep this page open.", androidScheduled: "Reminder scheduled on Android",
+    scheduleError: "The reminder could not be scheduled. Check notification permissions and try again.",
+    importPrompt: "Import the {month} {year} calendar? Alarm settings will also be imported. Actual clock-ins are included only if they were shared."
+  },
+  fr: {
+    title: "Mémoire de travail · Rappel de journée", day: "Journée", entry: "entrée à", reminder: "rappel", minutes: "min avant",
+    browserUnsupported: "Ce navigateur ne prend pas en charge les notifications.", browserPermission: "Autorisez les notifications du navigateur pour recevoir des rappels tant que cette page est ouverte.",
+    androidPermission: "Autorisez les notifications sur Android pour activer ce rappel.", syncPermission: "Autorisez les notifications Android pour activer les rappels synchronisés.",
+    futureTime: "Choisissez une heure future pour programmer le rappel.", browserScheduled: "Rappel programmé. Gardez cette page ouverte.", androidScheduled: "Rappel programmé sur Android",
+    scheduleError: "Le rappel n’a pas pu être programmé. Vérifiez les autorisations de notification et réessayez.",
+    importPrompt: "Importer l’agenda de {month} {year} ? Les réglages des rappels seront également importés. Les pointages réels ne seront inclus que s’ils ont été partagés."
+  },
+  it: {
+    title: "Memoria di lavoro · Promemoria turno", day: "Turno", entry: "ingresso alle", reminder: "avviso", minutes: "min prima",
+    browserUnsupported: "Questo browser non supporta le notifiche.", browserPermission: "Consenti le notifiche del browser per ricevere promemoria mentre la pagina è aperta.",
+    androidPermission: "Consenti le notifiche su Android per attivare questo promemoria.", syncPermission: "Consenti le notifiche Android per attivare i promemoria sincronizzati.",
+    futureTime: "Scegli un orario futuro per programmare il promemoria.", browserScheduled: "Promemoria programmato. Mantieni aperta questa pagina.", androidScheduled: "Promemoria programmato su Android",
+    scheduleError: "Impossibile programmare il promemoria. Controlla i permessi di notifica e riprova.",
+    importPrompt: "Importare il calendario di {month} {year}? Verranno importate anche le impostazioni dei promemoria. Le timbrature effettive saranno incluse solo se condivise."
+  },
+  de: {
+    title: "Arbeitsprotokoll · Schichterinnerung", day: "Schicht", entry: "Beginn um", reminder: "Erinnerung", minutes: "Min. vorher",
+    browserUnsupported: "Dieser Browser unterstützt keine Benachrichtigungen.", browserPermission: "Erlaube Browserbenachrichtigungen, um Erinnerungen zu erhalten, solange diese Seite geöffnet ist.",
+    androidPermission: "Erlaube Benachrichtigungen auf Android, um diese Erinnerung zu aktivieren.", syncPermission: "Erlaube Android-Benachrichtigungen, um synchronisierte Erinnerungen zu aktivieren.",
+    futureTime: "Wähle eine zukünftige Uhrzeit für die Erinnerung.", browserScheduled: "Erinnerung geplant. Lass diese Seite geöffnet.", androidScheduled: "Erinnerung auf Android geplant",
+    scheduleError: "Die Erinnerung konnte nicht geplant werden. Prüfe die Benachrichtigungsberechtigungen und versuche es erneut.",
+    importPrompt: "Kalender für {month} {year} importieren? Die Erinnerungseinstellungen werden ebenfalls importiert. Tatsächliche Stempelzeiten werden nur übernommen, wenn sie geteilt wurden."
+  }
+};
+
+function alarmText(key) {
+  return (alarmMessages[currentLanguage] || alarmMessages.es)[key];
+}
+
+function alarmNotificationBody(route) {
+  const text = alarmMessages[currentLanguage] || alarmMessages.es;
+  return `${route.destination || text.day} · ${text.entry} ${route.time}${Number(route.reminder || 0) ? ` · ${text.reminder} ${route.reminder} ${text.minutes}` : ""}`;
+}
+
+function importAgendaPrompt(month, year) {
+  return alarmText("importPrompt").replace("{month}", month).replace("{year}", String(year));
+}
 
 function shiftHours(shift) {
   return ({ completa: 8, continua: 7, media: 4 })[shift] || 8;
@@ -1446,6 +1504,7 @@ function escapeHtml(text) {
 // Construye la cuadrícula del mes y actualiza resumen, expediente y vista previa.
 function renderCalendar() {
   loadRoutes();
+  refreshBrowserAlarms();
   calendarGrid.classList.remove("month-enter");
   void calendarGrid.offsetWidth;
   calendarGrid.classList.add("month-enter");
@@ -1633,46 +1692,193 @@ function nativeAndroid() {
   return Boolean(window.Capacitor?.isNativePlatform?.());
 }
 
-// Programa una notificación local en Android para recordar la hora de entrada.
+function browserAlarmKey(year, month, day) {
+  return `${year}-${month}-${day}`;
+}
+
+function routeAlarmTime(year, month, day, route) {
+  if (!route || typeof route !== "object") return null;
+  if (!route.alarm || !route.time || ["baja", "asuntos-propios", "descanso"].includes(route.status)) return null;
+  const [hour, minute] = route.time.split(":").map(Number);
+  const reminder = Number(route.reminder || 0);
+  if (!Number.isInteger(hour) || hour < 0 || hour > 23 || !Number.isInteger(minute) || minute < 0 || minute > 59 || !Number.isFinite(reminder) || reminder < 0) return null;
+  const entryAt = new Date(year, month, day, hour, minute);
+  if (entryAt.getFullYear() !== year || entryAt.getMonth() !== month || entryAt.getDate() !== day) return null;
+  const alarmAt = new Date(entryAt.getTime() - reminder * 60_000);
+  return alarmAt > new Date() ? alarmAt : null;
+}
+
+function storedRouteEntries() {
+  const entries = [];
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const storageKey = localStorage.key(index);
+    const match = storageKey?.match(/^limasam-(\d{4})-(\d{1,2})$/);
+    if (!match) continue;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    if (month > 11) continue;
+    try {
+      const routes = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      Object.entries(routes).forEach(([day, route]) => {
+        const numericDay = Number(day);
+        if (Number.isInteger(numericDay)) entries.push({ year, month, day: numericDay, route });
+      });
+    } catch {
+      continue;
+    }
+  }
+  return entries;
+}
+
+function scheduleBrowserAlarm(year, month, day, route) {
+  const key = browserAlarmKey(year, month, day);
+  const alarmAt = routeAlarmTime(year, month, day, route);
+  if (!alarmAt) {
+    const existing = browserAlarmTimers.get(key);
+    if (existing) clearTimeout(existing.timeout);
+    browserAlarmTimers.delete(key);
+    return;
+  }
+  const body = alarmNotificationBody(route);
+  const existing = browserAlarmTimers.get(key);
+  if (existing?.at === alarmAt.getTime() && existing.body === body) return;
+  if (existing) clearTimeout(existing.timeout);
+  const timeout = setTimeout(async () => {
+    browserAlarmTimers.delete(key);
+    if (Date.now() < alarmAt.getTime()) {
+      scheduleBrowserAlarm(year, month, day, route);
+      return;
+    }
+    if (Notification.permission !== "granted") return;
+    try {
+      if ("serviceWorker" in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification(alarmText("title"), { body, icon: "icon.svg", tag: `jornada-${key}` });
+      } else {
+        new Notification(alarmText("title"), { body, tag: `jornada-${key}` });
+      }
+    } catch (error) {
+      console.error("No se pudo mostrar el recordatorio web", error);
+    }
+  }, Math.min(alarmAt.getTime() - Date.now(), 2147483647));
+  browserAlarmTimers.set(key, { timeout, at: alarmAt.getTime(), body });
+}
+
+function refreshBrowserAlarms() {
+  if (nativeAndroid() || !("Notification" in window) || Notification.permission !== "granted") return;
+  const activeKeys = new Set();
+  storedRouteEntries().forEach(({ year, month, day, route }) => {
+    const key = browserAlarmKey(year, month, day);
+    if (routeAlarmTime(year, month, day, route)) activeKeys.add(key);
+    scheduleBrowserAlarm(year, month, day, route);
+  });
+  browserAlarmTimers.forEach(({ timeout }, key) => {
+    if (!activeKeys.has(key)) {
+      clearTimeout(timeout);
+      browserAlarmTimers.delete(key);
+    }
+  });
+}
+
+function androidAlarmId(year, month, day) {
+  return year * 10000 + (month + 1) * 100 + day;
+}
+
+function androidAlarmNotification({ year, month, day, route, alarmAt }) {
+  return {
+    id: androidAlarmId(year, month, day),
+    title: alarmText("title"),
+    body: alarmNotificationBody(route),
+    schedule: { at: alarmAt },
+    sound: "default"
+  };
+}
+
+async function refreshAndroidAlarms({ requestPermission = false } = {}) {
+  if (!nativeAndroid()) return;
+  try {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    const pending = await LocalNotifications.getPending();
+    const routeNotifications = pending.notifications.filter(({ id }) => id >= 20000000 && id <= 21001231);
+    if (routeNotifications.length) await LocalNotifications.cancel({ notifications: routeNotifications });
+
+    const notifications = storedRouteEntries()
+      .map((entry) => ({ ...entry, alarmAt: routeAlarmTime(entry.year, entry.month, entry.day, entry.route) }))
+      .filter((entry) => entry.alarmAt)
+      .map(androidAlarmNotification);
+    if (!notifications.length) return;
+
+    let permission = await LocalNotifications.checkPermissions();
+    if (permission.display !== "granted" && requestPermission) permission = await LocalNotifications.requestPermissions();
+    if (permission.display !== "granted") {
+      if (requestPermission) showToast(alarmText("syncPermission"));
+      return;
+    }
+    await LocalNotifications.schedule({ notifications });
+  } catch (error) {
+    console.error("No se pudieron sincronizar los recordatorios de Android", error);
+  }
+}
+
+// Programa un recordatorio en la plataforma actual y cancela antes cualquier versión anterior.
 async function scheduleAlarm(day, route) {
-  if (!nativeAndroid() || !route.alarm || !route.time || ["baja", "asuntos-propios", "descanso"].includes(route.status)) return;
+  await cancelAlarm(day);
+  if (!route.alarm || !route.time || ["baja", "asuntos-propios", "descanso"].includes(route.status)) return;
+  if (!nativeAndroid()) {
+    if (!("Notification" in window)) {
+      showToast(alarmText("browserUnsupported"));
+      return;
+    }
+    if (Notification.permission === "default") await Notification.requestPermission();
+    if (Notification.permission !== "granted") {
+      showToast(alarmText("browserPermission"));
+      return;
+    }
+    refreshBrowserAlarms();
+    showToast(alarmText("browserScheduled"));
+    return;
+  }
   try {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
     const permission = await LocalNotifications.requestPermissions();
     if (permission.display !== "granted") {
-      showToast("Para activar el recordatorio, permite las notificaciones en Android.");
+      showToast(alarmText("androidPermission"));
       return;
     }
     const [hour, minute] = route.time.split(":").map(Number);
     const at = new Date(state.year, state.month, day, hour, minute);
     at.setMinutes(at.getMinutes() - Number(route.reminder || 0));
     if (at <= new Date()) {
-      showToast("Elige una hora futura para programar el recordatorio.");
+      showToast(alarmText("futureTime"));
       return;
     }
-    const id = state.year * 10000 + (state.month + 1) * 100 + day;
+    const id = androidAlarmId(state.year, state.month, day);
     await LocalNotifications.cancel({ notifications: [{ id }] });
     await LocalNotifications.schedule({
       notifications: [{
         id,
-        title: "Memoria laboral · Recordatorio de jornada",
-        body: `${route.destination} · entrada a las ${route.time}${Number(route.reminder || 0) ? ` · aviso ${route.reminder} min antes` : ""}`,
+        title: alarmText("title"),
+        body: alarmNotificationBody(route),
         schedule: { at },
         sound: "default"
       }]
     });
-    showToast("Alarma programada en Android");
+    showToast(alarmText("androidScheduled"));
   } catch (error) {
     console.error("No se pudo programar la alarma", error);
-    showToast("No se completó el recordatorio. Revisa los permisos de notificación e inténtalo de nuevo.");
+    showToast(alarmText("scheduleError"));
   }
 }
 
 async function cancelAlarm(day) {
+  const key = browserAlarmKey(state.year, state.month, day);
+  const browserTimer = browserAlarmTimers.get(key);
+  if (browserTimer) clearTimeout(browserTimer.timeout);
+  browserAlarmTimers.delete(key);
   if (!nativeAndroid()) return;
   try {
     const { LocalNotifications } = await import("@capacitor/local-notifications");
-    const id = state.year * 10000 + (state.month + 1) * 100 + day;
+    const id = androidAlarmId(state.year, state.month, day);
     await LocalNotifications.cancel({ notifications: [{ id }] });
   } catch (error) {
     console.error("No se pudo cancelar la alarma", error);
@@ -1968,8 +2174,8 @@ async function importSharedAgenda(encodedFromApp = null) {
   try {
     const payload = await decodeSharedAgendaSecure(encoded);
     if (payload.app !== "memoria-laboral" || !Number.isInteger(payload.month) || !Number.isInteger(payload.year)) throw new Error("Enlace no válido");
-    const monthName = months[payload.month] || "mes";
-    if (window.confirm(`¿Importar la agenda de ${monthName} ${payload.year}? Tus huellas y registros de entrada/salida no se compartirán.`)) {
+    const monthName = (localizedMonths[currentLanguage] || months)[payload.month] || "mes";
+    if (window.confirm(importAgendaPrompt(monthName, payload.year))) {
       localStorage.setItem(`limasam-${payload.year}-${payload.month}`, JSON.stringify(payload.routes || {}));
       if (Array.isArray(payload.customHolidays)) {
         customHolidays.splice(0, customHolidays.length, ...customHolidays.filter((holiday) => !holiday.date.startsWith(`${payload.year}-${String(payload.month + 1).padStart(2, "0")}-`)), ...payload.customHolidays);
@@ -2020,6 +2226,7 @@ async function importSharedAgenda(encodedFromApp = null) {
       updateShareBackgroundOption();
       renderHolidayList();
       renderCalendar();
+      await refreshAndroidAlarms({ requestPermission: true });
       selectDay(1);
       showToast("Agenda mensual importada");
     }
@@ -2375,6 +2582,7 @@ importSharedAgenda();
 listenNativeAgendaLinks();
 renderHolidayList();
 renderCalendar();
+refreshAndroidAlarms();
 updateShareBackgroundOption();
 selectDay(1, { revealPlanner: false });
 translatePage();

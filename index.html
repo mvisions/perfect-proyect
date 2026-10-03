@@ -19,7 +19,7 @@
   <div class="app-shell">
     <!-- Barra superior con identidad, idioma, conexión y acceso al expediente. -->
     <header class="topbar">
-      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.2</small></span></a>
+      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.3</small></span></a>
       <div class="topbar-actions">
         <div class="language-toggle" aria-label="Idioma"><button id="spanishButton" type="button" aria-label="Español">🇪🇸 ES</button><button id="englishButton" type="button" aria-label="English">🇬🇧 EN</button></div>
         <span class="offline-status" id="offlineStatus" hidden>Sin conexión</span>
@@ -116,7 +116,7 @@
             <div class="extra-hours-control"><span>Horas extra</span><div><button id="extraHoursMinus" type="button" aria-label="Restar una hora extra">−</button><strong id="extraHoursValue">0</strong><button id="extraHoursPlus" type="button" aria-label="Añadir una hora extra">+</button></div><small>Se suma de una en una</small></div>
             <label for="reminderInput">Avisar</label><select id="reminderInput"><option value="30">30 minutos antes</option><option value="0">A la hora de entrada</option><option value="15">15 minutos antes</option><option value="60">1 hora antes</option><option value="120">2 horas antes</option></select>
             <label for="statusInput">Estado del día</label><select id="statusInput"><option value="trabajado">Trabajado</option><option value="festivo-trabajado">Festivo trabajado</option><option value="baja">Baja</option><option value="asuntos-propios">Asuntos propios</option><option value="vacaciones">Vacaciones</option><option value="ampliaciones">Ampliaciones</option></select>
-            <label class="alarm-toggle"><input id="alarmInput" type="checkbox" checked><span>Activar alarma en Android</span></label>
+            <label class="alarm-toggle"><input id="alarmInput" type="checkbox" checked><span>Activar recordatorio</span></label>
             <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-quiet" id="clearRememberedButton" type="button">Borrar recuerdo</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
           </form>
           <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><span>Tu ruta aparecerá aquí</span></div>
