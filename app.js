@@ -950,7 +950,7 @@ async function requestCalendarAccessToken() {
     const socialLogin = await getNativeGoogleAuth();
     const response = await socialLogin.login({ provider: "google", options: { scopes: [scope] } });
     const token = response.result.accessToken?.token;
-    if (!token) throw new Error("Google no devolvió un token de Calendar");
+    if (!token) throw new Error(calendarText().noToken);
     return token;
   }
 
@@ -965,7 +965,7 @@ async function requestCalendarAccessToken() {
       const client = google.accounts.oauth2.initTokenClient({
         client_id: googleClientId,
         scope,
-        callback: finish((response) => response.access_token ? resolve(response.access_token) : reject(new Error("Google no devolvió un token de Calendar"))),
+        callback: finish((response) => response.access_token ? resolve(response.access_token) : reject(new Error(calendarText().noToken))),
         error_callback: finish(reject)
       });
       client.requestAccessToken({ prompt: "consent" });
@@ -976,6 +976,15 @@ async function requestCalendarAccessToken() {
   });
 }
 
+const calendarTexts = {
+  es: { noRoutes: "No hay rutas guardadas en el mes seleccionado.", done: (n, m) => `Se importaron ${n} rutas de ${m} en Google Calendar.`, fail: "No se pudo importar el mes", noToken: "Google no devolvió un token de Calendar", destination: "Destino", noDestination: "Sin destino", status: "Estado", type: "Tipo de trabajo", route: "Ruta", shift: "Jornada", plannedEntry: "Entrada planificada", actualEntry: "Entrada fichada", plannedExit: "Salida planificada", actualExit: "Salida fichada", none: "Sin registrar", worked: "Tiempo trabajado", extra: "Horas extra", reminder: "Recordatorio", alarm: "Alarma activada", yes: "Sí", no: "No" },
+  en: { noRoutes: "There are no saved routes in the selected month.", done: (n, m) => `${n} routes from ${m} were imported to Google Calendar.`, fail: "The month could not be imported", noToken: "Google did not return a Calendar token", destination: "Destination", noDestination: "No destination", status: "Status", type: "Work type", route: "Route", shift: "Workday", plannedEntry: "Planned entry", actualEntry: "Clocked entry", plannedExit: "Planned exit", actualExit: "Clocked exit", none: "Not recorded", worked: "Time worked", extra: "Overtime hours", reminder: "Reminder", alarm: "Alarm enabled", yes: "Yes", no: "No" },
+  fr: { noRoutes: "Aucune tournée enregistrée pour le mois sélectionné.", done: (n, m) => `${n} tournées de ${m} ont été importées dans Google Agenda.`, fail: "Impossible d’importer le mois", noToken: "Google n’a pas renvoyé de jeton Agenda", destination: "Destination", noDestination: "Sans destination", status: "Statut", type: "Type de travail", route: "Tournée", shift: "Journée", plannedEntry: "Début prévu", actualEntry: "Début pointé", plannedExit: "Fin prévue", actualExit: "Fin pointée", none: "Non enregistré", worked: "Temps travaillé", extra: "Heures supplémentaires", reminder: "Rappel", alarm: "Alarme activée", yes: "Oui", no: "Non" },
+  it: { noRoutes: "Nessun percorso salvato nel mese selezionato.", done: (n, m) => `${n} percorsi di ${m} importati in Google Calendar.`, fail: "Impossibile importare il mese", noToken: "Google non ha restituito un token di Calendar", destination: "Destinazione", noDestination: "Senza destinazione", status: "Stato", type: "Tipo di lavoro", route: "Percorso", shift: "Giornata", plannedEntry: "Entrata prevista", actualEntry: "Entrata registrata", plannedExit: "Uscita prevista", actualExit: "Uscita registrata", none: "Non registrato", worked: "Tempo lavorato", extra: "Ore extra", reminder: "Promemoria", alarm: "Allarme attivo", yes: "Sì", no: "No" },
+  de: { noRoutes: "Im gewählten Monat sind keine Routen gespeichert.", done: (n, m) => `${n} Routen aus ${m} wurden in Google Kalender importiert.`, fail: "Der Monat konnte nicht importiert werden", noToken: "Google hat kein Kalender-Token zurückgegeben", destination: "Ziel", noDestination: "Kein Ziel", status: "Status", type: "Arbeitsart", route: "Route", shift: "Schicht", plannedEntry: "Geplanter Beginn", actualEntry: "Erfasster Beginn", plannedExit: "Geplantes Ende", actualExit: "Erfasstes Ende", none: "Nicht erfasst", worked: "Arbeitszeit", extra: "Überstunden", reminder: "Erinnerung", alarm: "Alarm aktiv", yes: "Ja", no: "Nein" }
+};
+const calendarText = () => calendarTexts[currentLanguage] || calendarTexts.es;
+
 function calendarDateString(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
@@ -985,19 +994,20 @@ function calendarEventForRoute(day, route, timeZone) {
   const entry = recordEntryTime(route);
   const exit = recordExitTime(route);
   const eventId = `limasam${state.year}m${String(state.month + 1).padStart(2, "0")}d${String(day).padStart(2, "0")}`;
+  const text = calendarText();
   const description = [
-    `Destino: ${route.destination || "Sin destino"}`,
-    `Estado: ${statusLabel(route)}`,
-    `Tipo de trabajo: ${routeTypes[route.type]?.label || "Ruta"}`,
-    `Jornada: ${route.shift || "completa"} (${shiftHours(route)} h)`,
-    `Entrada planificada: ${route.plannedTime || route.time || "Sin registrar"}`,
-    `Entrada fichada: ${route.actualEntry || "Sin registrar"}`,
-    `Salida planificada: ${route.plannedExit || route.exit || "Sin registrar"}`,
-    `Salida fichada: ${route.actualExit || "Sin registrar"}`,
-    `Tiempo trabajado: ${workedMinutes(entry, exit)} min`,
-    `Horas extra: ${routeExtraHours(route)}`,
-    `Recordatorio: ${Number(route.reminder ?? 30)} min`,
-    `Alarma activada: ${route.alarm === true ? "Sí" : "No"}`
+    `${text.destination}: ${route.destination || text.noDestination}`,
+    `${text.status}: ${statusLabel(route)}`,
+    `${text.type}: ${routeTypes[route.type]?.label || text.route}`,
+    `${text.shift}: ${route.shift || "completa"} (${shiftHours(route)} h)`,
+    `${text.plannedEntry}: ${route.plannedTime || route.time || text.none}`,
+    `${text.actualEntry}: ${route.actualEntry || text.none}`,
+    `${text.plannedExit}: ${route.plannedExit || route.exit || text.none}`,
+    `${text.actualExit}: ${route.actualExit || text.none}`,
+    `${text.worked}: ${workedMinutes(entry, exit)} min`,
+    `${text.extra}: ${routeExtraHours(route)}`,
+    `${text.reminder}: ${Number(route.reminder ?? 30)} min`,
+    `${text.alarm}: ${route.alarm === true ? text.yes : text.no}`
   ].join("\n");
   const event = {
     id: eventId,
@@ -1022,7 +1032,7 @@ function calendarEventForRoute(day, route, timeZone) {
 async function importSelectedMonthToGoogleCalendar() {
   const routes = Object.entries(state.routes).filter(([, route]) => route && typeof route === "object");
   if (!routes.length) {
-    showToast("No hay rutas guardadas en el mes seleccionado.");
+    showToast(calendarText().noRoutes);
     return;
   }
 
@@ -1045,10 +1055,10 @@ async function importSelectedMonthToGoogleCalendar() {
       }
       imported += 1;
     }
-    showToast(`Se importaron ${imported} rutas de ${localizedMonth(state.month)} ${state.year} en Google Calendar.`);
+    showToast(calendarText().done(imported, `${localizedMonth(state.month)} ${state.year}`));
   } catch (error) {
     console.error("No se pudo importar el mes en Google Calendar", error);
-    showToast(`No se pudo importar el mes: ${error.message}`);
+    showToast(`${calendarText().fail}: ${error.message}`);
   } finally {
     googleCalendarButton.disabled = false;
   }
