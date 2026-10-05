@@ -10,15 +10,15 @@
   <title>Memoria laboral</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=63">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Material+Symbols+Outlined:FILL@0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=64">
   <link rel="stylesheet" href="intro.css?v=4">
-  <link rel="stylesheet" href="visual-enhancements.css?v=37">
+  <link rel="stylesheet" href="visual-enhancements.css?v=58">
   <link rel="stylesheet" href="fingerprint.css?v=1">
   <link rel="stylesheet" href="typography.css?v=2">
 </head>
 <body>
-  <div class="intro-screen" id="introScreen" aria-label="Introducción de Memoria laboral">
+  <div class="intro-screen" id="introScreen" aria-label="Introducción de Memoria laboral" hidden>
     <video class="intro-video" id="introVideo" muted playsinline preload="none" aria-label="Introducción de Memoria laboral">
       <source src="./intro/memoria laboral.mp4" type="video/mp4">
     </video>
@@ -29,7 +29,7 @@
   <div class="app-shell">
     <!-- Barra superior con identidad, idioma, conexión y acceso al expediente. -->
     <header class="topbar">
-      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.7</small></span></a>
+      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.11</small></span></a>
       <div class="topbar-actions">
         <div class="topbar-locale-actions"><label class="language-select" for="languageSelect"><select id="languageSelect" aria-label="Idioma"><option value="es">🇪🇸 Español</option><option value="en">🇬🇧 English</option><option value="fr">🇫🇷 Français</option><option value="it">🇮🇹 Italiano</option><option value="de">🇩🇪 Deutsch</option></select></label><label class="theme-toggle" for="themeSelect"><select id="themeSelect" aria-label="Tema"><option value="light">Claro</option><option value="dark">Oscuro</option><option value="night">Nocturno</option></select></label></div>
         <span class="offline-status" id="offlineStatus" hidden>Sin conexión</span>
@@ -91,7 +91,7 @@
           <div class="advanced-options-body">
             <div class="advanced-option-toggles">
               <label class="sound-toggle" for="soundToggle"><input id="soundToggle" type="checkbox" checked><span>Sonidos</span></label>
-              <label class="background-toggle" for="introHideToggle"><input id="introHideToggle" type="checkbox"><span>No mostrar intro</span></label>
+              <label class="background-toggle" for="introEnableToggle"><input id="introEnableToggle" type="checkbox"><span>Usar intro al iniciar</span></label>
             </div>
             <div class="calendar-color-group" aria-label="Colores del calendario">
               <span class="calendar-color-title">Colores del calendario</span>
@@ -167,7 +167,7 @@
             <label for="reminderInput">Avisar</label><select id="reminderInput"><option value="30">30 minutos antes</option><option value="0">A la hora de entrada</option><option value="15">15 minutos antes</option><option value="60">1 hora antes</option><option value="120">2 horas antes</option></select>
             <label for="statusInput">Estado del día</label><select id="statusInput"><option value="trabajado">Trabajado</option><option value="festivo-trabajado">Festivo trabajado</option><option value="baja">Baja</option><option value="asuntos-propios">Asuntos propios</option><option value="vacaciones">Vacaciones</option><option value="ampliaciones">Ampliaciones</option></select>
             <label class="alarm-toggle"><input id="alarmInput" type="checkbox" checked><span>Activar recordatorio</span></label>
-            <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-quiet" id="clearRememberedButton" type="button">Borrar recuerdo</button><button class="button button-dark" type="submit">Guardar ruta</button></div>
+            <div class="form-actions"><button class="button button-quiet" id="clearButton" type="button">Vaciar día</button><button class="button button-quiet" id="clearRememberedButton" type="button">Borrar recuerdo</button><md-filled-button id="saveRouteButton" type="submit">Guardar ruta</md-filled-button></div>
           </form>
           <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><span>Tu ruta aparecerá aquí</span></div>
         </details>
@@ -209,12 +209,38 @@
         <div class="record-export" aria-label="Exportar expediente"><span>Exportar expediente</span><button class="button button-quiet" id="pdfButton" type="button">Descargar PDF</button><button class="button button-quiet" id="csvButton" type="button">Descargar CSV</button><button class="button button-quiet" id="shareRecordButton" type="button">Compartir resumen</button><button class="button button-quiet" id="googleCalendarButton" type="button">Importar a Google Calendar</button></div>
         </div>
       </section>
+      <section class="mobile-settings-page" id="mobileSettingsPage" aria-labelledby="mobileSettingsTitle" hidden>
+        <h1 id="mobileSettingsTitle">Ajustes</h1>
+        <div class="mobile-settings-controls" id="mobileSettingsControls"></div>
+        <div class="mobile-settings-planning" id="mobileSettingsPlanning"></div>
+        <div class="mobile-settings-preferences" id="mobileSettingsPreferences"></div>
+      </section>
+      <section class="mobile-help-page" id="mobileHelpPage" aria-labelledby="mobileHelpTitle" hidden>
+        <h1 id="mobileHelpTitle">Ayuda</h1>
+        <div id="mobileHelpContent"></div>
+      </section>
       <!-- Vista previa dibujada en un lienzo para compartir o descargar. -->
       <section class="agenda-preview" aria-labelledby="previewTitle">
-        <div class="preview-heading"><div><p class="section-label">Vista previa en tiempo real</p><h2 id="previewTitle">Agenda lista para compartir</h2></div><div class="preview-day-picker"><select id="previewDaySelect" aria-label="Editar día"></select><div class="calendar-view-controls"><button class="calendar-view-control" id="previousWeekButton" type="button" aria-label="Semana anterior" title="Semana anterior" hidden>‹</button><button class="calendar-view-control" id="todayButton" type="button" hidden>Hoy</button><button class="calendar-view-control" id="calendarViewToggle" type="button">Vistas</button><button class="calendar-view-control" id="nextWeekButton" type="button" aria-label="Semana siguiente" title="Semana siguiente" hidden>›</button></div></div></div>
+        <div class="preview-heading"><div><p class="section-label">Vista previa en tiempo real</p><h2 id="previewTitle">Agenda lista para compartir</h2><a class="landscape-agenda-brand" href="#" aria-label="Memoria laboral v2.9.11"><img src="logo/logo-transparente.png" alt=""><span>v2.9.11</span></a></div><div class="preview-day-picker"><select id="previewDaySelect" aria-label="Editar día"></select><div class="preview-month-year-controls" id="previewMonthYearControls"></div><div class="preview-month-navigation"><button class="calendar-view-control" id="previousMonthButton" type="button" aria-label="Mes anterior" title="Mes anterior">‹</button><button class="calendar-view-control" id="nextMonthButton" type="button" aria-label="Mes siguiente" title="Mes siguiente">›</button></div><div class="calendar-view-controls"><button class="calendar-view-control" id="previousWeekButton" type="button" aria-label="Semana anterior" title="Semana anterior" hidden>‹</button><button class="calendar-view-control" id="todayButton" type="button" hidden>Hoy</button><button class="calendar-view-control" id="calendarViewToggle" type="button">Vistas</button><button class="calendar-view-control" id="nextWeekButton" type="button" aria-label="Semana siguiente" title="Semana siguiente" hidden>›</button></div></div></div>
+        <p class="mobile-orientation-hint" id="mobileOrientationHint" hidden>Gira el móvil para ver la agenda apaisada.</p>
         <canvas id="agendaCanvas" aria-label="Vista previa de la agenda"></canvas>
       </section>
     </main>
+    <nav class="mobile-navigation" aria-label="Navegación principal">
+      <md-tabs id="mobilePageTabs" aria-label="Secciones principales">
+        <md-primary-tab id="mobileAgendaTab" data-mobile-page="agenda" active><md-icon slot="icon">calendar_month</md-icon>Agenda</md-primary-tab>
+        <md-primary-tab id="mobileStatsTab" data-mobile-page="stats"><md-icon slot="icon">bar_chart</md-icon>Estadísticas</md-primary-tab>
+        <md-primary-tab id="mobileSettingsTab" data-mobile-page="settings"><md-icon slot="icon">settings</md-icon>Ajustes</md-primary-tab>
+        <md-primary-tab id="mobileHelpTab" data-mobile-page="help"><md-icon slot="icon">help</md-icon>Ayuda</md-primary-tab>
+      </md-tabs>
+    </nav>
+    <dialog class="mobile-route-dialog" id="mobileRouteDialog" aria-labelledby="mobileRouteTitle">
+      <div class="mobile-route-dialog-header">
+        <div><p class="section-label">Detalle del día</p><h2 id="mobileRouteTitle">Editar jornada</h2></div>
+        <button class="mobile-route-dialog-close" id="mobileRouteDialogClose" type="button" aria-label="Cerrar editor">×</button>
+      </div>
+      <div class="mobile-route-dialog-content" id="mobileRouteDialogContent"></div>
+    </dialog>
     <dialog class="agenda-zoom-dialog" id="agendaZoomDialog" aria-label="Calendario ampliado">
       <div class="agenda-zoom-toolbar">
         <span class="section-label">Agenda mensual</span>
@@ -249,6 +275,6 @@
   <!-- Región accesible donde JavaScript presenta mensajes temporales. -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <!-- Punto de entrada del código JavaScript principal. -->
-  <script type="module" src="app.js?v=17"></script>
+  <script type="module" src="app.js?v=25"></script>
 </body>
 </html>

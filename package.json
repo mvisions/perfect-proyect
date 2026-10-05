@@ -1,6 +1,6 @@
 {
   "name": "proyecto",
-  "version": "2.9.7",
+  "version": "2.9.11",
   "description": "",
   "main": "app.js",
   "scripts": {
@@ -28,8 +28,10 @@
     "@capacitor/core": "^8.5.2",
     "@capacitor/filesystem": "^8.1.4",
     "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/screen-orientation": "^8.0.2",
     "@capacitor/share": "^8.0.3",
     "@capgo/capacitor-social-login": "^8.5.12",
+    "@material/web": "^2.5.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8"
   },

@@ -1,7 +1,12 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Capacitor } from "@capacitor/core";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { decryptDriveBackup, encryptDriveBackup } from "./drive-encryption.mjs";
+import "@material/web/tabs/tabs.js";
+import "@material/web/tabs/primary-tab.js";
+import "@material/web/icon/icon.js";
+import "@material/web/button/filled-button.js";
 
 // Catálogos de meses, días, tipos de ruta y estados de la jornada.
 const months = [
@@ -83,6 +88,7 @@ function clearDriveSession() {
   }
 }
 
+
 // Estado de navegación: mes, año, día seleccionado y rutas cargadas.
 const currentDate = new Date();
 const state = {
@@ -93,46 +99,51 @@ const state = {
 };
 
 const $ = (selector) => document.querySelector(selector);
+const mobileViewportQuery = window.matchMedia("(max-width: 760px), (orientation: landscape) and (max-height: 520px)");
+const mobileLandscapeQuery = window.matchMedia("(orientation: landscape) and (max-height: 520px)");
 const introScreen = document.getElementById("introScreen");
 const webWelcomeBanner = document.getElementById("webWelcomeBanner");
 const introVideo = document.getElementById("introVideo");
 const introPlayButton = document.getElementById("introPlayButton");
 const introSkipButton = document.getElementById("introSkipButton");
-const introHideToggle = document.getElementById("introHideToggle");
-const introHideKey = "limasam-hide-intro";
-const introHiddenByPreference = localStorage.getItem(introHideKey) === "true";
+const introEnableToggle = document.getElementById("introEnableToggle");
+const introEnableKey = "limasam-intro-enabled";
+const introEnabled = localStorage.getItem(introEnableKey) === "true";
+if (introEnableToggle) introEnableToggle.checked = introEnabled;
 
-if (introHideToggle) introHideToggle.checked = introHiddenByPreference;
-introHideToggle?.addEventListener("change", () => {
-  localStorage.setItem(introHideKey, String(introHideToggle.checked));
+function finishIntro() {
+  if (!introScreen || introScreen.hidden || introScreen.classList.contains("is-leaving")) return;
+  introScreen.classList.add("is-leaving");
+  window.setTimeout(() => {
+    introScreen.hidden = true;
+    introVideo?.pause();
+  }, 400);
+}
+
+function playIntro() {
+  if (!introScreen || !introVideo) return;
+  introScreen.hidden = false;
+  introScreen.classList.remove("is-leaving");
+  introVideo.currentTime = 0;
+  introVideo.play().then(() => {
+    if (introPlayButton) introPlayButton.hidden = true;
+  }).catch(() => {
+    if (introPlayButton) introPlayButton.hidden = false;
+  });
+}
+
+introEnableToggle?.addEventListener("change", () => {
+  localStorage.setItem(introEnableKey, String(introEnableToggle.checked));
+  if (introEnableToggle.checked) playIntro();
+  else finishIntro();
 });
 
 if (introScreen && introVideo) {
-  if (introHiddenByPreference) {
-    introScreen.hidden = true;
-  } else {
-    const finishIntro = () => {
-      if (introScreen.hidden || introScreen.classList.contains("is-leaving")) return;
-      introScreen.classList.add("is-leaving");
-      window.setTimeout(() => {
-        introScreen.hidden = true;
-      }, 400);
-    };
-
-    introVideo.addEventListener("ended", finishIntro, { once: true });
-    introVideo.addEventListener("error", finishIntro, { once: true });
-    introSkipButton?.addEventListener("click", finishIntro);
-    introPlayButton?.addEventListener("click", () => {
-      introVideo.play().then(() => {
-        introPlayButton.hidden = true;
-      }).catch(() => {});
-    });
-    introVideo.play().then(() => {
-      if (introPlayButton) introPlayButton.hidden = true;
-    }).catch(() => {
-      if (introPlayButton) introPlayButton.hidden = false;
-    });
-  }
+  introVideo.addEventListener("ended", finishIntro);
+  introVideo.addEventListener("error", finishIntro);
+  introSkipButton?.addEventListener("click", finishIntro);
+  introPlayButton?.addEventListener("click", playIntro);
+  if (introEnabled) playIntro();
 }
 
 // Referencias a los controles del documento para usarlos en toda la aplicación.
@@ -193,19 +204,66 @@ const updateButton = $("#updateButton");
 const updateButtonLabel = $("#updateButtonLabel");
 const offlineStatus = $("#offlineStatus");
 const previewDaySelect = $("#previewDaySelect");
+const previewMonthYearControls = $("#previewMonthYearControls");
+const previousMonthButton = $("#previousMonthButton");
+const nextMonthButton = $("#nextMonthButton");
 const agendaCanvas = $("#agendaCanvas");
 const agendaZoomDialog = $("#agendaZoomDialog");
 const agendaZoomCanvas = $("#agendaZoomCanvas");
 const agendaZoomClose = $("#agendaZoomClose");
 const agendaPreview = $(".agenda-preview");
+const introBlock = $(".intro-block");
+const formPanel = $(".form-panel");
+const preferencesPanel = $(".preferences-panel");
+const mobileConfigurationDetails = $(".preferences-panel > details.advanced-options:not(.help-options)");
+const topbarLocaleActions = $(".topbar-locale-actions");
 const previousWeekButton = $("#previousWeekButton");
 const nextWeekButton = $("#nextWeekButton");
 const todayButton = $("#todayButton");
 const exportActions = $(".export-actions");
 const plannerDetails = $(".holiday-manager");
 const routeManager = $("#routeManager");
+const mobileRouteDialog = $("#mobileRouteDialog");
+const mobileRouteDialogClose = $("#mobileRouteDialogClose");
+const mobileRouteDialogContent = $("#mobileRouteDialogContent");
+const mobileRouteTitle = $("#mobileRouteTitle");
 const recordButton = $("#recordButton");
 const recordCard = $("#recordCard");
+const mobilePageTabs = $("#mobilePageTabs");
+const mobileSettingsPage = $("#mobileSettingsPage");
+const mobileSettingsControls = $("#mobileSettingsControls");
+const mobileSettingsPlanning = $("#mobileSettingsPlanning");
+const mobileSettingsPreferences = $("#mobileSettingsPreferences");
+const mobileHelpPage = $("#mobileHelpPage");
+const mobileHelpContent = $("#mobileHelpContent");
+const mobileHelpSection = $(".help-options");
+const mobileOrientationHint = $("#mobileOrientationHint");
+const monthFieldGroup = monthSelect.closest(".field-group");
+const yearFieldGroup = yearInput.closest(".field-group");
+const mobileLocaleHome = document.createComment("mobile locale controls home");
+const mobileAccountHome = document.createComment("mobile account controls home");
+const mobilePreferencesHome = document.createComment("mobile preferences home");
+const mobilePlanningHome = document.createComment("mobile planning home");
+const mobileHelpHome = document.createComment("mobile help home");
+const mobileRouteManagerHome = document.createComment("mobile route manager home");
+const monthFieldHome = document.createComment("month field home");
+const yearFieldHome = document.createComment("year field home");
+topbarLocaleActions.before(mobileLocaleHome);
+topbarAccountActions.before(mobileAccountHome);
+preferencesPanel.before(mobilePreferencesHome);
+plannerDetails.before(mobilePlanningHome);
+mobileHelpSection.before(mobileHelpHome);
+routeManager.before(mobileRouteManagerHome);
+monthFieldGroup.before(monthFieldHome);
+yearFieldGroup.before(yearFieldHome);
+let mobileLayoutEnabled = false;
+let activeMobilePage = "agenda";
+let configurationWasOpenBeforeMobile = mobileConfigurationDetails.open;
+mobileConfigurationDetails.addEventListener("toggle", () => {
+  if (mobileLayoutEnabled && activeMobilePage === "settings" && !mobileConfigurationDetails.open) {
+    mobileConfigurationDetails.open = true;
+  }
+});
 const customBackgroundKey = "limasam-custom-backgrounds";
 const restoredDriveSession = readDriveSession();
 let driveAccessToken = restoredDriveSession?.token || null;
@@ -647,6 +705,11 @@ Object.assign(languageTranslations.de, {
 });
 
 const staticUiTranslations = {
+  "Agenda": { en: "Agenda", fr: "Agenda", it: "Agenda", de: "Kalender" },
+  "Agenda semanal": { en: "Weekly agenda", fr: "Agenda hebdomadaire", it: "Agenda settimanale", de: "Wochenkalender" },
+  "Estadísticas": { en: "Statistics", fr: "Statistiques", it: "Statistiche", de: "Statistiken" },
+  "Ajustes": { en: "Settings", fr: "Paramètres", it: "Impostazioni", de: "Einstellungen" },
+  "Usar intro al iniciar": { en: "Play intro on startup", fr: "Lire l’introduction au démarrage", it: "Riproduci l’introduzione all’avvio", de: "Einführung beim Start abspielen" },
   "Reproducir intro": { en: "Play intro", fr: "Lire l’introduction", it: "Riproduci introduzione", de: "Einführung abspielen" },
   "Saltar intro": { en: "Skip intro", fr: "Passer l’introduction", it: "Salta introduzione", de: "Einführung überspringen" },
   "Sin conexión": { en: "Offline", fr: "Hors ligne", it: "Non in linea", de: "Offline" },
@@ -661,6 +724,11 @@ const staticUiTranslations = {
   "Acciones de la aplicación": { en: "App actions", fr: "Actions de l’application", it: "Azioni dell’app", de: "App-Aktionen" },
   "Gestión de calendario y detalle del día": { en: "Calendar and day details", fr: "Gestion du calendrier et détails du jour", it: "Gestione del calendario e dettagli del giorno", de: "Kalender- und Tagesdetails" },
   "Calendario mensual": { en: "Monthly calendar", fr: "Calendrier mensuel", it: "Calendario mensile", de: "Monatskalender" },
+  "Navegación principal": { en: "Main navigation", fr: "Navigation principale", it: "Navigazione principale", de: "Hauptnavigation" },
+  "Secciones principales": { en: "Main sections", fr: "Sections principales", it: "Sezioni principali", de: "Hauptbereiche" },
+  "Mes anterior": { en: "Previous month", fr: "Mois précédent", it: "Mese precedente", de: "Vorheriger Monat" },
+  "Mes siguiente": { en: "Next month", fr: "Mois suivant", it: "Mese successivo", de: "Nächster Monat" },
+  "Gira el móvil para ver la agenda apaisada.": { en: "Rotate your phone for a landscape agenda.", fr: "Tournez le téléphone pour afficher l’agenda en paysage.", it: "Ruota il telefono per visualizzare l’agenda in orizzontale.", de: "Drehe dein Smartphone für die Kalenderansicht im Querformat." },
   "Hora de entrada, horas": { en: "Entry hour", fr: "Heure d’entrée", it: "Ora di ingresso", de: "Eingangsstunde" },
   "Hora de entrada, minutos": { en: "Entry minutes", fr: "Minutes d’entrée", it: "Minuti di ingresso", de: "Eingangsminuten" },
   "Usar huella de entrada": { en: "Record entry time", fr: "Enregistrer l’heure d’entrée", it: "Registra l’ora di ingresso", de: "Eingangszeit erfassen" },
@@ -719,6 +787,13 @@ function updateCalendarViewButton() {
   calendarViewToggle.textContent = activeLabels[modes.indexOf(calendarView)];
   calendarViewToggle.setAttribute("aria-label", localizedUiText("Cambiar vista del calendario"));
   const weekly = calendarView === "week";
+  agendaPreview.dataset.calendarView = calendarView;
+  document.querySelector(".calendar-view-controls")?.classList.toggle("is-weekly", weekly);
+  calendarViewToggle.hidden = false;
+  calendarViewToggle.parentElement.classList.toggle("is-weekly", weekly);
+  previousMonthButton.hidden = weekly;
+  nextMonthButton.hidden = weekly;
+  previewMonthYearControls.hidden = weekly;
   previousWeekButton.hidden = !weekly;
   nextWeekButton.hidden = !weekly;
   todayButton.hidden = !weekly;
@@ -931,6 +1006,8 @@ function updateBackgroundOptions() {
 // Rellena la lista de días según la cantidad de días del mes seleccionado.
 function renderPreviewDayOptions() {
   const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
+  monthSelect.value = String(state.month);
+  yearInput.value = String(state.year);
   previewDaySelect.innerHTML = Array.from({ length: daysInMonth }, (_, index) => {
     const day = index + 1;
     return `<option value="${day}">Día ${day}</option>`;
@@ -2018,6 +2095,13 @@ function moveCalendarWeek(amount) {
   showCalendarDate(target, false);
 }
 
+function moveCalendarMonth(amount) {
+  const target = new Date(state.year, state.month + amount, 1);
+  if (target.getFullYear() < 2000 || target.getFullYear() > 2100) return;
+  const selectedDay = Math.min(state.selected || 1, new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate());
+  showCalendarDate(new Date(target.getFullYear(), target.getMonth(), selectedDay), false);
+}
+
 // Construye la cuadrícula mensual o semanal sin modificar las preferencias de fondo.
 function renderCalendar() {
   loadRoutes();
@@ -2122,8 +2206,10 @@ function renderCalendar() {
 function selectDay(day, { useRemembered = true, revealPlanner = true, focusInput = true } = {}) {
   state.selected = day;
   previewDaySelect.value = String(day);
-  if (revealPlanner) plannerDetails.open = true;
-  routeManager.open = true;
+  if (revealPlanner) {
+    plannerDetails.open = true;
+    routeManager.open = true;
+  }
   calendarGrid.querySelectorAll("button").forEach((button) => button.classList.remove("is-selected"));
   const selectedButton = [...calendarGrid.querySelectorAll("button")]
     .find((button) => button.querySelector(".day-number")?.textContent === String(day));
@@ -2159,6 +2245,11 @@ function selectDay(day, { useRemembered = true, revealPlanner = true, focusInput
   if (focusInput) $("#destinationInput").focus();
   drawAgendaCanvas();
   translatePage();
+  if (mobileLayoutEnabled && activeMobilePage === "agenda" && revealPlanner) {
+    routeManager.open = true;
+    mobileRouteTitle.textContent = $("#editorTitle").textContent;
+    if (!mobileRouteDialog.open) mobileRouteDialog.showModal();
+  }
 }
 
 // Convierte la posición del clic en la vista previa al día correspondiente.
@@ -2184,6 +2275,47 @@ function selectCanvasDay(event) {
     }
     agendaZoomDialog.close();
   };
+
+  if (isLandscapeMobile()) {
+    let selectedDate;
+    if (calendarView === "week") {
+      const { margin, gridTop, rowHeight, rowGap, cardWidth } = landscapeWeekLayout(canvas);
+      const row = Math.floor((y - gridTop) / (rowHeight + rowGap));
+      const dates = visibleWeekDates();
+      const rowY = gridTop + row * (rowHeight + rowGap);
+      if (x < margin || x > margin + cardWidth || row < 0 || row >= dates.length || y > rowY + rowHeight) {
+        onBackground();
+        return;
+      }
+      selectedDate = dates[row];
+    } else {
+      const layout = landscapeMonthLayout(canvas);
+      const horizontalGap = layout.compact ? layout.gridGap : layout.columnGap;
+      const column = Math.floor((x - layout.margin) / (layout.cellWidth + horizontalGap));
+      const row = Math.floor((y - layout.gridTop) / (layout.cellHeight + layout.gridGap));
+      const day = row * 7 + column - layout.offset + 1;
+      const cellX = layout.margin + column * (layout.cellWidth + horizontalGap);
+      const cellY = layout.gridTop + row * (layout.cellHeight + layout.gridGap);
+      if (column < 0 || column >= layout.columns || row < 0 || row >= layout.rows || day < 1 || day > layout.daysInMonth || x > cellX + layout.cellWidth || y > cellY + layout.cellHeight) {
+        onBackground();
+        return;
+      }
+      if (layout.compact) {
+        const radius = Math.min(layout.cellHeight * 0.43, layout.cellWidth * 0.19);
+        const centerX = cellX + layout.cellWidth / 2;
+        const centerY = cellY + layout.cellHeight / 2;
+        if (Math.hypot(x - centerX, y - centerY) > radius + 8) {
+          onBackground();
+          return;
+        }
+      }
+      selectedDate = new Date(state.year, state.month, day);
+    }
+    showCalendarDate(selectedDate);
+    if (canvas === agendaZoomCanvas) agendaZoomDialog.close();
+    return;
+  }
+
   if (calendarView === "week") {
     const margin = 72;
     const gridTop = 320;
@@ -2203,6 +2335,7 @@ function selectCanvasDay(event) {
     if (canvas === agendaZoomCanvas) agendaZoomDialog.close();
     return;
   }
+
   const margin = 72;
   const gridTop = 470;
   const gridGap = 14;
@@ -2247,6 +2380,96 @@ function showToast(message) {
 function nativeAndroid() {
   return Capacitor.isNativePlatform();
 }
+
+function isMobileExperience() {
+  return nativeAndroid() || mobileViewportQuery.matches;
+}
+
+function isLandscapeMobile() {
+  return isMobileExperience() && mobileLandscapeQuery.matches;
+}
+
+function setMobilePage(page) {
+  if (!isMobileExperience()) return;
+  activeMobilePage = page;
+  const pageIndex = { agenda: 0, stats: 1, settings: 2, help: 3 }[page] ?? 0;
+  const isAgenda = pageIndex === 0;
+  const isStats = pageIndex === 1;
+  const isSettings = pageIndex === 2;
+  const isHelp = pageIndex === 3;
+  if (!isAgenda && mobileRouteDialog.open) mobileRouteDialog.close();
+  if (isSettings) mobileConfigurationDetails.open = true;
+  if (nativeAndroid()) {
+    ScreenOrientation.unlock().catch(() => {});
+  } else if (window.screen?.orientation?.unlock) {
+    Promise.resolve().then(() => window.screen.orientation.unlock()).catch(() => {});
+  }
+  webWelcomeBanner.hidden = !isAgenda || mobileLayoutEnabled;
+  [introBlock, agendaPreview].forEach((section) => {
+    section.hidden = !isAgenda;
+  });
+  formPanel.hidden = true;
+  preferencesPanel.hidden = !isSettings;
+  recordCard.hidden = !isStats;
+  mobileSettingsPage.hidden = !isSettings;
+  mobileHelpPage.hidden = !isHelp;
+  mobileHelpSection.open = isHelp;
+  document.body.classList.toggle("record-view", isStats);
+  document.body.classList.toggle("settings-view", isSettings);
+  document.body.classList.toggle("help-view", isHelp);
+  mobileOrientationHint.hidden = isLandscapeMobile() || !isAgenda;
+  mobilePageTabs.activeTabIndex = pageIndex;
+  updateCalendarViewButton();
+  if (isStats) renderAnnualSummary();
+  if (isAgenda) renderCalendar();
+}
+
+function restorePortal(element, anchor) {
+  anchor.parentNode.insertBefore(element, anchor.nextSibling);
+}
+
+function syncMobileLayout() {
+  const shouldEnable = isMobileExperience();
+  if (shouldEnable === mobileLayoutEnabled) return;
+  mobileLayoutEnabled = shouldEnable;
+  if (shouldEnable) {
+    document.body.classList.add("native-android");
+    configurationWasOpenBeforeMobile = mobileConfigurationDetails.open;
+    mobileConfigurationDetails.open = true;
+    mobileSettingsControls.append(topbarLocaleActions, topbarAccountActions);
+    mobileSettingsPlanning.append(plannerDetails);
+    mobileSettingsPreferences.append(preferencesPanel);
+    mobileHelpContent.append(mobileHelpSection);
+    mobileRouteDialogContent.append(routeManager);
+    previewMonthYearControls.append(monthFieldGroup, yearFieldGroup);
+    setMobilePage(activeMobilePage);
+    return;
+  }
+
+  restorePortal(topbarLocaleActions, mobileLocaleHome);
+  restorePortal(topbarAccountActions, mobileAccountHome);
+  restorePortal(plannerDetails, mobilePlanningHome);
+  restorePortal(preferencesPanel, mobilePreferencesHome);
+  mobileConfigurationDetails.open = configurationWasOpenBeforeMobile;
+  restorePortal(mobileHelpSection, mobileHelpHome);
+  restorePortal(routeManager, mobileRouteManagerHome);
+  restorePortal(monthFieldGroup, monthFieldHome);
+  restorePortal(yearFieldGroup, yearFieldHome);
+  document.body.classList.remove("native-android", "settings-view", "help-view");
+  document.body.classList.toggle("record-view", activeMobilePage === "stats");
+  [webWelcomeBanner, introBlock, formPanel, agendaPreview].forEach((section) => { section.hidden = false; });
+  mobileSettingsPage.hidden = true;
+  preferencesPanel.hidden = false;
+  recordCard.hidden = activeMobilePage !== "stats";
+}
+
+mobileViewportQuery.addEventListener("change", syncMobileLayout);
+mobileLandscapeQuery.addEventListener("change", () => {
+  if (!mobileLayoutEnabled) return;
+  mobileOrientationHint.hidden = mobileLandscapeQuery.matches || activeMobilePage !== "agenda";
+  updateCalendarViewButton();
+  renderCalendar();
+});
 
 function browserAlarmKey(year, month, day) {
   return `${year}-${month}-${day}`;
@@ -2608,8 +2831,251 @@ function drawWeeklyAgendaCanvas() {
   return canvas;
 }
 
+function drawLandscapeCanvasBackground(context, width, height) {
+  const background = backgroundToggle.checked ? currentAgendaBackground() : null;
+  if (background?.complete && background.naturalWidth) {
+    const scale = Math.max(width / background.naturalWidth, height / background.naturalHeight);
+    const imageWidth = background.naturalWidth * scale;
+    const imageHeight = background.naturalHeight * scale;
+    context.drawImage(background, (width - imageWidth) / 2, (height - imageHeight) / 2, imageWidth, imageHeight);
+    context.fillStyle = "rgba(245,247,243,.3)";
+    context.fillRect(0, 0, width, height);
+    return;
+  }
+  context.fillStyle = backgroundToggle.checked ? "#f5f7f3" : backgroundColorInput.value;
+  context.fillRect(0, 0, width, height);
+}
+
+function landscapeCanvasLogicalHeight(canvas, width) {
+  const availableWidth = canvas.clientWidth || Math.max(1, window.innerWidth - 35);
+  const availableHeight = Math.max(160, window.innerHeight - 114);
+  return Math.round(width * availableHeight / availableWidth);
+}
+
+function landscapeMonthLayout(canvas) {
+  const width = 1600;
+  const margin = 36;
+  const compact = calendarView === "filled";
+  const gridTop = compact ? 80 : 88;
+  const gridGap = compact ? 4 : 8;
+  const columnGap = compact ? gridGap : 14;
+  const firstDay = new Date(state.year, state.month, 1).getDay();
+  const offset = firstDay === 0 ? 6 : firstDay - 1;
+  const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
+  const columns = 7;
+  const rows = Math.ceil((offset + daysInMonth) / 7);
+  const cellWidth = (width - margin * 2 - columnGap * (columns - 1)) / columns;
+  const cellHeight = compact
+    ? Math.max(54, Math.min(96, (landscapeCanvasLogicalHeight(canvas, width) - gridTop - 8) / rows - gridGap))
+    : Math.max(96, Math.min(124, (landscapeCanvasLogicalHeight(canvas, width) - gridTop - 8) / rows - gridGap));
+  return { width, margin, compact, gridTop, gridGap, columnGap, cellHeight, firstDay, offset, daysInMonth, columns, rows, cellWidth };
+}
+
+function landscapeWeekLayout(canvas) {
+  const width = 1600;
+  const margin = 36;
+  const gridTop = 66;
+  const rowGap = 5;
+  const rowHeight = Math.max(58, Math.min(82, (landscapeCanvasLogicalHeight(canvas, width) - gridTop - 12) / 7 - rowGap));
+  const cardWidth = width - margin * 2;
+  const height = gridTop + 7 * (rowHeight + rowGap) + 12;
+  return { width, margin, gridTop, rowHeight, rowGap, cardWidth, height };
+}
+
+function drawLandscapeMonthCanvas() {
+  const canvas = $("#agendaCanvas");
+  const context = canvas.getContext("2d");
+  const { width, margin, compact, gridTop, gridGap, columnGap, cellHeight, firstDay, offset, daysInMonth, columns, rows, cellWidth } = landscapeMonthLayout(canvas);
+  const height = gridTop + rows * (cellHeight + gridGap) + 8;
+  canvas.width = width;
+  canvas.height = height;
+  drawLandscapeCanvasBackground(context, width, height);
+  context.fillStyle = "#17211f";
+  context.beginPath();
+  context.roundRect(margin, 8, width - margin * 2, 48, 12);
+  context.fill();
+  context.fillStyle = "#fff";
+  context.font = "700 32px Arial";
+  fillUppercaseText(context, `${(localizedMonths[currentLanguage] || months)[state.month]} ${state.year}`, margin + 18, 41);
+  const weekdays = localizedWeekdays[currentLanguage] || localizedWeekdays.es;
+  context.font = "700 18px Arial";
+  weekdays.forEach((weekday, column) => {
+    const x = margin + column * (cellWidth + columnGap);
+    context.fillStyle = "#40534b";
+    context.textAlign = "center";
+    context.fillText(weekday, x + cellWidth / 2, 73);
+  });
+  context.textAlign = "left";
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const index = offset + day - 1;
+    const column = index % 7;
+    const row = Math.floor(index / 7);
+    const x = margin + column * (cellWidth + columnGap);
+    const y = gridTop + row * (cellHeight + gridGap);
+    const date = new Date(state.year, state.month, day);
+    const route = state.routes[day];
+    const holiday = isHoliday(day);
+    const weekend = date.getDay() === 0 || date.getDay() === 6;
+    const fill = route && compact
+      ? workedDayViewColorInput.value
+      : route ? "#dff4e8" : holiday ? "#fff0c9" : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#fff");
+    if (!compact) {
+      context.fillStyle = fill;
+      context.beginPath();
+      context.roundRect(x, y, cellWidth, cellHeight, 12);
+      context.fill();
+      context.strokeStyle = "rgba(113,128,122,.36)";
+      context.lineWidth = 1;
+      context.stroke();
+    }
+
+    if (compact) {
+      const radius = Math.min(cellHeight * 0.43, cellWidth * 0.19);
+      const centerX = x + cellWidth / 2;
+      const centerY = y + cellHeight / 2;
+      const badgeFill = fill;
+      context.fillStyle = badgeFill;
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      context.fill();
+      context.strokeStyle = state.selected === day ? "#f27d65" : "rgba(23,33,31,.28)";
+      context.lineWidth = state.selected === day ? 3 : 1.5;
+      context.stroke();
+      context.fillStyle = canvasTextColorForFill(badgeFill);
+      context.font = `700 ${Math.round(radius * 1.12)}px Arial`;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(String(day), centerX, centerY + 1);
+      context.textAlign = "left";
+      context.textBaseline = "alphabetic";
+    } else {
+      context.fillStyle = "#17211f";
+      context.font = "700 25px Arial";
+      context.fillText(String(day), x + 9, y + 27);
+      const textX = x + 9;
+      const textWidth = cellWidth - 18;
+      if (route) {
+        const title = route.destination?.trim() || route.type?.trim() || statusLabel(route);
+        const entry = route.actualEntry || route.plannedTime || route.time || "";
+        const exit = route.actualExit || route.plannedExit || route.exit || "";
+        const schedule = entry ? `${entry}${exit ? ` – ${exit}` : ""}` : statusLabel(route);
+        const details = [route.type?.trim(), schedule, routeExtraHours(route) ? `${routeExtraHours(route)} h extra` : ""].filter(Boolean).join(" · ");
+        context.fillStyle = routeColor(route);
+        context.font = "700 22px Arial";
+        drawWrappedText(context, title, textX, y + 52, textWidth, 20);
+        context.fillStyle = "#40534b";
+        context.font = "600 17px Arial";
+        drawWrappedText(context, details, textX, y + 84, textWidth, 18);
+      } else {
+        const label = customHolidays.find((item) => item.date === calendarDateString(date))?.name
+          || (holiday ? holidayLabel(day) : "");
+        context.fillStyle = "#53645c";
+        context.font = "600 18px Arial";
+        drawWrappedText(context, label, textX, y + 60, textWidth, 19);
+      }
+    }
+  }
+  return canvas;
+}
+
+function drawLandscapeAgendaCanvas() {
+  const canvas = $("#agendaCanvas");
+  const context = canvas.getContext("2d");
+  const { width, margin, gridTop, columnGap, rowHeight, rowGap, cardWidth, height } = landscapeWeekLayout(canvas);
+  const dates = visibleWeekDates();
+  const locale = { es: "es-ES", en: "en-US", fr: "fr-FR", it: "it-IT", de: "de-DE" }[currentLanguage] || "es-ES";
+  canvas.width = width;
+  canvas.height = height;
+
+  drawLandscapeCanvasBackground(context, width, height);
+
+  context.fillStyle = "#17211f";
+  context.beginPath();
+  context.roundRect(margin, 10, width - margin * 2, 46, 12);
+  context.fill();
+  context.fillStyle = "#ffffff";
+  context.font = "700 30px Arial";
+  fillUppercaseText(context, localizedUiText("Agenda semanal"), margin + 18, 41);
+  const rangeStart = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(dates[0]);
+  const rangeEnd = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(dates[6]);
+  context.textAlign = "right";
+  context.font = "600 22px Arial";
+  context.fillText(`${rangeStart} – ${rangeEnd}`, width - margin - 18, 40);
+  context.textAlign = "left";
+
+  const routeCache = new Map();
+  const routeForDate = (date) => {
+    const key = `limasam-${date.getFullYear()}-${date.getMonth()}`;
+    if (!routeCache.has(key)) {
+      try {
+        routeCache.set(key, JSON.parse(localStorage.getItem(key) || "{}"));
+      } catch {
+        routeCache.set(key, {});
+      }
+    }
+    return routeCache.get(key)[date.getDate()];
+  };
+
+  dates.forEach((date, index) => {
+    const row = index;
+    const x = margin;
+    const y = gridTop + row * (rowHeight + rowGap);
+    const route = date.getMonth() === state.month && date.getFullYear() === state.year
+      ? state.routes[date.getDate()]
+      : routeForDate(date);
+    const customHoliday = customHolidays.find((holiday) => holiday.date === calendarDateString(date));
+    const holiday = nationalHolidays.has(`${date.getMonth() + 1}-${date.getDate()}`) || Boolean(customHoliday);
+    const weekend = date.getDay() === 0 || date.getDay() === 6;
+    const fill = route ? "#ffffff" : holiday ? "#fff0c9" : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#ffffff");
+    context.fillStyle = fill;
+    context.beginPath();
+    context.roundRect(x, y, cardWidth, rowHeight, 12);
+    context.fill();
+    context.strokeStyle = route ? "rgba(217,101,78,.68)" : "rgba(113,128,122,.42)";
+    context.lineWidth = 2;
+    context.stroke();
+    context.fillStyle = route ? workedDayViewColorInput.value : "#207c62";
+    context.beginPath();
+    context.roundRect(x, y, 9, rowHeight, [8, 0, 0, 8]);
+    context.fill();
+
+    const weekday = new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date);
+    const dayDate = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(date);
+    context.fillStyle = "#17211f";
+    context.font = "700 22px Arial";
+    context.fillText(`${weekday} ${dayDate}`, x + 20, y + Math.round(rowHeight * 0.58));
+    if (route) {
+      const detailX = x + 182;
+      const textWidth = cardWidth - 198;
+      context.fillStyle = routeColor(route);
+      context.font = "700 21px Arial";
+      drawWrappedText(context, routeDisplayName(route), detailX, y + 25, textWidth, 20);
+      const entry = route.actualEntry || route.plannedTime || route.time || "";
+      const exit = route.actualExit || route.plannedExit || route.exit || "";
+      const schedule = entry ? `${entry}${exit ? ` – ${exit}` : ""}` : statusLabel(route);
+      const details = [route.type?.trim(), schedule, routeExtraHours(route) ? `${routeExtraHours(route)} h` : ""].filter(Boolean).join(" · ");
+      context.fillStyle = "#40534b";
+      context.font = "600 16px Arial";
+      drawWrappedText(context, details, detailX, y + rowHeight - 8, textWidth, 17);
+    } else {
+      context.fillStyle = "#71807a";
+      context.font = "600 18px Arial";
+      const emptyLabel = customHoliday?.name || (holiday ? holidayLabel(date.getDate()) : localizedUiText("Sin actividad programada"));
+      drawWrappedText(context, emptyLabel, x + 182, y + Math.round(rowHeight * 0.58), cardWidth - 198, 18);
+    }
+    if (state.selected === date.getDate() && state.month === date.getMonth() && state.year === date.getFullYear()) {
+      context.strokeStyle = "#f27d65";
+      context.lineWidth = 4;
+      context.strokeRect(x + 2, y + 2, cardWidth - 4, rowHeight - 4);
+    }
+  });
+  return canvas;
+}
+
 // Dibuja la agenda mensual completa en el lienzo que se comparte o descarga.
 function drawAgendaCanvas() {
+  if (isLandscapeMobile()) return calendarView === "week" ? drawLandscapeAgendaCanvas() : drawLandscapeMonthCanvas();
   if (calendarView === "week") return drawWeeklyAgendaCanvas();
   const filledMonthView = calendarView === "filled";
   const canvas = $("#agendaCanvas");
@@ -3012,24 +3478,20 @@ calendarViewToggle.addEventListener("click", () => {
 });
 previousWeekButton.addEventListener("click", () => moveCalendarWeek(-1));
 nextWeekButton.addEventListener("click", () => moveCalendarWeek(1));
+previousMonthButton.addEventListener("click", () => moveCalendarMonth(-1));
+nextMonthButton.addEventListener("click", () => moveCalendarMonth(1));
 todayButton.addEventListener("click", () => showCalendarDate(new Date(), false));
 
 monthSelect.addEventListener("change", () => {
-  state.month = Number(monthSelect.value);
-  state.selected = null;
-  renderPreviewDayOptions();
-  updateShareBackgroundOption();
-  renderCalendar();
+  const month = Number(monthSelect.value);
+  const day = Math.min(state.selected || Number(previewDaySelect.value) || 1, new Date(state.year, month + 1, 0).getDate());
+  showCalendarDate(new Date(state.year, month, day), false);
 });
 yearInput.addEventListener("change", () => {
   const year = Number(yearInput.value);
   if (year >= 2000 && year <= 2100) {
-    state.year = year;
-    state.selected = null;
-    renderPreviewDayOptions();
-    renderCalendar();
-    renderHolidayList();
-    if (!recordCard.hidden) renderAnnualSummary();
+    const day = Math.min(state.selected || Number(previewDaySelect.value) || 1, new Date(year, state.month + 1, 0).getDate());
+    showCalendarDate(new Date(year, state.month, day), false);
   }
 });
 
@@ -3220,6 +3682,13 @@ driveTutorialDialog.addEventListener("click", (event) => {
   if (event.target === driveTutorialDialog) closeDriveTutorial();
 });
 syncNowButton.addEventListener("click", syncNow);
+mobilePageTabs?.addEventListener("change", () => {
+  setMobilePage(mobilePageTabs.activeTab?.dataset.mobilePage || "agenda");
+});
+mobileRouteDialogClose?.addEventListener("click", () => mobileRouteDialog.close());
+mobileRouteDialog?.addEventListener("click", (event) => {
+  if (event.target === mobileRouteDialog) mobileRouteDialog.close();
+});
 pdfButton.addEventListener("click", downloadRecordPdf);
 csvButton.addEventListener("click", downloadRecordCsv);
 shareRecordButton.addEventListener("click", shareRecordSummary);
@@ -3310,6 +3779,7 @@ $("#routeForm").addEventListener("submit", async (event) => {
   await scheduleAlarm(selectedDay, state.routes[selectedDay]);
   playSavedMelody();
   showToast("Ruta guardada");
+  if (mobileRouteDialog.open) mobileRouteDialog.close();
 });
 
 $("#clearRememberedButton").addEventListener("click", () => {
@@ -3346,7 +3816,8 @@ translatePage();
 $("#shareButton")?.remove();
 $(".agenda-preview").appendChild($(".export-actions"));
 $(".export-actions").appendChild($(".share-punches-toggle"));
-webWelcomeBanner.hidden = nativeAndroid();
+webWelcomeBanner.hidden = false;
+syncMobileLayout();
 if (driveAccessToken) {
   driveButtonLabel.textContent = "Drive conectado";
   driveLogoutButton.hidden = false;
