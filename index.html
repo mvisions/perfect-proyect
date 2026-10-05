@@ -11,11 +11,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Material+Symbols+Outlined:FILL@0..1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=64">
-  <link rel="stylesheet" href="intro.css?v=4">
-  <link rel="stylesheet" href="visual-enhancements.css?v=58">
-  <link rel="stylesheet" href="fingerprint.css?v=1">
-  <link rel="stylesheet" href="typography.css?v=2">
+  <link rel="stylesheet" href="src/styles/styles.css?v=64">
+  <link rel="stylesheet" href="src/styles/intro.css?v=4">
+  <link rel="stylesheet" href="src/styles/visual-enhancements.css?v=76">
+  <link rel="stylesheet" href="src/styles/fingerprint.css?v=1">
+  <link rel="stylesheet" href="src/styles/typography.css?v=2">
 </head>
 <body>
   <div class="intro-screen" id="introScreen" aria-label="Introducción de Memoria laboral" hidden>
@@ -29,7 +29,7 @@
   <div class="app-shell">
     <!-- Barra superior con identidad, idioma, conexión y acceso al expediente. -->
     <header class="topbar">
-      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.11</small></span></a>
+      <a class="brand" href="#"><img class="brand-mark" src="logo/logo-transparente.png" alt=""><span class="brand-copy"><span>Memoria laboral</span><small class="brand-version">v2.9.12</small></span></a>
       <div class="topbar-actions">
         <div class="topbar-locale-actions"><label class="language-select" for="languageSelect"><select id="languageSelect" aria-label="Idioma"><option value="es">🇪🇸 Español</option><option value="en">🇬🇧 English</option><option value="fr">🇫🇷 Français</option><option value="it">🇮🇹 Italiano</option><option value="de">🇩🇪 Deutsch</option></select></label><label class="theme-toggle" for="themeSelect"><select id="themeSelect" aria-label="Tema"><option value="light">Claro</option><option value="dark">Oscuro</option><option value="night">Nocturno</option></select></label></div>
         <span class="offline-status" id="offlineStatus" hidden>Sin conexión</span>
@@ -39,9 +39,13 @@
     </header>
     <main class="workspace">
       <section class="web-welcome-banner" id="webWelcomeBanner" aria-labelledby="webWelcomeTitle" hidden>
-        <img class="web-welcome-image" src="logo/POSIBLE.jpeg" alt="">
-        <div class="web-welcome-copy"><h2 id="webWelcomeTitle">Tu jornada, clara de un vistazo</h2><p>Organiza rutas, horarios y festivos en un calendario fácil de compartir.</p></div>
-        <a class="web-welcome-link" href="#previewTitle">Ir a la agenda</a>
+        <img class="web-welcome-image" src="logo/POSIBLE.jpeg" alt="Personas trabajadoras reunidas frente a un calendario laboral">
+        <div class="web-welcome-copy">
+          <p class="web-welcome-eyebrow">PLANIFICACIÓN LABORAL</p>
+          <h1 id="webWelcomeTitle">Todo tu trabajo, <span class="web-welcome-highlight">claro</span> en un calendario.</h1>
+          <p>Organiza rutas, turnos y fichajes en un mismo lugar.</p>
+          <a class="web-welcome-link" href="#previewTitle">Empezar a planificar</a>
+        </div>
       </section>
       <!-- Presentación del planificador y fecha activa. -->
       <section class="intro-block">
@@ -53,6 +57,7 @@
       </section>
       <!-- Preferencias del calendario y acciones de exportación y uso compartido. -->
       <section class="control-panel preferences-panel" aria-label="Configuración del calendario">
+        <div class="web-settings-tabs">
         <details class="advanced-options help-options">
           <summary>Ayuda</summary>
           <div class="advanced-options-body help-guide">
@@ -98,6 +103,7 @@
               <label class="calendar-color" for="weekdayColorInput"><span>Diarios</span><input id="weekdayColorInput" type="color" value="#ffffff"></label>
               <label class="calendar-color" for="weekendColorInput"><span>Fines de semana</span><input id="weekendColorInput" type="color" value="#e4f2ff"></label>
               <label class="calendar-color" for="workedDayViewColorInput"><span>Días trabajados</span><input id="workedDayViewColorInput" type="color" value="#d64545"></label>
+              <label class="calendar-color" for="holidayColorInput"><span>Festivos</span><input id="holidayColorInput" type="color" value="#fff0c9"></label>
             </div>
             <div class="background-controls">
               <label class="background-toggle"><input id="backgroundToggle" type="checkbox" checked><span>Mostrar tema</span></label>
@@ -111,6 +117,23 @@
             <label class="solid-background" id="solidBackground" for="backgroundColorInput"><span>Color sólido</span><input id="backgroundColorInput" type="color" value="#f5f7f3"></label>
           </div>
         </details>
+        <details class="holiday-manager">
+          <summary>Planificación mensual</summary>
+          <div class="holiday-manager-body">
+            <div class="planner-fields">
+              <div class="field-group"><label for="groupNumber">Número de grupo</label><div class="input-with-icon"><span>#</span><input id="groupNumber" type="text" placeholder="Ej. 204" maxlength="18"></div></div>
+              <div class="field-group"><label for="monthSelect">Mes</label><select id="monthSelect"></select></div>
+              <div class="field-group"><label for="yearInput">Año</label><input id="yearInput" type="number" min="2000" max="2100" value="2026"></div>
+            </div>
+            <div class="holiday-fields">
+              <label for="holidayDateInput">Fecha<input id="holidayDateInput" type="date"></label>
+              <label for="holidayNameInput">Nombre<input id="holidayNameInput" type="text" maxlength="32" placeholder="Ej. Fiesta local"></label>
+              <button class="button button-dark" id="addHolidayButton" type="button">Añadir festivo</button>
+            </div>
+            <ul class="holiday-list" id="holidayList"></ul>
+          </div>
+        </details>
+        </div>
         <div class="export-actions">
           <button class="button button-primary" id="downloadButton" type="button"><span>↓</span> Descargar PNG</button>
           <button class="button button-share" id="shareMonthButton" type="button"><span class="whatsapp-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 3.5A10.5 10.5 0 0 0 3.42 16.08L2 21.2l5.24-1.37A10.5 10.5 0 1 0 20.5 3.5Zm-8 17.08a8.72 8.72 0 0 1-4.45-1.22l-.32-.19-3.11.81.83-3.03-.2-.33A8.75 8.75 0 1 1 12.5 20.58Z"/><path d="M16.85 13.43c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64.58.25 1.04.4 1.4.51.47-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg></span><span>Compartir estructura del mes</span></button>
@@ -121,21 +144,6 @@
       </section>
       <!-- Gestión de festivos y formulario para editar los detalles de cada jornada. -->
       <section class="form-panel" aria-label="Gestión de calendario y detalle del día">
-      <details class="holiday-manager">
-        <summary>Planificación mensual</summary>
-        <div class="holiday-manager-body">
-          <div class="planner-fields">
-            <div class="field-group"><label for="groupNumber">Número de grupo</label><div class="input-with-icon"><span>#</span><input id="groupNumber" type="text" placeholder="Ej. 204" maxlength="18"></div></div>
-            <div class="field-group"><label for="monthSelect">Mes</label><select id="monthSelect"></select></div>
-            <div class="field-group"><label for="yearInput">Año</label><input id="yearInput" type="number" min="2000" max="2100" value="2026"></div>
-          </div>
-          <div class="holiday-fields">
-            <label for="holidayDateInput">Fecha<input id="holidayDateInput" type="date"></label>
-            <label for="holidayNameInput">Nombre<input id="holidayNameInput" type="text" maxlength="32" placeholder="Ej. Fiesta local"></label>
-            <button class="button button-dark" id="addHolidayButton" type="button">Añadir festivo</button>
-          </div>
-          <ul class="holiday-list" id="holidayList"></ul>
-        </div>
       <div class="content-grid">
         <section class="calendar-card" aria-labelledby="calendarTitle">
           <div class="calendar-heading"><div><p class="section-label">Vista mensual</p><h2 id="calendarTitle">Mes actual</h2></div><div class="calendar-legend"><span class="legend-swatch"></span> Día con ruta</div></div>
@@ -221,7 +229,7 @@
       </section>
       <!-- Vista previa dibujada en un lienzo para compartir o descargar. -->
       <section class="agenda-preview" aria-labelledby="previewTitle">
-        <div class="preview-heading"><div><p class="section-label">Vista previa en tiempo real</p><h2 id="previewTitle">Agenda lista para compartir</h2><a class="landscape-agenda-brand" href="#" aria-label="Memoria laboral v2.9.11"><img src="logo/logo-transparente.png" alt=""><span>v2.9.11</span></a></div><div class="preview-day-picker"><select id="previewDaySelect" aria-label="Editar día"></select><div class="preview-month-year-controls" id="previewMonthYearControls"></div><div class="preview-month-navigation"><button class="calendar-view-control" id="previousMonthButton" type="button" aria-label="Mes anterior" title="Mes anterior">‹</button><button class="calendar-view-control" id="nextMonthButton" type="button" aria-label="Mes siguiente" title="Mes siguiente">›</button></div><div class="calendar-view-controls"><button class="calendar-view-control" id="previousWeekButton" type="button" aria-label="Semana anterior" title="Semana anterior" hidden>‹</button><button class="calendar-view-control" id="todayButton" type="button" hidden>Hoy</button><button class="calendar-view-control" id="calendarViewToggle" type="button">Vistas</button><button class="calendar-view-control" id="nextWeekButton" type="button" aria-label="Semana siguiente" title="Semana siguiente" hidden>›</button></div></div></div>
+        <div class="preview-heading"><div><p class="section-label">Vista previa en tiempo real</p><h2 id="previewTitle">Agenda lista para compartir</h2><a class="landscape-agenda-brand" href="#" aria-label="Memoria laboral v2.9.12"><img src="logo/logo-transparente.png" alt=""><span>v2.9.12</span></a></div><div class="preview-day-picker"><select id="previewDaySelect" aria-label="Editar día"></select><div class="preview-month-year-controls" id="previewMonthYearControls"></div><div class="preview-month-navigation"><button class="calendar-view-control" id="previousMonthButton" type="button" aria-label="Mes anterior" title="Mes anterior">‹</button><button class="calendar-view-control" id="nextMonthButton" type="button" aria-label="Mes siguiente" title="Mes siguiente">›</button></div><div class="calendar-view-controls"><button class="calendar-view-control" id="previousWeekButton" type="button" aria-label="Semana anterior" title="Semana anterior" hidden>‹</button><button class="calendar-view-control" id="todayButton" type="button" hidden>Hoy</button><button class="calendar-view-control" id="calendarViewToggle" type="button">Vistas</button><button class="calendar-view-control" id="nextWeekButton" type="button" aria-label="Semana siguiente" title="Semana siguiente" hidden>›</button></div></div></div>
         <p class="mobile-orientation-hint" id="mobileOrientationHint" hidden>Gira el móvil para ver la agenda apaisada.</p>
         <canvas id="agendaCanvas" aria-label="Vista previa de la agenda"></canvas>
       </section>
@@ -275,6 +283,6 @@
   <!-- Región accesible donde JavaScript presenta mensajes temporales. -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <!-- Punto de entrada del código JavaScript principal. -->
-  <script type="module" src="app.js?v=25"></script>
+  <script type="module" src="src/app.js?v=31"></script>
 </body>
 </html>

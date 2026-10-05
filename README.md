@@ -36,6 +36,15 @@ Abre [Memoria laboral](https://mvisions.github.io/perfect-proyect/) desde el nav
 
 Requisitos: Node.js 20 o posterior y npm.
 
+### Estructura
+
+- `src/`: aplicación y estilos fuente.
+- `tests/`: pruebas automatizadas.
+- `scripts/`: herramientas de mantenimiento.
+- `assets/`, `intro/` y `logo/`: recursos de la aplicación.
+- `public/`: archivos estáticos de la PWA.
+- `android/`: proyecto nativo de Capacitor.
+
 ```bash
 npm ci
 npm run dev

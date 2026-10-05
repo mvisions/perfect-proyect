@@ -44,6 +44,7 @@ const dayStatuses = {
 const nationalHolidays = new Set(["1-1", "1-6", "5-1", "8-15", "10-12", "11-1", "12-6", "12-8", "12-25"]);
 const customHolidayKey = "limasam-custom-holidays";
 const workedDayViewColorKey = "limasam-workday-view-color";
+const holidayColorKey = "limasam-holiday-color";
 const localDriveBackupKey = "limasam-drive-local-backup";
 const googleClientId = "129023096829-69s79kbie7pkc43gqf02qr175hhni3jm.apps.googleusercontent.com";
 const publicAppUrl = "https://mvisions.github.io/perfect-proyect/";
@@ -183,6 +184,7 @@ const languageSelect = $("#languageSelect");
 const weekdayColorInput = $("#weekdayColorInput");
 const weekendColorInput = $("#weekendColorInput");
 const workedDayViewColorInput = $("#workedDayViewColorInput");
+const holidayColorInput = $("#holidayColorInput");
 const driveButton = $("#driveButton");
 const driveButtonLabel = $("#driveButtonLabel");
 const topbarAccountActions = $(".topbar-account-actions");
@@ -215,12 +217,13 @@ const agendaPreview = $(".agenda-preview");
 const introBlock = $(".intro-block");
 const formPanel = $(".form-panel");
 const preferencesPanel = $(".preferences-panel");
-const mobileConfigurationDetails = $(".preferences-panel > details.advanced-options:not(.help-options)");
+const mobileConfigurationDetails = $(".preferences-panel .advanced-options:not(.help-options)");
 const topbarLocaleActions = $(".topbar-locale-actions");
 const previousWeekButton = $("#previousWeekButton");
 const nextWeekButton = $("#nextWeekButton");
 const todayButton = $("#todayButton");
 const exportActions = $(".export-actions");
+const webSettingsTabs = $(".web-settings-tabs");
 const plannerDetails = $(".holiday-manager");
 const routeManager = $("#routeManager");
 const mobileRouteDialog = $("#mobileRouteDialog");
@@ -754,6 +757,14 @@ const staticUiTranslations = {
   "Cambiar vista del calendario": { en: "Change calendar view", fr: "Changer la vue du calendrier", it: "Cambia vista calendario", de: "Kalenderansicht ändern" },
   "Sin actividad programada": { en: "No activity scheduled", fr: "Aucune activité prévue", it: "Nessuna attività programmata", de: "Keine Aktivität geplant" },
   "Días trabajados": { en: "Worked days", fr: "Jours travaillés", it: "Giorni lavorati", de: "Arbeitstage" },
+  "PLANIFICACIÓN LABORAL, MÁS CLARA": { en: "CLEARER WORKDAY PLANNING", fr: "UNE PLANIFICATION DU TRAVAIL PLUS CLAIRE", it: "PIANIFICAZIONE DEL LAVORO PIÙ CHIARA", de: "KLARE ARBEITSPLANUNG" },
+  "Funciones principales": { en: "Key features", fr: "Fonctionnalités principales", it: "Funzioni principali", de: "Die wichtigsten Funktionen" },
+  "Todo tu trabajo, claro en un calendario.": { en: "All your work, clear in one calendar.", fr: "Tout votre travail, dans un calendrier clair.", it: "Tutto il tuo lavoro, in un unico calendario.", de: "Deine Arbeit, klar in einem Kalender." },
+  "Planifica rutas, registra fichajes y controla horas extra y festivos. Guarda en Drive y comparte tu agenda cuando la necesites.": { en: "Plan routes, track work hours, and keep holidays and overtime in view. Save to Drive and share your calendar whenever you need.", fr: "Planifiez les itinéraires, suivez les horaires et gardez les congés et heures supplémentaires en vue. Enregistrez sur Drive et partagez votre agenda.", it: "Pianifica i percorsi, registra le presenze e tieni sotto controllo festività e straordinari. Salva su Drive e condividi l’agenda quando vuoi.", de: "Plane Routen, erfasse Arbeitszeiten und behalte Feiertage und Überstunden im Blick. Speichere in Drive und teile deinen Kalender." },
+  "Rutas y turnos": { en: "Routes and shifts", fr: "Itinéraires et horaires", it: "Percorsi e turni", de: "Routen und Schichten" },
+  "Fichajes y horas extra": { en: "Time tracking and overtime", fr: "Pointages et heures supplémentaires", it: "Presenze e straordinari", de: "Zeiterfassung und Überstunden" },
+  "Drive y exportación": { en: "Drive and exports", fr: "Drive et exportations", it: "Drive ed esportazioni", de: "Drive und Exporte" },
+  "Empezar a planificar": { en: "Start planning", fr: "Commencer à planifier", it: "Inizia a pianificare", de: "Jetzt planen" },
   "Tu jornada, clara de un vistazo": { en: "Your workday, clear at a glance", fr: "Votre journée en un coup d’œil", it: "La tua giornata, a colpo d’occhio", de: "Dein Arbeitstag auf einen Blick" },
   "Organiza rutas, horarios y festivos en un calendario fácil de compartir.": { en: "Organize routes, schedules, and holidays in a calendar that is easy to share.", fr: "Organisez itinéraires, horaires et jours fériés dans un calendrier facile à partager.", it: "Organizza percorsi, orari e festività in un calendario facile da condividere.", de: "Organisiere Routen, Arbeitszeiten und Feiertage in einem Kalender, den du einfach teilen kannst." },
   "Ir a la agenda": { en: "Open calendar", fr: "Ouvrir l’agenda", it: "Apri il calendario", de: "Kalender öffnen" }
@@ -871,6 +882,7 @@ backgroundColorInput.value = localStorage.getItem("limasam-background-color") ||
 weekdayColorInput.value = localStorage.getItem("limasam-weekday-color") || "#ffffff";
 weekendColorInput.value = localStorage.getItem("limasam-weekend-color") || "#e4f2ff";
 workedDayViewColorInput.value = localStorage.getItem(workedDayViewColorKey) || "#d64545";
+holidayColorInput.value = localStorage.getItem(holidayColorKey) || "#fff0c9";
 // Restaura las preferencias visuales y de sonido almacenadas en el navegador.
 const savedTheme = localStorage.getItem("limasam-theme") || (localStorage.getItem("limasam-dark-mode") === "true" ? "dark" : "light");
 themeSelect.value = savedTheme;
@@ -879,6 +891,7 @@ document.body.classList.toggle("dark-mode", savedTheme === "dark");
 document.body.classList.toggle("night-mode", savedTheme === "night");
 document.documentElement.style.setProperty("--weekday-color", weekdayColorInput.value);
 document.documentElement.style.setProperty("--weekend-color", weekendColorInput.value);
+document.documentElement.style.setProperty("--holiday-color", holidayColorInput.value);
 
 let audioContext;
 let welcomeSoundPlayed = false;
@@ -958,7 +971,7 @@ function loadCustomBackgrounds() {
 }
 
 const customBackgroundData = loadCustomBackgrounds();
-const themeBackgroundAssets = import.meta.glob("./assets/background-themes/*/*.{jpg,webp}", {
+const themeBackgroundAssets = import.meta.glob("../assets/background-themes/*/*.{jpg,webp}", {
   eager: true,
   query: "?url",
   import: "default"
@@ -975,9 +988,9 @@ function createAgendaBackgrounds(theme) {
     const image = new Image();
     const assetPath = theme === "cleaning"
       ? index === 0
-        ? "./assets/background-themes/cleaning/barrenderos.webp"
-        : `./assets/background-themes/cleaning/barrenderos-${String(index + 1).padStart(2, "0")}.jpg`
-      : `./assets/background-themes/${theme}/month-${String(index + 1).padStart(2, "0")}.jpg`;
+        ? "../assets/background-themes/cleaning/barrenderos.webp"
+        : `../assets/background-themes/cleaning/barrenderos-${String(index + 1).padStart(2, "0")}.jpg`
+      : `../assets/background-themes/${theme}/month-${String(index + 1).padStart(2, "0")}.jpg`;
     const assetUrl = themeBackgroundAssets[assetPath];
     if (assetUrl) image.src = assetUrl;
     image.addEventListener("load", () => drawAgendaCanvas());
@@ -1120,12 +1133,20 @@ function updateSyncUi() {
   syncNowButton.hidden = !driveAccessToken;
   if (driveChangesPending) {
     syncStatus.textContent = "Cambios pendientes";
+    syncStatus.title = "Hay cambios pendientes de sincronización";
+    syncStatus.setAttribute("aria-label", syncStatus.title);
     syncStatus.classList.add("is-pending");
   } else if (savedAt) {
-    syncStatus.textContent = `Sincronizado ${new Date(savedAt).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}`;
+    const syncedAt = new Date(savedAt);
+    const fullTimestamp = syncedAt.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+    syncStatus.textContent = `Última ${syncedAt.toLocaleDateString("es-ES", { dateStyle: "short" })}`;
+    syncStatus.title = `Sincronizado por última vez ${fullTimestamp}`;
+    syncStatus.setAttribute("aria-label", syncStatus.title);
     syncStatus.classList.remove("is-pending");
   } else {
     syncStatus.textContent = driveAccessToken ? "Sincronizado ahora" : "Sin sincronizar";
+    syncStatus.title = syncStatus.textContent;
+    syncStatus.setAttribute("aria-label", syncStatus.textContent);
     syncStatus.classList.remove("is-pending");
   }
 }
@@ -2385,6 +2406,14 @@ function isMobileExperience() {
   return nativeAndroid() || mobileViewportQuery.matches;
 }
 
+webSettingsTabs?.addEventListener("toggle", (event) => {
+  const activeTab = event.target;
+  if (!(activeTab instanceof HTMLDetailsElement) || !activeTab.open || isMobileExperience()) return;
+  webSettingsTabs.querySelectorAll("details[open]").forEach((tab) => {
+    if (tab !== activeTab) tab.open = false;
+  });
+}, true);
+
 function isLandscapeMobile() {
   return isMobileExperience() && mobileLandscapeQuery.matches;
 }
@@ -2786,7 +2815,7 @@ function drawWeeklyAgendaCanvas() {
     const customHoliday = holidayForDate(date);
     const holiday = nationalHolidays.has(`${date.getMonth() + 1}-${date.getDate()}`) || Boolean(customHoliday);
     const weekend = date.getDay() === 0 || date.getDay() === 6;
-    const fill = route ? "rgba(255,255,255,.96)" : holiday ? "#fff0c9" : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#ffffff");
+    const fill = route ? "rgba(255,255,255,.96)" : holiday ? holidayColorInput.value : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#ffffff");
     drawPanel(margin, rowY, rowWidth, rowHeight, fill, route ? "rgba(217,101,78,.68)" : "rgba(113,128,122,.42)");
     context.fillStyle = route ? workedDayViewColorInput.value : "rgba(32,124,98,.9)";
     context.beginPath();
@@ -2919,7 +2948,7 @@ function drawLandscapeMonthCanvas() {
     const weekend = date.getDay() === 0 || date.getDay() === 6;
     const fill = route && compact
       ? workedDayViewColorInput.value
-      : route ? "#dff4e8" : holiday ? "#fff0c9" : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#fff");
+      : route ? "#dff4e8" : holiday ? holidayColorInput.value : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#fff");
     if (!compact) {
       context.fillStyle = fill;
       context.beginPath();
@@ -3027,7 +3056,7 @@ function drawLandscapeAgendaCanvas() {
     const customHoliday = customHolidays.find((holiday) => holiday.date === calendarDateString(date));
     const holiday = nationalHolidays.has(`${date.getMonth() + 1}-${date.getDate()}`) || Boolean(customHoliday);
     const weekend = date.getDay() === 0 || date.getDay() === 6;
-    const fill = route ? "#ffffff" : holiday ? "#fff0c9" : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#ffffff");
+    const fill = route ? "#ffffff" : holiday ? holidayColorInput.value : calendarColor(weekend ? "--weekend-color" : "--weekday-color", weekend ? "#e4f2ff" : "#ffffff");
     context.fillStyle = fill;
     context.beginPath();
     context.roundRect(x, y, cardWidth, rowHeight, 12);
@@ -3187,7 +3216,7 @@ function drawAgendaCanvas() {
       const dayCircleColor = route
         ? workedDayViewColorInput.value
         : holiday
-          ? "#fff0c9"
+          ? holidayColorInput.value
           : isWeekend
             ? calendarColor("--weekend-color", "#e4f2ff")
             : "";
@@ -3214,7 +3243,7 @@ function drawAgendaCanvas() {
       continue;
     }
 
-    const cellColor = holiday ? "#fff0c9" : (isWeekend ? calendarColor("--weekend-color", "#e4f2ff") : calendarColor("--weekday-color", "#ffffff"));
+    const cellColor = holiday ? holidayColorInput.value : (isWeekend ? calendarColor("--weekend-color", "#e4f2ff") : calendarColor("--weekday-color", "#ffffff"));
     context.fillStyle = cellColor;
     context.beginPath();
     context.roundRect(x, y, cellWidth, cellHeight, 10);
@@ -3331,7 +3360,7 @@ function sharedMonthPayload() {
     reminder: Number(route.reminder ?? 30),
     ...(sharePunchesToggle.checked ? { actualEntry: route.actualEntry || "", actualExit: route.actualExit || "" } : {})
   }]));
-  return { app: "memoria-laboral", version: 4, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, workedDayViewColor: workedDayViewColorInput.value, backgroundTheme: shareBackgroundToggle.checked ? selectedBackgroundTheme : null, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
+  return { app: "memoria-laboral", version: 4, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, workedDayViewColor: workedDayViewColorInput.value, holidayColor: holidayColorInput.value, backgroundTheme: shareBackgroundToggle.checked ? selectedBackgroundTheme : null, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
 }
 
 async function shareMonthAgenda() {
@@ -3395,6 +3424,11 @@ async function importSharedAgenda(encodedFromApp = null) {
       if (/^#[0-9a-f]{6}$/i.test(payload.workedDayViewColor || "")) {
         workedDayViewColorInput.value = payload.workedDayViewColor;
         localStorage.setItem(workedDayViewColorKey, payload.workedDayViewColor);
+      }
+      if (/^#[0-9a-f]{6}$/i.test(payload.holidayColor || "")) {
+        holidayColorInput.value = payload.holidayColor;
+        document.documentElement.style.setProperty("--holiday-color", payload.holidayColor);
+        localStorage.setItem(holidayColorKey, payload.holidayColor);
       }
       if (["light", "dark", "night"].includes(payload.theme)) {
         themeSelect.value = payload.theme;
@@ -3623,6 +3657,11 @@ weekendColorInput.addEventListener("input", () => {
 });
 workedDayViewColorInput.addEventListener("input", () => {
   localStorage.setItem(workedDayViewColorKey, workedDayViewColorInput.value);
+  drawAgendaCanvas();
+});
+holidayColorInput.addEventListener("input", () => {
+  document.documentElement.style.setProperty("--holiday-color", holidayColorInput.value);
+  localStorage.setItem(holidayColorKey, holidayColorInput.value);
   drawAgendaCanvas();
 });
 backgroundFiles.addEventListener("change", async () => {

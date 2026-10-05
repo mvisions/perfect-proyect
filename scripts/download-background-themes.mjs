@@ -1,7 +1,8 @@
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const projectRoot = new URL(".", import.meta.url).pathname;
+const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const themes = [
   {
     id: "gardening",

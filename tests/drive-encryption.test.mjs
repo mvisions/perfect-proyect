@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { decryptDriveBackup, encryptDriveBackup } from "./drive-encryption.mjs";
+import { decryptDriveBackup, encryptDriveBackup } from "../src/drive-encryption.mjs";
 
 test("double encryption round-trips a Drive backup without exposing its contents", async () => {
   const backup = { version: 3, routes: { "limasam-2026-9": { 12: { destination: "Centro de trabajo" } } } };

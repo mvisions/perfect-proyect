@@ -1,14 +1,15 @@
 {
   "name": "proyecto",
-  "version": "2.9.11",
+  "version": "2.9.12",
   "description": "",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "android:sync": "npm run build && npx cap sync android",
     "android:open": "npx cap open android",
-    "test": "node --test"
+    "test": "node --test tests/drive-encryption.test.mjs",
+    "download:background-themes": "node scripts/download-background-themes.mjs"
   },
   "repository": {
     "type": "git",

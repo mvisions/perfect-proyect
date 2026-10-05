@@ -1,5 +1,5 @@
 // Identificador de la caché y recursos mínimos disponibles sin conexión.
-const CACHE_NAME = "agenda-trabajos-v10";
+const CACHE_NAME = "agenda-trabajos-v11";
 const APP_SHELL = [
   "./",
   "./index.html",

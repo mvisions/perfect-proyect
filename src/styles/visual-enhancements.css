@@ -44,7 +44,7 @@ body.dark-mode{--ink:#edf5f0;--muted:#9eafa7;--paper:#18211f;--card:#202b27;--li
 body.dark-mode .day-cell:not(.is-empty):not(.is-weekend),body.night-mode .day-cell:not(.is-empty):not(.is-weekend){background:var(--weekday-color)}
 body.dark-mode .day-cell:not(.is-empty).is-weekend,body.night-mode .day-cell:not(.is-empty).is-weekend{background:var(--weekend-color)}
 body.dark-mode .day-cell:not(.is-empty).is-weekend.has-route,body.night-mode .day-cell:not(.is-empty).is-weekend.has-route{background:var(--weekend-color)}
-.day-cell.is-holiday,.day-cell.is-holiday.has-route,body.dark-mode .day-cell.is-holiday,body.night-mode .day-cell.is-holiday{background:#fff0c9;border-color:#d18b27;color:#6f4b0d}.day-cell.is-holiday .route-preview{color:#a96d12}
+.day-cell:not(.is-empty).is-holiday,.day-cell:not(.is-empty).is-holiday.has-route,body.dark-mode .day-cell:not(.is-empty).is-holiday,body.night-mode .day-cell:not(.is-empty).is-holiday{background:var(--holiday-color,#fff0c9);border-color:#d18b27;color:#6f4b0d}.day-cell.is-holiday .route-preview{color:#a96d12}
 .holiday-manager{margin:0 0 22px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.42)}.holiday-manager summary{padding:14px 18px;color:var(--mint-strong);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.holiday-manager-body{padding:0 18px 16px}.holiday-fields{display:grid;grid-template-columns:minmax(150px,.7fr) minmax(180px,1fr) auto;align-items:end;gap:12px}.holiday-fields label{margin:0}.holiday-fields .button{height:42px}.holiday-list{display:grid;gap:6px;margin:14px 0 0;padding:0;list-style:none}.holiday-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:7px;color:var(--muted);background:rgba(204,239,225,.3);font-size:11px}.holiday-list .holiday-empty{color:var(--muted);background:transparent;font-style:italic}.holiday-remove{width:24px;height:24px;padding:0;border:0;border-radius:50%;color:var(--coral);background:transparent;font-size:18px;line-height:1}.holiday-remove:hover{background:rgba(242,125,101,.14)}body.dark-mode .holiday-manager,body.night-mode .holiday-manager{background:rgba(32,43,39,.7)}body.night-mode .holiday-manager{background:rgba(45,39,34,.8)}
 .record-card{margin-top:22px;padding:27px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow)}.record-heading{display:flex;align-items:end;justify-content:space-between;gap:16px}.record-heading h2{margin:0;font-family:"Space Grotesk",sans-serif;font-size:28px;letter-spacing:-.055em}.record-note{color:var(--muted);font-size:11px}.record-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 20px}.record-stats div{padding:13px;border:1px solid var(--line);border-radius:9px;background:rgba(204,239,225,.2)}.record-stats strong{display:block;font-family:"Space Grotesk",sans-serif;font-size:25px}.record-stats span{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase}.record-table-wrap{overflow-x:auto}.record-table{width:100%;border-collapse:collapse;font-size:12px}.record-table th{padding:9px 10px;color:var(--muted);font-size:9px;letter-spacing:.08em;text-align:left;text-transform:uppercase}.record-table td{padding:11px 10px;border-top:1px solid var(--line)}.record-table td:first-child{font-weight:700;white-space:nowrap}.status-pill{display:inline-block;padding:4px 7px;border-radius:99px;font-size:10px;font-weight:700}.status-pill.status-trabajado{color:#207c62;background:#dff4e8}.status-pill.status-festivo-trabajado{color:#a96d12;background:#fff0c9}.status-pill.status-baja{color:#b44c4c;background:#f8dddd}.status-pill.status-asuntos-propios{color:#8950a2;background:#f0e1f5}.status-pill.status-descanso{color:#66736d;background:#edf1ef}.record-empty{text-align:center;color:var(--muted);font-style:italic}
 .record-view .workspace>*:not(.record-card){display:none}.record-view .record-card:not([hidden]){display:block;margin-top:0;min-height:calc(100vh - 150px)}
@@ -314,7 +314,7 @@ body.native-android .record-card{order:1}
 	body.native-android .topbar{display:none}
 	body.native-android .workspace{padding:4px 8px calc(64px + env(safe-area-inset-bottom))}
 	body.native-android .web-welcome-banner{height:54px;grid-template-columns:126px minmax(0,1fr) auto;grid-template-rows:54px;margin:0 0 6px;border-radius:10px}
-	body.native-android .web-welcome-image{grid-column:1;grid-row:1;width:126px;height:54px;aspect-ratio:auto;object-fit:cover;object-position:center}
+	body.native-android .web-welcome-image{grid-column:1;grid-row:1;width:162px;height:54px;aspect-ratio:auto;object-fit:contain;object-position:center}
 	body.native-android .web-welcome-copy{grid-column:2;grid-row:1;padding:4px 8px}
 	body.native-android .web-welcome-copy h2{margin:0;font-size:13px;line-height:1.15}
 	body.native-android .web-welcome-copy p{display:none}
@@ -422,4 +422,159 @@ body.native-android .record-card{order:1}
 	body.native-android .annual-chart.is-fan .fan-chart{width:168px;height:168px;margin:14px auto}
 	body.native-android .annual-chart.is-fan .fan-labels{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px 3px;font-size:9px}
 	body.native-android .record-export .button{min-height:48px;font-size:12px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .preferences-panel{margin-bottom:0}
+	body:not(.native-android) .form-panel{margin-top:10px}
+	body:not(.native-android) .web-settings-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+	body:not(.native-android) .web-settings-tabs>details{display:contents}
+	body:not(.native-android) .web-settings-tabs>details>summary{grid-row:1;display:flex;min-width:0;min-height:50px;align-items:center;justify-content:center;padding:8px 12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;text-align:center;cursor:pointer;list-style:none}
+	body:not(.native-android) .web-settings-tabs>details:last-of-type>summary{border-right:0}
+	body:not(.native-android) .web-settings-tabs>details>summary::-webkit-details-marker{display:none}
+	body:not(.native-android) .web-settings-tabs>details>summary::before{width:0;height:0;flex:0 0 auto;margin-right:8px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--mint-strong);content:"";transition:transform .18s ease}
+	body:not(.native-android) .web-settings-tabs>details[open]>summary{color:var(--ink);background:var(--mint)}
+	body:not(.native-android) .web-settings-tabs>details[open]>summary::before{transform:rotate(90deg)}
+	body:not(.native-android) .web-settings-tabs>details>summary:hover{color:var(--ink);background:rgba(204,239,225,.45)}
+	body:not(.native-android) .web-settings-tabs .advanced-options-body,
+	body:not(.native-android) .web-settings-tabs .holiday-manager-body{grid-row:2;grid-column:1/-1;min-width:0;padding:16px 18px 18px;border-top:1px solid var(--line);background:var(--card)}
+	body:not(.native-android) .web-settings-tabs .holiday-manager{margin:0;border:0;border-radius:0;background:transparent}
+	body:not(.native-android) .web-settings-tabs .holiday-manager>summary{margin:0;padding:0}
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(1)>.advanced-options-body,
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(1)>.holiday-manager-body{position:relative;z-index:1;width:300%;grid-column:auto;transform:translateX(0)}
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(2)>.advanced-options-body,
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(2)>.holiday-manager-body{position:relative;z-index:1;width:300%;grid-column:auto;transform:translateX(-33.333%)}
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(3)>.advanced-options-body,
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(3)>.holiday-manager-body{position:relative;z-index:1;width:300%;grid-column:auto;transform:translateX(-66.666%)}
+	body:not(.native-android) .web-settings-tabs .calendar-color-group{grid-template-columns:repeat(4,max-content);justify-content:center;align-items:center;column-gap:clamp(18px,3vw,44px);row-gap:10px}
+	body:not(.native-android) .web-settings-tabs .calendar-color-title{grid-column:1/-1;text-align:center}
+}
+
+@media (max-width: 380px) and (orientation: portrait){
+	body.native-android .mobile-settings-preferences .calendar-color-group{grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch;column-gap:8px;row-gap:8px}
+	body.native-android .mobile-settings-preferences .calendar-color-group .calendar-color{display:grid;grid-column:auto;grid-template-columns:minmax(0,1fr) 42px;align-items:center;gap:4px;width:100%;min-width:0;white-space:normal;line-height:1.15}
+	body.native-android .mobile-settings-preferences .calendar-color-group .calendar-color input{width:42px;height:42px;flex:0 0 42px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .topbar{height:auto;min-height:68px;padding:8px 0;flex-wrap:nowrap;justify-content:space-between;gap:8px}
+	body:not(.native-android) .app-shell .topbar .brand{display:flex;flex:0 0 auto;flex-direction:row;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:transparent}
+	body:not(.native-android) .app-shell .topbar .brand-mark{width:44px;height:44px;flex:0 0 44px}
+	body:not(.native-android) .app-shell .topbar .brand-copy{align-items:flex-start;gap:2px;text-align:left;white-space:nowrap}
+	body:not(.native-android) .app-shell .topbar .topbar-actions{display:flex;width:auto;flex:1 1 auto;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px;min-width:0;margin:0}
+	body:not(.native-android) .app-shell .topbar .topbar-locale-actions{display:flex;flex:0 0 auto;align-items:center;gap:6px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:98px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:72px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{display:flex;flex:1 1 0;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:4px;min-width:0;max-width:none;margin:0}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:auto;min-width:0;max-width:128px;flex:0 1 128px;padding:0 7px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:94px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:92px;max-width:92px;flex:0 1 92px;overflow:hidden;text-align:center;text-overflow:ellipsis;white-space:nowrap;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:auto;max-width:120px;min-width:0;flex:0 1 120px;overflow:hidden;padding:0 6px;text-overflow:ellipsis;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:auto;max-width:88px;min-width:0;flex:0 1 88px;overflow:hidden;padding:0 5px;text-overflow:ellipsis;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:112px;max-width:112px;min-width:0;flex:0 0 112px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{border:1px solid #d9654e;border-radius:7px;color:#a94735;background:#ffe1da}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton:hover{border-color:#b94d39;background:#ffd1c7}
+	body:not(.native-android) .app-shell .topbar .offline-status{max-width:64px;overflow:hidden;padding:4px 5px;text-overflow:ellipsis;font-size:8px}
+}
+
+@media (min-width: 761px) and (max-width: 1050px){
+	body:not(.native-android) .app-shell .topbar .brand-mark{width:36px;height:36px;flex-basis:36px}
+	body:not(.native-android) .app-shell .topbar .brand-copy>span:first-child{font-size:11px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:85px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:62px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-actions{gap:6px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{gap:3px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:120px;flex-basis:120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:84px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:88px;max-width:88px;flex-basis:88px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:105px;flex-basis:105px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:80px;flex-basis:80px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex-basis:104px;padding:0 5px;font-size:10px}
+}
+
+@media (min-width: 901px) and (max-width: 1050px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:120px;flex-basis:120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:84px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:88px;max-width:88px;flex-basis:88px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:105px;flex-basis:105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:80px;flex-basis:80px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex-basis:104px}
+}
+
+@media (min-width: 801px) and (max-width: 900px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:105px;flex-basis:105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:70px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:68px;max-width:68px;flex-basis:68px;font-size:8px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:88px;flex-basis:88px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:64px;flex-basis:64px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:88px;max-width:88px;flex-basis:88px;padding:0 4px;font-size:9px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+
+@media (min-width: 761px) and (max-width: 800px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{gap:2px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:96px;max-width:96px;flex:0 0 96px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:58px;max-width:58px;flex:0 0 58px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:78px;max-width:78px;flex:0 0 78px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:70px;max-width:70px;flex:0 0 70px;padding:0 3px;font-size:8px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:78px;max-width:78px;flex:0 0 78px}
+}
+
+@media (min-width: 801px) and (max-width: 900px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{gap:3px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:105px;max-width:105px;flex:0 0 105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:68px;max-width:68px;flex:0 0 68px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:88px;max-width:88px;flex:0 0 88px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:74px;max-width:74px;flex:0 0 74px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:88px;max-width:88px;flex:0 0 88px}
+}
+
+@media (min-width: 901px) and (max-width: 950px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:120px;max-width:120px;flex:0 0 120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:84px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:88px;max-width:88px;flex:0 0 88px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:105px;max-width:105px;flex:0 0 105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:84px;max-width:84px;flex:0 0 84px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex:0 0 104px}
+}
+
+@media (min-width: 951px) and (max-width: 1050px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:150px;max-width:150px;flex:0 0 150px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:116px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:100px;max-width:100px;flex:0 0 100px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:120px;max-width:120px;flex:0 0 120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:96px;max-width:96px;flex:0 0 96px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex:0 0 104px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+
+@media (min-width: 761px) and (max-width: 900px){
+	body:not(.native-android) .app-shell .topbar .brand{gap:6px}
+	body:not(.native-android) .app-shell .topbar .brand-mark{width:34px;height:34px;flex-basis:34px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:82px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:60px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:96px;flex-basis:96px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:78px;flex-basis:78px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:56px;flex-basis:56px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:78px;max-width:78px;flex-basis:78px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .web-welcome-banner{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;align-items:center;min-height:0;margin:0 0 22px;overflow:hidden;border:1px solid rgba(32,124,98,.22);border-radius:12px;background:transparent;box-shadow:0 8px 24px rgba(32,124,98,.12)}
+	body:not(.native-android) .app-shell .web-welcome-image{grid-column:1;grid-row:1;width:100%;height:auto;min-height:0;aspect-ratio:3/1;object-fit:contain;object-position:center}
+	body:not(.native-android) .app-shell .web-welcome-copy{grid-column:1;grid-row:2;display:flex;flex-direction:column;align-items:center;max-width:900px;margin:0 auto;padding:18px 24px 20px;text-align:center;color:var(--ink);background:transparent}
+	body:not(.native-android) .app-shell .web-welcome-eyebrow{display:inline-flex;align-items:center;gap:7px;margin:0 0 7px;color:var(--mint-strong);font-size:10px;font-weight:700;line-height:1.3;text-transform:uppercase}
+	body:not(.native-android) .app-shell .web-welcome-eyebrow::before{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--coral);content:""}
+	body:not(.native-android) .app-shell .web-welcome-copy h1{margin:0 0 7px;font-family:"Space Grotesk",sans-serif;font-size:30px;font-weight:700;line-height:1.12}
+	body:not(.native-android) .app-shell .web-welcome-highlight{color:var(--coral)}
+	body:not(.native-android) .app-shell .web-welcome-copy>p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+	body:not(.native-android) .app-shell .web-welcome-link{grid-column:1;grid-row:auto;align-self:center;min-height:42px;margin:12px 0 0;padding:0 18px;border:1px solid var(--coral);color:#fff;background:var(--coral);font-size:12px;font-weight:700;box-shadow:0 4px 12px rgba(32,124,98,.16);transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease}
+	body:not(.native-android) .app-shell .web-welcome-link:hover{transform:translateY(-2px);border-color:var(--ink);color:#fff;background:var(--ink);box-shadow:0 7px 16px rgba(32,33,31,.2)}
+	body:not(.native-android) .app-shell .web-welcome-link:focus-visible{outline:3px solid var(--mint-strong);outline-offset:3px}
 }
