@@ -1,0 +1,57 @@
+.intro-screen {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+  opacity: 1;
+  transition: opacity 400ms ease;
+}
+
+.intro-screen[hidden] {
+  display: none;
+}
+
+.intro-screen.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-video {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100vh;
+  object-fit: contain;
+}
+
+.intro-play-button,
+.intro-skip-button {
+  position: absolute;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, .65);
+  border-radius: 6px;
+  color: #fff;
+  background: rgba(0, 0, 0, .62);
+  font: 600 14px/1 "DM Sans", sans-serif;
+}
+
+.intro-play-button {
+  right: auto;
+  left: 20px;
+}
+
+.intro-play-button[hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-screen {
+    transition: none;
+  }
+}

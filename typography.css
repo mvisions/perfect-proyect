@@ -1,0 +1,5 @@
+body,
+body * {
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}

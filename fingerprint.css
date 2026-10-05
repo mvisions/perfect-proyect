@@ -1,0 +1,54 @@
+.work-schedule-row .time-action-row.fingerprint-row {
+  grid-template-columns: minmax(0, 1fr) 46px;
+}
+
+.work-schedule-row .time-action-row .fingerprint-button {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  min-height: 46px;
+  justify-self: end;
+  padding: 0;
+  border: 1px solid rgba(32, 124, 98, .24);
+  border-radius: 12px;
+  color: var(--mint-strong);
+  background: #e8f5ef;
+  box-shadow: 0 2px 8px rgba(23, 33, 31, .08);
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.work-schedule-row .time-action-row .fingerprint-button svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.work-schedule-row .time-action-row .fingerprint-button:hover {
+  border-color: var(--mint-strong);
+  color: #fff;
+  background: var(--mint-strong);
+  box-shadow: 0 4px 12px rgba(32, 124, 98, .2);
+  transform: translateY(-1px);
+}
+
+.work-schedule-row .time-action-row .fingerprint-button:focus-visible {
+  outline: 3px solid rgba(242, 125, 101, .65);
+  outline-offset: 3px;
+}
+
+.work-schedule-row .time-action-row .fingerprint-button:active {
+  transform: scale(.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-schedule-row .time-action-row .fingerprint-button {
+    transition: none;
+  }
+}
