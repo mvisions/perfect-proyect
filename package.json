@@ -34,7 +34,8 @@
     "@capgo/capacitor-social-login": "^8.5.12",
     "@material/web": "^2.5.0",
     "jspdf": "^4.2.1",
-    "jspdf-autotable": "^5.0.8"
+    "jspdf-autotable": "^5.0.8",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

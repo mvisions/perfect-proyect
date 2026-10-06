@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import QRCode from "qrcode";
 import { Capacitor } from "@capacitor/core";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { decryptDriveBackup, encryptDriveBackup } from "./drive-encryption.mjs";
@@ -204,6 +205,10 @@ const sharePunchesToggle = $("#sharePunchesToggle");
 const installButton = $("#installButton");
 const updateButton = $("#updateButton");
 const updateButtonLabel = $("#updateButtonLabel");
+const showQrButton = $("#showQrButton");
+const shareQrDialog = $("#shareQrDialog");
+const shareQrClose = $("#shareQrClose");
+const shareQrImage = $("#shareQrImage");
 const offlineStatus = $("#offlineStatus");
 const previewDaySelect = $("#previewDaySelect");
 const previewMonthYearControls = $("#previewMonthYearControls");
@@ -464,7 +469,12 @@ Object.assign(languagePairs, {
   "Comprobando...": "Checking...",
   "Actualizando...": "Updating...",
   "Instalar aplicación": "Install application",
-  "Comprobar actualizaciones": "Check for updates"
+  "Comprobar actualizaciones": "Check for updates",
+  "Mostrar QR": "Show QR",
+  "Compartir calendario": "Share calendar",
+  "Escanea el QR": "Scan the QR code",
+  "Cerrar ventana del QR": "Close QR window",
+  "Escanea el código con otro dispositivo para abrir la agenda compartida.": "Scan this code with another device to open the shared calendar."
 });
 Object.assign(languageTranslations.fr, {
   "Mostrar tema": "Afficher le thème",
@@ -479,7 +489,12 @@ Object.assign(languageTranslations.fr, {
   "Comprobando...": "Vérification...",
   "Actualizando...": "Mise à jour...",
   "Instalar aplicación": "Installer l’application",
-  "Comprobar actualizaciones": "Vérifier les mises à jour"
+  "Comprobar actualizaciones": "Vérifier les mises à jour",
+  "Mostrar QR": "Afficher le QR code",
+  "Compartir calendario": "Partager le calendrier",
+  "Escanea el QR": "Scannez le QR code",
+  "Cerrar ventana del QR": "Fermer la fenêtre QR",
+  "Escanea el código con otro dispositivo para abrir la agenda compartida.": "Scannez ce code avec un autre appareil pour ouvrir l’agenda partagé."
 });
 Object.assign(languageTranslations.it, {
   "Mostrar tema": "Mostra tema",
@@ -494,7 +509,12 @@ Object.assign(languageTranslations.it, {
   "Comprobando...": "Verifica...",
   "Actualizando...": "Aggiornamento...",
   "Instalar aplicación": "Installa l’applicazione",
-  "Comprobar actualizaciones": "Verifica aggiornamenti"
+  "Comprobar actualizaciones": "Verifica aggiornamenti",
+  "Mostrar QR": "Mostra il codice QR",
+  "Compartir calendario": "Condividi calendario",
+  "Escanea el QR": "Scansiona il codice QR",
+  "Cerrar ventana del QR": "Chiudi la finestra QR",
+  "Escanea el código con otro dispositivo para abrir la agenda compartida.": "Scansiona questo codice con un altro dispositivo per aprire l’agenda condivisa."
 });
 Object.assign(languageTranslations.de, {
   "Mostrar tema": "Thema anzeigen",
@@ -3363,14 +3383,36 @@ function sharedMonthPayload() {
   return { app: "memoria-laboral", version: 4, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, workedDayViewColor: workedDayViewColorInput.value, holidayColor: holidayColorInput.value, backgroundTheme: shareBackgroundToggle.checked ? selectedBackgroundTheme : null, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
 }
 
-async function shareMonthAgenda() {
+async function createSharedMonthUrl() {
   const encoded = await encryptSharedAgenda(sharedMonthPayload());
   const shareUrl = new URL(publicAppUrl);
   shareUrl.searchParams.set("import", encoded);
-  const link = shareUrl.toString();
+  return shareUrl.toString();
+}
+
+async function shareMonthAgenda() {
+  const link = await createSharedMonthUrl();
   const message = `Memoria laboral · ${months[state.month]} ${state.year}\nAbre este enlace para importar la agenda del mes:\n${link}`;
   window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener");
   showToast("Enlace del mes preparado para WhatsApp");
+}
+
+async function showMonthShareQr() {
+  showQrButton.disabled = true;
+  try {
+    const shareUrl = await createSharedMonthUrl();
+    shareQrImage.src = await QRCode.toDataURL(shareUrl, {
+      errorCorrectionLevel: "H",
+      margin: 2,
+      width: 280
+    });
+    shareQrDialog.showModal();
+  } catch (error) {
+    console.error("No se pudo generar el código QR", error);
+    showToast("No se pudo generar el código QR.");
+  } finally {
+    showQrButton.disabled = false;
+  }
 }
 
 // Valida e importa una agenda compartida, actualizando las preferencias incluidas.
@@ -3844,6 +3886,11 @@ $("#clearButton").addEventListener("click", async () => {
 // Inicializa la página con los datos guardados y prepara la agenda para usarla.
 $("#downloadButton").addEventListener("click", downloadPng);
 $("#shareMonthButton").addEventListener("click", shareMonthAgenda);
+showQrButton.addEventListener("click", showMonthShareQr);
+shareQrClose.addEventListener("click", () => shareQrDialog.close());
+shareQrDialog.addEventListener("click", (event) => {
+  if (event.target === shareQrDialog) shareQrDialog.close();
+});
 importSharedAgenda();
 listenNativeAgendaLinks();
 renderHolidayList();

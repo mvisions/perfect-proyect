@@ -70,6 +70,16 @@ body.dark-mode .record-stats div,body.night-mode .record-stats div{background:rg
 .agenda-zoom-dialog{position:fixed;inset:0;width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;padding:0;border:0;border-radius:0;color:var(--ink);background:var(--paper);overflow:hidden}
 .agenda-zoom-dialog[open]{display:flex;flex-direction:column;gap:0}
 .agenda-zoom-dialog::backdrop{background:rgba(16,24,21,.9)}
+.share-qr-dialog{position:fixed;inset:0;width:min(92vw,420px);max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);margin:auto;padding:22px;overflow:auto;border:1px solid var(--line);border-radius:16px;color:var(--ink);background:var(--card);box-shadow:0 20px 60px rgba(23,33,31,.24)}
+.share-qr-dialog[open]{display:grid;align-content:center;gap:14px}
+.share-qr-dialog::backdrop{background:rgba(16,24,21,.62);backdrop-filter:blur(2px)}
+.share-qr-header{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.share-qr-header .section-label{margin:0 0 4px}
+.share-qr-header h2{margin:0;font-family:"Space Grotesk",sans-serif;font-size:22px;line-height:1.2}
+.share-qr-close{display:grid;flex:0 0 42px;place-items:center;width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:50%;color:var(--ink);background:var(--card);font-size:26px;line-height:1}
+.share-qr-description{margin:0;color:var(--muted);font-size:13px;line-height:1.45;text-align:center}
+.share-qr-image{display:block;width:min(100%,280px);aspect-ratio:1;justify-self:center;border:8px solid #fff;border-radius:10px;background:#fff;image-rendering:pixelated}
+@media(max-width:420px){.share-qr-dialog{padding:18px}.share-qr-image{width:min(100%,250px)}}
 .agenda-zoom-toolbar{display:flex;flex:0 0 48px;align-items:center;justify-content:space-between;padding:0 12px}
 .agenda-zoom-close{display:grid;place-items:center;width:40px;height:40px;padding:0;border:1px solid var(--line);border-radius:50%;color:var(--ink);background:var(--card);font-size:27px;line-height:1}
 .agenda-zoom-scroll{flex:1 1 auto;min-height:0;width:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y}
@@ -577,4 +587,6 @@ body.native-android .record-card{order:1}
 	body:not(.native-android) .app-shell .web-welcome-link{grid-column:1;grid-row:auto;align-self:center;min-height:42px;margin:12px 0 0;padding:0 18px;border:1px solid var(--coral);color:#fff;background:var(--coral);font-size:12px;font-weight:700;box-shadow:0 4px 12px rgba(32,124,98,.16);transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease}
 	body:not(.native-android) .app-shell .web-welcome-link:hover{transform:translateY(-2px);border-color:var(--ink);color:#fff;background:var(--ink);box-shadow:0 7px 16px rgba(32,33,31,.2)}
 	body:not(.native-android) .app-shell .web-welcome-link:focus-visible{outline:3px solid var(--mint-strong);outline-offset:3px}
+	body:not(.native-android) .app-shell .intro-actions #showQrButton{box-sizing:border-box;width:132px;height:40px;min-height:40px;justify-content:center;padding:0 12px;font-size:11px}
+	body:not(.native-android) .app-shell .intro-actions #showQrButton .material-symbols-outlined{font-size:16px}
 }
