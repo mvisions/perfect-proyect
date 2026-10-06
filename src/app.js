@@ -3396,11 +3396,31 @@ function sharedMonthPayload() {
   return { app: "memoria-laboral", version: 4, month: state.month, year: state.year, group: groupInput.value.trim(), theme: themeSelect.value, weekdayColor: weekdayColorInput.value, weekendColor: weekendColorInput.value, workedDayViewColor: workedDayViewColorInput.value, holidayColor: holidayColorInput.value, backgroundTheme: shareBackgroundToggle.checked ? selectedBackgroundTheme : null, background: shareBackgroundToggle.checked ? customBackgroundData[state.month] : null, routes, customHolidays: customHolidays.filter((holiday) => holiday.date.startsWith(`${state.year}-${String(state.month + 1).padStart(2, "0")}-`)) };
 }
 
+let sharedMonthUrlFingerprint = null;
+let sharedMonthUrlPromise = null;
+
 async function createSharedMonthUrl() {
-  const encoded = await encryptSharedAgenda(sharedMonthPayload());
-  const shareUrl = new URL(publicAppUrl);
-  shareUrl.searchParams.set("import", encoded);
-  return shareUrl.toString();
+  const payload = sharedMonthPayload();
+  const fingerprint = JSON.stringify(payload);
+  if (fingerprint !== sharedMonthUrlFingerprint) {
+    sharedMonthUrlFingerprint = fingerprint;
+    sharedMonthUrlPromise = (async () => {
+      const encoded = await encryptSharedAgenda(payload);
+      const shareUrl = new URL(publicAppUrl);
+      shareUrl.searchParams.set("import", encoded);
+      return shareUrl.toString();
+    })();
+  }
+  const urlPromise = sharedMonthUrlPromise;
+  try {
+    return await urlPromise;
+  } catch (error) {
+    if (fingerprint === sharedMonthUrlFingerprint && urlPromise === sharedMonthUrlPromise) {
+      sharedMonthUrlFingerprint = null;
+      sharedMonthUrlPromise = null;
+    }
+    throw error;
+  }
 }
 
 async function shareMonthAgenda() {
