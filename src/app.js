@@ -3362,21 +3362,38 @@ async function deriveSharedKey(salt) {
   return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
 }
 
+async function compressSharedAgenda(bytes) {
+  if (typeof CompressionStream !== "function") return null;
+  const compressed = new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip"));
+  return new Uint8Array(await new Response(compressed).arrayBuffer());
+}
+
+async function decompressSharedAgenda(bytes) {
+  const decompressed = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return new Uint8Array(await new Response(decompressed).arrayBuffer());
+}
+
 // Cifra la agenda antes de compartirla para evitar exponer sus datos directamente.
 async function encryptSharedAgenda(payload) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const key = await deriveSharedKey(salt);
-  const base64Payload = encodeSharedAgenda(payload);
-  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(base64Payload));
-  return `ml2.${encodeBytes(salt)}.${encodeBytes(iv)}.${encodeBytes(encrypted)}`;
+  const compressedPayload = await compressSharedAgenda(new TextEncoder().encode(JSON.stringify(payload)));
+  const version = compressedPayload ? "ml3" : "ml2";
+  const plaintext = compressedPayload || new TextEncoder().encode(encodeSharedAgenda(payload));
+  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, plaintext);
+  return `${version}.${encodeBytes(salt)}.${encodeBytes(iv)}.${encodeBytes(encrypted)}`;
 }
 
 async function decodeSharedAgendaSecure(encoded) {
-  if (!encoded.startsWith("ml2.")) return decodeSharedAgenda(encoded);
+  if (!encoded.startsWith("ml2.") && !encoded.startsWith("ml3.")) return decodeSharedAgenda(encoded);
   const [, saltEncoded, ivEncoded, encryptedEncoded] = encoded.split(".");
   const key = await deriveSharedKey(decodeBytes(saltEncoded));
   const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: decodeBytes(ivEncoded) }, key, decodeBytes(encryptedEncoded));
+  if (encoded.startsWith("ml3.")) {
+    const decompressed = await decompressSharedAgenda(decrypted);
+    return JSON.parse(new TextDecoder().decode(decompressed));
+  }
   return decodeSharedAgenda(new TextDecoder().decode(decrypted));
 }
 
@@ -3435,15 +3452,23 @@ async function showMonthShareQr() {
   showQrButton.disabled = true;
   try {
     const shareUrl = await createSharedMonthUrl();
-    shareQrImage.src = await QRCode.toDataURL(shareUrl, {
-      errorCorrectionLevel: "H",
-      margin: 2,
-      width: 280
-    });
+    let qrImage;
+    for (const errorCorrectionLevel of ["H", "M", "L"]) {
+      try {
+        qrImage = await QRCode.toDataURL(shareUrl, { errorCorrectionLevel, margin: 2, width: 360 });
+        break;
+      } catch (error) {
+        if (!error.message?.includes("too big")) throw error;
+      }
+    }
+    if (!qrImage) throw new Error("El enlace supera la capacidad máxima del código QR.");
+    shareQrImage.src = qrImage;
     shareQrDialog.showModal();
   } catch (error) {
     console.error("No se pudo generar el código QR", error);
-    showToast("No se pudo generar el código QR.");
+    showToast(error.message?.includes("capacidad máxima")
+      ? "El enlace es demasiado largo para un QR. Desactiva la opción de incluir el fondo o comparte por WhatsApp."
+      : "No se pudo generar el código QR.");
   } finally {
     showQrButton.disabled = false;
   }
