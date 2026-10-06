@@ -1,0 +1,580 @@
+.theme-toggle{display:flex;align-items:center;gap:8px;align-self:center;margin:0;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}.theme-toggle select{width:112px;height:38px;padding:0 9px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--card);font-size:11px;font-weight:700;letter-spacing:0;text-transform:none}.theme-toggle select:focus{border-color:var(--mint-strong);outline:0;box-shadow:0 0 0 3px rgba(32,124,98,.12)}
+.topbar-actions{display:flex;align-items:center;gap:18px}.drive-button{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--card);font-size:11px;font-weight:700}.drive-button:hover{border-color:var(--mint-strong);background:var(--mint)}.drive-button:disabled{cursor:wait;opacity:.65}.drive-icon{color:#4285f4;font-size:16px;line-height:1}
+.install-button{min-height:34px;padding:0 10px;border:1px solid var(--coral);border-radius:8px;color:var(--coral);background:transparent;font-size:10px;font-weight:700}.install-button:hover{color:#fff;background:var(--coral)}.offline-status{padding:5px 7px;border-radius:6px;color:#a96d12;background:#fff0c9;font-size:9px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.drive-logout-button{min-height:34px;padding:0 9px;border:0;border-radius:7px;color:var(--muted);background:transparent;font-size:10px;font-weight:700}.drive-logout-button:hover{color:var(--coral);background:rgba(242,125,101,.1)}
+.record-button{min-height:34px;padding:0 11px;border:1px solid var(--coral);border-radius:8px;color:var(--coral);background:transparent;font-size:11px;font-weight:700}.record-button:hover{color:#fff;background:var(--coral)}
+.topbar-actions .record-button{box-sizing:border-box;width:150px;flex:0 0 150px;text-align:center;white-space:nowrap}
+.calendar-color{display:flex;align-items:center;gap:7px;align-self:center;margin:0;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}.calendar-color input{width:30px;height:28px;padding:2px;border:1px solid var(--line);border-radius:7px;cursor:pointer}.day-cell:not(.is-weekend):not(.has-route){background:var(--weekday-color)}.day-cell.is-weekend:not(.has-route){background:var(--weekend-color)}
+.month-enter{animation:month-enter .28s ease both}@keyframes month-enter{from{opacity:.2;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.day-cell.is-holiday{border-color:#e6c1b8;background:#fff7f4}.holiday-label{display:block;margin-top:-8px;color:var(--coral);font-size:8px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.day-cell.route-limpieza.has-route{background:#e5f1ff;border-color:#73a9dc}.day-cell.route-mantenimiento.has-route{background:#fff3d8;border-color:#e4b85e}.day-cell.route-reunion.has-route{background:#f3e7f8;border-color:#c18bd2}.day-cell.route-otro.has-route{background:#ffebe6;border-color:#e49a8b}.day-cell.route-limpieza.has-route .route-preview{color:#3c82c4}.day-cell.route-mantenimiento.has-route .route-preview{color:#b4781c}.day-cell.route-reunion.has-route .route-preview{color:#9b5bb4}.day-cell.route-otro.has-route .route-preview{color:#d15f4c}
+.month-summary{display:flex;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}.month-summary div{display:flex;align-items:baseline;gap:6px;flex:1;padding-right:12px;border-right:1px solid var(--line)}.month-summary div:last-child{border-right:0}.month-summary strong{font-family:"Space Grotesk",sans-serif;font-size:22px}.month-summary span{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase}
+body.dark-mode{--ink:#edf5f0;--muted:#9eafa7;--paper:#18211f;--card:#202b27;--line:#384943;--shadow:0 18px 50px rgba(0,0,0,.2)}body.dark-mode .app-shell{background:radial-gradient(circle at 91% 8%,rgba(32,124,98,.25),transparent 24rem),var(--paper)}body.dark-mode input,body.dark-mode select{color:var(--ink);background:#26332e;border-color:var(--line)}body.dark-mode .control-panel,body.dark-mode .agenda-preview{background:rgba(32,43,39,.82)}body.dark-mode .day-cell{color:var(--ink);background:#26332e}body.dark-mode .day-cell.is-holiday{background:#3a2b29}body.dark-mode .day-cell.is-weekend{background:#263747}body.dark-mode .day-cell.route-limpieza.has-route{background:#273b4c}body.dark-mode .day-cell.route-mantenimiento.has-route{background:#453a27}body.dark-mode .day-cell.route-reunion.has-route{background:#3d3043}body.dark-mode .day-cell.route-otro.has-route{background:#44302c}
+.night-mode{--ink:#f0dfc2;--muted:#b5a58d;--paper:#211d1a;--card:#2d2722;--line:#4b4035;--shadow:0 18px 50px rgba(0,0,0,.3)}body.night-mode .app-shell{background:radial-gradient(circle at 90% 8%,rgba(190,128,65,.16),transparent 24rem),var(--paper)}body.night-mode input,body.night-mode select{color:var(--ink);background:#362e27;border-color:var(--line)}body.night-mode .control-panel,body.night-mode .agenda-preview{background:rgba(45,39,34,.9)}body.night-mode .day-cell{color:var(--ink);background:#362e27}body.night-mode .day-cell.is-holiday{background:#49332b}body.night-mode .day-cell.is-weekend{background:#3b332c}
+@media(max-width:760px){.control-panel{align-items:stretch}.theme-toggle,.background-toggle,.calendar-color{align-self:center}.theme-toggle select{flex:1}.month-summary{gap:6px}.month-summary div{display:block;padding-right:5px}.month-summary strong{display:block;font-size:20px}.month-summary span{font-size:8px}}
+
+/* Stable control layout: every setting gets room for its label and value. */
+.control-panel{display:grid;grid-template-columns:minmax(170px,1.35fr) minmax(120px,.9fr) minmax(82px,.55fr) auto auto;align-items:end;gap:16px}
+.control-panel .field-group,.control-panel .compact-field{min-width:0;width:auto}
+.control-panel label{min-width:0;white-space:normal;overflow-wrap:anywhere}
+.theme-toggle,.background-toggle,.calendar-color,.solid-background{align-self:end;min-height:46px}
+.theme-toggle,.background-toggle{white-space:normal;line-height:1.25}
+.calendar-color-group{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:8px;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.42)}.calendar-color-title{grid-column:1 / -1;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.calendar-color{display:grid;grid-template-columns:minmax(0,1fr) 28px;align-items:center;gap:6px;min-width:0;margin:0;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;white-space:normal;line-height:1.15}.calendar-color input{width:28px}
+.background-toggle{grid-column:1 / 3}
+.background-options{grid-column:3 / -1;min-width:0}
+.solid-background{grid-column:1 / 3}
+.button-primary{max-width:100%;white-space:normal;text-align:center}
+.export-actions{display:flex;grid-column:1 / -1;gap:10px}.export-actions .button{flex:1}.button-share{display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#fff;background:#168c55;box-shadow:0 8px 18px rgba(22,140,85,.2);white-space:normal}.button-share:hover{background:#117344}.whatsapp-icon{display:inline-grid;place-items:center;width:20px;height:20px}.whatsapp-icon svg{display:block;width:20px;height:20px;fill:currentColor}
+.background-reset{max-width:100%;white-space:normal;height:auto;min-height:38px;line-height:1.2}
+@media(max-width:1050px){.control-panel{grid-template-columns:repeat(3,minmax(0,1fr))}.theme-toggle,.background-toggle,.calendar-color-group{align-self:center}.background-toggle{grid-column:auto}.calendar-color-group{grid-column:1 / -1}.background-options{grid-column:1 / -1}.solid-background{grid-column:auto}.export-actions{grid-column:1 / -1}.button-primary{grid-column:auto;justify-self:stretch}}
+@media(max-width:760px){.control-panel{grid-template-columns:1fr 1fr;gap:14px}.control-panel .field-group:first-child{grid-column:1 / -1}.theme-toggle,.background-toggle,.calendar-color-group,.solid-background{min-height:42px;align-self:center}.theme-toggle{grid-column:1 / -1}.calendar-color-group{grid-column:1 / -1;grid-template-columns:1fr 1fr}.calendar-color-title{grid-column:1 / -1}.background-toggle{grid-column:1 / -1;justify-self:start}.background-options{grid-column:1 / -1;width:100%}.background-options .background-reset{flex:1;min-width:170px}.solid-background{grid-column:1 / -1;justify-self:start}.export-actions{grid-column:1 / -1}.export-actions .button{min-width:0}.control-panel label{font-size:10px}}
+.drive-button span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media(max-width:760px){.topbar-actions{gap:5px}.drive-button,.record-button{max-width:145px;padding:0 8px}.drive-button span:last-child{max-width:102px}.brand>span:last-child{max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+.brand{flex-direction:column;align-items:center;gap:4px;padding:12px 18px;border:1px solid rgba(32,124,98,.22);border-radius:14px;background:rgba(255,255,255,.72)}
+.brand-copy{display:flex;flex-direction:column;align-items:center;gap:4px;align-content:center;max-width:100%;text-align:center;line-height:1.2}
+.brand-version{align-self:center;margin:0;color:var(--muted);font-family:"DM Sans",sans-serif;font-size:9px;font-weight:700;letter-spacing:.04em;line-height:1}
+@media(max-width:760px){.brand-version{font-size:8px}}
+@media(max-width:760px){.brand>span.brand-copy{max-width:none;overflow:visible;text-overflow:clip;white-space:normal}}
+.drive-tutorial{width:min(92vw,520px);padding:0;border:1px solid var(--line);border-radius:14px;color:var(--ink);background:var(--card);box-shadow:0 24px 80px rgba(23,33,31,.28)}.drive-tutorial::backdrop{background:rgba(23,33,31,.52);backdrop-filter:blur(3px)}.drive-tutorial-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px 24px 0}.drive-tutorial h2{margin:0;font-family:"Space Grotesk",sans-serif;font-size:24px;letter-spacing:-.04em}.drive-tutorial-close{width:32px;height:32px;padding:0;border:1px solid var(--line);border-radius:7px;color:var(--muted);background:transparent;font-size:22px;line-height:1}.drive-tutorial-close:hover{color:var(--ink);background:var(--mint)}.drive-tutorial-intro{margin:18px 24px 0;color:var(--muted);font-size:13px;line-height:1.5}.drive-tutorial-steps{display:grid;gap:12px;margin:20px 24px 0;padding:0;list-style:none;counter-reset:drive-step}.drive-tutorial-steps li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;color:var(--muted);font-size:12px;line-height:1.45;counter-increment:drive-step}.drive-tutorial-steps li::before{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;color:#fff;background:var(--mint-strong);font-weight:700;content:counter(drive-step)}.drive-tutorial-steps strong{color:var(--ink)}.drive-tutorial-note{margin:20px 24px 0;padding:10px 12px;border-left:3px solid var(--coral);color:var(--muted);background:rgba(242,125,101,.08);font-size:11px;line-height:1.45}.drive-tutorial-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:24px;padding:16px 24px;background:rgba(204,239,225,.18)}.drive-tutorial-actions .button{min-height:40px}.drive-tutorial[open]{animation:drive-tutorial-in .18s ease-out both}@keyframes drive-tutorial-in{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:520px){.drive-tutorial-header{padding:20px 18px 0}.drive-tutorial-intro,.drive-tutorial-steps,.drive-tutorial-note{margin-left:18px;margin-right:18px}.drive-tutorial-actions{padding:14px 18px}.drive-tutorial-actions .button{flex:1;min-width:0}.drive-tutorial h2{font-size:21px}}
+
+/* The selected weekday/weekend colors also cover days that already contain a route. */
+.day-cell:not(.is-empty):not(.is-weekend){background:var(--weekday-color)}
+.day-cell:not(.is-empty).is-weekend{background:var(--weekend-color)}
+.day-cell.route-limpieza.has-route{border-color:#3c82c4}.day-cell.route-mantenimiento.has-route{border-color:#d18b27}.day-cell.route-reunion.has-route{border-color:#9b5bb4}.day-cell.route-otro.has-route{border-color:#e16f5b}
+.day-cell.status-baja.has-route{border-color:#c65b5b;background:#f8dddd}.day-cell.status-asuntos-propios.has-route{border-color:#9b5bb4;background:#f0e1f5}.day-cell.status-descanso.has-route{border-color:#84928c;background:#edf1ef}.day-cell.status-festivo-trabajado.has-route{border-color:#d18b27;background:#fff0c9}.day-cell.status-baja .route-preview{color:#b44c4c}.day-cell.status-asuntos-propios .route-preview{color:#8950a2}.day-cell.status-descanso .route-preview{color:#66736d}.day-cell.status-festivo-trabajado .route-preview{color:#a96d12}
+body.dark-mode .day-cell:not(.is-empty):not(.is-weekend),body.night-mode .day-cell:not(.is-empty):not(.is-weekend){background:var(--weekday-color)}
+body.dark-mode .day-cell:not(.is-empty).is-weekend,body.night-mode .day-cell:not(.is-empty).is-weekend{background:var(--weekend-color)}
+body.dark-mode .day-cell:not(.is-empty).is-weekend.has-route,body.night-mode .day-cell:not(.is-empty).is-weekend.has-route{background:var(--weekend-color)}
+.day-cell:not(.is-empty).is-holiday,.day-cell:not(.is-empty).is-holiday.has-route,body.dark-mode .day-cell:not(.is-empty).is-holiday,body.night-mode .day-cell:not(.is-empty).is-holiday{background:var(--holiday-color,#fff0c9);border-color:#d18b27;color:#6f4b0d}.day-cell.is-holiday .route-preview{color:#a96d12}
+.holiday-manager{margin:0 0 22px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.42)}.holiday-manager summary{padding:14px 18px;color:var(--mint-strong);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.holiday-manager-body{padding:0 18px 16px}.holiday-fields{display:grid;grid-template-columns:minmax(150px,.7fr) minmax(180px,1fr) auto;align-items:end;gap:12px}.holiday-fields label{margin:0}.holiday-fields .button{height:42px}.holiday-list{display:grid;gap:6px;margin:14px 0 0;padding:0;list-style:none}.holiday-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:7px;color:var(--muted);background:rgba(204,239,225,.3);font-size:11px}.holiday-list .holiday-empty{color:var(--muted);background:transparent;font-style:italic}.holiday-remove{width:24px;height:24px;padding:0;border:0;border-radius:50%;color:var(--coral);background:transparent;font-size:18px;line-height:1}.holiday-remove:hover{background:rgba(242,125,101,.14)}body.dark-mode .holiday-manager,body.night-mode .holiday-manager{background:rgba(32,43,39,.7)}body.night-mode .holiday-manager{background:rgba(45,39,34,.8)}
+.record-card{margin-top:22px;padding:27px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow)}.record-heading{display:flex;align-items:end;justify-content:space-between;gap:16px}.record-heading h2{margin:0;font-family:"Space Grotesk",sans-serif;font-size:28px;letter-spacing:-.055em}.record-note{color:var(--muted);font-size:11px}.record-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 20px}.record-stats div{padding:13px;border:1px solid var(--line);border-radius:9px;background:rgba(204,239,225,.2)}.record-stats strong{display:block;font-family:"Space Grotesk",sans-serif;font-size:25px}.record-stats span{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase}.record-table-wrap{overflow-x:auto}.record-table{width:100%;border-collapse:collapse;font-size:12px}.record-table th{padding:9px 10px;color:var(--muted);font-size:9px;letter-spacing:.08em;text-align:left;text-transform:uppercase}.record-table td{padding:11px 10px;border-top:1px solid var(--line)}.record-table td:first-child{font-weight:700;white-space:nowrap}.status-pill{display:inline-block;padding:4px 7px;border-radius:99px;font-size:10px;font-weight:700}.status-pill.status-trabajado{color:#207c62;background:#dff4e8}.status-pill.status-festivo-trabajado{color:#a96d12;background:#fff0c9}.status-pill.status-baja{color:#b44c4c;background:#f8dddd}.status-pill.status-asuntos-propios{color:#8950a2;background:#f0e1f5}.status-pill.status-descanso{color:#66736d;background:#edf1ef}.record-empty{text-align:center;color:var(--muted);font-style:italic}
+.record-view .workspace>*:not(.record-card){display:none}.record-view .record-card:not([hidden]){display:block;margin-top:0;min-height:calc(100vh - 150px)}
+body.dark-mode .record-stats div,body.night-mode .record-stats div{background:rgba(204,239,225,.08)}
+@media(max-width:760px){.holiday-fields{grid-template-columns:1fr 1fr}.holiday-fields label:nth-child(2){grid-column:1 / -1}.holiday-fields .button{grid-column:1 / -1;width:100%}}
+@media(max-width:760px){.record-card{padding:18px 15px}.record-heading{display:block}.record-note{display:block;margin-top:8px}.record-stats{grid-template-columns:repeat(2,1fr)}.record-table{min-width:560px}}
+.status-pill.status-vacaciones{color:#287c75;background:#d8f0ed}.day-cell.status-vacaciones.has-route{border-color:#287c75;background:#d8f0ed}.day-cell.status-vacaciones .route-preview{color:#287c75}
+.annual-chart{margin:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0}.chart-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}.chart-heading h3{margin:0;font-family:"Space Grotesk",sans-serif;font-size:17px}.chart-legend{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px 12px;color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase}.chart-legend span::before{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:currentColor;content:""}.legend-worked{color:#207c62}.legend-holiday{color:#d18b27}.legend-vacation{color:#287c75}.legend-leave{color:#b44c4c}.legend-personal{color:#8950a2}.monthly-stats{display:grid;gap:7px}.month-row{display:grid;grid-template-columns:32px minmax(0,1fr) 24px;align-items:center;gap:9px}.month-name{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase}.month-track{display:flex;overflow:hidden;height:13px;border-radius:99px;background:var(--line)}.month-bar{display:block;min-width:0;flex:var(--bar-size) 1 0;height:100%}.bar-worked{background:#207c62}.bar-holiday{background:#d18b27}.bar-vacation{background:#287c75}.bar-leave{background:#b44c4c}.bar-personal{background:#8950a2}.month-total{color:var(--muted);font-size:10px;text-align:right}
+.chart-legend span{display:inline-flex;align-items:center;padding:5px 7px;border:1px solid var(--line);border-radius:6px;color:var(--ink);background:var(--card);white-space:nowrap}.chart-legend span::before{flex:0 0 7px}.legend-worked::before{background:#36b37e!important}.legend-holiday::before{background:#f2b84b!important}.legend-vacation::before{background:#32b9ad!important}.legend-leave::before{background:#ed6a6a!important}.legend-personal::before{background:#be78d8!important}
+@media(max-width:760px){.record-stats{grid-template-columns:repeat(2,1fr)}.record-stats div:first-child{grid-column:1 / -1}.chart-heading{display:block}.chart-legend{justify-content:flex-start;margin-top:12px;line-height:1.5}.month-row{grid-template-columns:28px minmax(0,1fr) 20px}}
+.legend-worked,.bar-worked{color:#2f6fed;background-color:#2f6fed}.legend-holiday,.bar-holiday{color:#e09a2d;background-color:#e09a2d}.legend-vacation,.bar-vacation{color:#0f9d8a;background-color:#0f9d8a}.legend-leave,.bar-leave{color:#d9534f;background-color:#d9534f}.legend-personal,.bar-personal{color:#8b5cf6;background-color:#8b5cf6}
+.sync-status{max-width:150px;color:var(--muted);font-size:10px;font-weight:700;line-height:1.2;text-align:right}.sync-status.is-pending{color:var(--coral)}.sync-now-button{min-height:30px;padding:0 8px;border:1px solid var(--mint-strong);border-radius:7px;color:var(--mint-strong);background:transparent;font-size:10px;font-weight:700}.sync-now-button:hover{color:var(--ink);background:var(--mint)}.record-stats{grid-template-columns:repeat(5,1fr)}.record-export{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}.record-export>span{margin-right:auto;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.record-export .button{height:34px;font-size:10px}.record-export .button:hover{color:var(--ink)}
+.calendar-card{display:none}.preview-heading{align-items:center}.preview-day-picker{display:flex;align-items:center;gap:8px;margin:0;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.preview-day-picker select{width:108px;height:36px;padding:0 8px;font-size:11px;letter-spacing:0;text-transform:none}.agenda-preview{margin-top:0}.content-grid{grid-template-columns:minmax(280px,.8fr);max-width:430px;margin:22px auto 0}.editor-card{width:100%}
+.content-grid{display:block;max-width:640px;margin:22px auto 0}.route-manager{min-height:0;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:none}.route-summary{padding:16px 18px;cursor:pointer;list-style:none}.route-summary::-webkit-details-marker{display:none}.route-summary::after{float:right;color:var(--muted);content:"+";font-size:18px;line-height:1}.route-manager[open] .route-summary::after{content:"−"}.route-summary .editor-topline{margin-bottom:8px}.route-summary h2{margin:0;font-family:"Space Grotesk",sans-serif;font-size:21px;letter-spacing:-.04em}.route-manager .editor-topline .section-label{color:var(--mint-strong)}.route-manager .editor-hint,.route-manager .route-form,.route-manager .empty-state{margin-left:18px;margin-right:18px}.route-manager .editor-hint{color:var(--muted)}.route-manager .route-form{padding-bottom:20px}.route-manager .route-form label{color:var(--muted)}.route-manager .route-form input,.route-manager .route-form select{color:var(--ink);background:var(--paper);border-color:var(--line)}.route-manager .empty-state{margin-top:20px;margin-bottom:20px}
+.workspace{display:flex;flex-direction:column}.agenda-preview{order:2}.content-grid{order:3}.record-card{order:4}
+.content-grid{display:contents}.route-manager{order:1;width:min(100%,1260px);margin:22px auto 0}.route-manager.editor-card{background:rgba(255,255,255,.42)!important;color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:none}.route-manager .route-summary{padding:14px 18px}.route-manager .editor-topline{margin-bottom:0}.route-manager .section-label{color:var(--mint-strong)}.route-manager .day-badge{width:28px;height:28px}.route-manager .editor-hint{padding:0 18px;color:var(--muted)}body.dark-mode .route-manager,body.night-mode .route-manager{background:rgba(32,43,39,.7)!important}
+.agenda-preview{width:100%;margin-top:22px;border-radius:16px 16px 0 0;border-bottom:0;box-shadow:var(--shadow)}.content-grid{width:100%;max-width:none;margin:0;padding:0 27px 27px;border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px;background:var(--card);box-shadow:var(--shadow)}.editor-card{max-width:430px;margin:0 auto;border:0;box-shadow:none;background:transparent}
+@media(max-width:760px){.content-grid{padding:0 15px 15px}.agenda-preview{padding:18px 15px}.editor-card{padding:20px 0}}
+@media(max-width:1050px){.record-stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.topbar-actions{gap:5px}.sync-status{display:none}.sync-now-button{font-size:9px}.record-stats{grid-template-columns:repeat(2,1fr)}.record-export{align-items:stretch}.record-export>span{width:100%;margin:0}.record-export .button{flex:1;min-width:0}}
+.route-manager.editor-card{background:var(--card)!important;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0;min-height:0}
+.route-manager.editor-card{width:min(100%,1260px);max-width:1260px;margin:22px auto 0}
+.agenda-preview canvas{cursor:pointer}
+.agenda-zoom-dialog{position:fixed;inset:0;width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;padding:0;border:0;border-radius:0;color:var(--ink);background:var(--paper);overflow:hidden}
+.agenda-zoom-dialog[open]{display:flex;flex-direction:column;gap:0}
+.agenda-zoom-dialog::backdrop{background:rgba(16,24,21,.9)}
+.agenda-zoom-toolbar{display:flex;flex:0 0 48px;align-items:center;justify-content:space-between;padding:0 12px}
+.agenda-zoom-close{display:grid;place-items:center;width:40px;height:40px;padding:0;border:1px solid var(--line);border-radius:50%;color:var(--ink);background:var(--card);font-size:27px;line-height:1}
+.agenda-zoom-scroll{flex:1 1 auto;min-height:0;width:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y}
+.agenda-zoom-scroll canvas{display:block;width:auto;height:100%;max-width:none;margin:0 auto}
+.form-panel{width:min(100%,1260px);margin:22px auto 0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}.form-panel .holiday-manager{margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent}.form-panel .content-grid{display:contents}.form-panel .route-manager.editor-card{width:100%;max-width:none;margin:0;border:0;border-radius:0;background:transparent!important}.form-panel .route-summary{border-radius:0}.form-panel .route-manager .editor-hint,.form-panel .route-manager .route-form,.form-panel .route-manager .empty-state{margin-left:18px;margin-right:18px}
+.calendar-color-group{grid-template-columns:repeat(2,max-content);justify-content:start;column-gap:28px}.calendar-color-group .calendar-color{display:flex;width:auto;min-width:0;justify-content:flex-start;align-items:center;gap:9px}.calendar-color-group .calendar-color input{flex:0 0 28px;justify-self:auto}
+@media(max-width:380px){.calendar-color-group{grid-template-columns:minmax(0,1fr)}.calendar-color-group .calendar-color{grid-column:1 / -1}}
+.work-duration{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}.work-duration strong{color:var(--mint-strong);font-family:"Space Grotesk",sans-serif;font-size:17px;letter-spacing:0;text-transform:none}
+.time-action-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}.time-action-row input{min-width:0}.time-action-row button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:0 12px;border:1px solid var(--mint-strong);border-radius:8px;color:#fff;background:var(--mint-strong);font-size:10px;font-weight:700;white-space:nowrap}.time-action-row button:hover{background:#17634e}.time-action-row button span{font-size:17px;line-height:1}@media(max-width:760px){.time-action-row{grid-template-columns:1fr}.time-action-row button{width:100%}}
+.clock-picker{display:grid;grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr);align-items:center;gap:6px;min-width:0}.clock-picker select{width:100%;min-width:0;text-align:center}.clock-picker>span{color:var(--ink);font-size:18px;font-weight:700;text-align:center}
+.time-action-row .clock-picker{width:190px;grid-template-columns:82px 12px 82px;flex:0 0 190px}.time-action-row .clock-picker select{height:46px;padding:0 8px}.time-action-row{grid-template-columns:minmax(190px,auto) auto;justify-content:start}
+@media(max-width:760px){.time-action-row{grid-template-columns:190px;justify-content:start}.time-action-row button{width:190px}}
+.work-schedule-row{display:grid;grid-column:1 / -1;grid-template-columns:minmax(0,1.3fr) minmax(150px,.8fr) minmax(0,1.3fr);align-items:end;gap:12px;min-width:0}
+.work-schedule-row .time-action-field,.work-schedule-row .shift-field{min-width:0}
+.work-schedule-row .time-action-field>label,.work-schedule-row .shift-field>label{display:block;margin:0 0 8px!important}
+.work-schedule-row .time-action-row{grid-template-columns:minmax(0,1fr) minmax(110px,.9fr);justify-content:stretch;gap:6px}
+.work-schedule-row .time-action-row .clock-picker{width:auto;min-width:0;grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr);flex:1 1 auto;gap:3px}
+.work-schedule-row .time-action-row .clock-picker select{min-width:0;padding:0 4px;font-size:12px}
+.work-schedule-row .time-action-row button{width:auto;min-width:0;padding:0 6px;gap:4px;font-size:14px;white-space:normal}
+.work-schedule-row .shift-field select{width:100%;min-width:0}
+@media(max-width:760px){.work-schedule-row{grid-template-columns:minmax(0,1fr)}.work-schedule-row .time-action-row{grid-template-columns:minmax(0,1fr)}.work-schedule-row .time-action-row .clock-picker{width:100%;grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr);flex:1 1 auto;gap:8px}.work-schedule-row .time-action-row button{width:100%}}
+.theme-toggle{grid-column:4}.sound-toggle{display:flex;align-items:center;gap:8px;align-self:end;min-height:46px;margin:0;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}.sound-toggle input{width:16px;height:16px;accent-color:var(--coral)}.calendar-color-group{grid-column:4 / 6}
+@media(max-width:1050px){.theme-toggle,.sound-toggle{grid-column:auto}.calendar-color-group{grid-column:1 / -1}}@media(max-width:760px){.theme-toggle,.sound-toggle{grid-column:1 / -1;min-height:42px;align-self:center}.calendar-color-group{grid-column:1 / -1}}
+.extra-hours-control{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700}.extra-hours-control>span{margin-right:auto;text-transform:uppercase;letter-spacing:.06em}.extra-hours-control div{display:flex;align-items:center;gap:8px}.extra-hours-control button{width:28px;height:28px;padding:0;border:1px solid var(--line);border-radius:7px;color:var(--ink);background:var(--card);font-size:18px;line-height:1}.extra-hours-control button:hover{border-color:var(--mint-strong);background:var(--mint)}.extra-hours-control strong{min-width:22px;color:var(--ink);font-size:16px;text-align:center}.extra-hours-control small{width:100%;color:var(--muted);font-size:9px;font-weight:500}.legend-extra{color:#e06b3c}.legend-extra::before{background:#e06b3c!important}.bar-extra{background:#e06b3c}.record-stats{grid-template-columns:repeat(7,1fr)}
+.status-pill.status-ampliaciones{color:#5367b8;background:#e2e7ff}.day-cell.status-ampliaciones.has-route{border-color:#5367b8;background:#e2e7ff}.day-cell.status-ampliaciones .route-preview{color:#5367b8}.legend-extension{color:#5367b8}.legend-extension::before{background:#5367b8!important}.bar-extension{background:#5367b8}
+.toast#toast,.toast#toast.is-visible{color:#fff!important;background:#17211f!important;border:1px solid rgba(255,255,255,.35);font-size:14px;font-weight:700;line-height:1.35;box-shadow:0 14px 32px rgba(0,0,0,.38)}
+.toast{color:#fff!important;background:#17211f!important;border:1px solid rgba(255,255,255,.22);box-shadow:0 12px 28px rgba(0,0,0,.3);font-weight:700}
+.button-primary{color:#fff!important;background:#d9654e;box-shadow:0 8px 18px rgba(217,101,78,.24)}.button-primary:hover{color:#fff!important;background:#b94d39}.button-dark{color:#fff!important;background:#207c62;border:1px solid #17634e}.button-dark:hover{color:#fff!important;background:#17634e}.button-quiet{color:var(--ink)!important;background:var(--card);border:1px solid var(--line);box-shadow:none}.button-quiet:hover{color:var(--ink)!important;background:var(--mint);border-color:var(--mint-strong)}.background-reset{color:var(--ink)!important;background:var(--card)!important;border:1px solid var(--line)!important}.background-reset:hover{color:var(--ink)!important;background:var(--mint)!important}.drive-button,.record-button,.sync-now-button,.install-button{color:var(--ink);background:var(--card)}.drive-button:hover,.sync-now-button:hover{color:var(--ink);background:var(--mint)}.record-button:hover,.install-button:hover{color:#fff;background:var(--coral)}.offline-status{color:#704b08;background:#ffe6a8}
+.share-punches-toggle{display:inline-flex;align-items:center;gap:6px;margin:0;padding:6px 10px;border:1px solid var(--line);border-radius:7px;color:var(--ink);background:var(--card);font-size:10px;font-weight:700;white-space:nowrap}.share-punches-toggle input{appearance:none;width:18px;height:18px;margin:0;border:2px solid var(--muted);border-radius:4px;background:var(--paper);cursor:pointer}.share-punches-toggle input:checked{border-color:var(--mint-strong);background:var(--mint-strong);box-shadow:inset 0 0 0 3px var(--card)}
+.share-background-toggle{display:inline-flex;align-items:center;gap:6px;margin:0;padding:6px 10px;border:1px solid var(--line);border-radius:7px;color:var(--ink);background:var(--card);font-size:10px;font-weight:700;white-space:nowrap}.share-background-toggle input{width:16px;height:16px;accent-color:var(--mint-strong)}.share-background-toggle input:disabled{opacity:.45}
+.export-actions .share-background-toggle,.export-actions .share-punches-toggle{display:flex;grid-column:1 / -1;align-items:center;justify-content:center;width:100%;min-height:46px;margin:0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--card);font-size:10px;font-weight:700;letter-spacing:.04em;white-space:nowrap}.export-actions .share-background-toggle input,.export-actions .share-punches-toggle input{appearance:none;width:18px;height:18px;margin:0;border:2px solid var(--muted);border-radius:4px;background:var(--paper);cursor:pointer}.export-actions .share-background-toggle input:checked,.export-actions .share-punches-toggle input:checked{border-color:var(--mint-strong);background:var(--mint-strong);box-shadow:inset 0 0 0 3px var(--card)}.export-actions .share-background-toggle input:disabled{opacity:.45;cursor:not-allowed}
+.agenda-preview .export-actions{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.background-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:10px;width:100%;grid-column:1 / -1}.background-options .background-file,.background-options .background-reset,.background-options .share-punches-toggle{display:flex;align-items:center;justify-content:center;width:100%;min-height:42px;margin:0;text-align:center}.background-options .background-reset{padding:0 12px}.export-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;gap:10px;width:100%;grid-column:1 / -1}.export-actions .button,.export-actions .share-background-toggle{width:100%;min-width:0;min-height:46px;height:auto;justify-content:center}.export-actions .button{padding:8px 12px}.export-actions .share-background-toggle{font-size:10px;text-align:center;white-space:normal}.export-actions .button-share{background:#168c55}.export-actions .button-share:hover{background:#117344}
+.background-options .background-theme{display:flex;grid-column:1 / -1;align-items:center;gap:8px;margin:0;color:var(--muted);font-size:11px;font-weight:700}.background-options .background-theme select{flex:1;min-width:0;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--card);font-size:12px}
+@media(max-width:1050px){.background-options{grid-template-columns:repeat(3,minmax(0,1fr))}.export-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.background-options{grid-template-columns:1fr}.export-actions{grid-template-columns:1fr 1fr}.export-actions .share-background-toggle{grid-column:1 / -1}.background-options .background-file,.background-options .background-reset,.background-options .share-punches-toggle{min-height:44px}}
+.control-panel{grid-template-columns:minmax(180px,1.3fr) minmax(130px,.9fr) minmax(86px,.6fr) minmax(120px,auto) minmax(100px,auto);gap:14px}.control-panel .calendar-color-group{grid-column:1 / -1}.control-panel .background-toggle{grid-column:1 / 2}.control-panel .background-options{grid-column:2 / 5}.control-panel .solid-background{grid-column:5 / -1}.control-panel .export-actions{grid-template-columns:repeat(3,minmax(0,1fr));display:grid}
+@media(max-width:1050px){.control-panel{grid-template-columns:repeat(3,minmax(0,1fr))}.control-panel .calendar-color-group{grid-column:1 / -1}.control-panel .background-toggle{grid-column:auto}.control-panel .background-options{grid-column:1 / -1}.control-panel .solid-background{grid-column:auto}.control-panel .export-actions{grid-column:1 / -1;grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.control-panel{grid-template-columns:1fr 1fr;gap:12px}.control-panel .calendar-color-group,.control-panel .background-toggle,.control-panel .background-options,.control-panel .solid-background,.control-panel .export-actions{grid-column:1 / -1}.control-panel .export-actions{grid-template-columns:1fr 1fr}.control-panel .export-actions .share-background-toggle{grid-column:1 / -1}}
+@media(max-width:760px){.agenda-preview .export-actions{grid-template-columns:1fr;gap:8px}.agenda-preview .export-actions .button,.agenda-preview .export-actions .share-background-toggle,.agenda-preview .export-actions .share-punches-toggle{grid-column:1 / -1;width:100%;min-height:46px}.agenda-preview .export-actions .button{white-space:nowrap}.agenda-preview .export-actions .share-background-toggle,.agenda-preview .export-actions .share-punches-toggle{justify-content:center}}
+.route-fields-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.route-fields-row label{margin-top:18px}
+@media(max-width:520px){.route-fields-row{grid-template-columns:minmax(0,1fr)}}
+#shareButton{display:none!important}
+.privacy-policy-link{color:inherit;font-size:inherit;font-weight:700;text-underline-offset:3px}
+.privacy-policy-link:focus-visible{outline:2px solid var(--mint-strong);outline-offset:3px}
+#entryNowButton,#exitNowButton{font-size:14px}
+.control-panel .background-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+.control-panel .background-controls{display:flex;grid-column:1 / -1;align-items:center;gap:14px;min-width:0}
+.control-panel .background-toggle{grid-column:auto;flex:0 0 auto;white-space:nowrap}
+.control-panel .background-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));flex:1 1 auto;grid-column:auto;align-items:center;gap:10px;width:auto;min-width:0}
+.control-panel .background-options[hidden]{display:none}
+.control-panel .background-options .background-theme{flex:1 1 0;grid-column:auto;min-width:0}
+.control-panel .background-options .background-theme span{white-space:nowrap}
+.control-panel .background-options .background-file,.control-panel .background-options .background-reset{flex:0 1 auto;width:auto;min-width:0;min-height:42px;white-space:nowrap}
+.control-panel .background-options .background-reset{padding:0 12px}
+.control-panel .background-options .background-file,.control-panel .background-options .background-reset{flex:1 1 0}
+@media(max-width:1050px) and (min-width:761px){.control-panel .background-controls{gap:10px}.control-panel .background-options{gap:8px}.control-panel .background-options .background-file,.control-panel .background-options .background-reset{padding:0 8px;font-size:10px}}
+@media(max-width:760px){.control-panel .background-controls{align-items:stretch;flex-direction:column;gap:10px}.control-panel .background-toggle{align-self:flex-start}.control-panel .background-options{grid-template-columns:1fr;align-items:stretch}.control-panel .background-options .background-theme{width:100%;min-width:0}.control-panel .background-options .background-file,.control-panel .background-options .background-reset{width:100%;min-height:44px}}
+.agenda-preview .export-actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.agenda-preview .export-actions .share-background-toggle,.agenda-preview .export-actions .share-punches-toggle{grid-column:auto;width:100%;min-width:0;min-height:46px;padding:6px 8px;white-space:normal;text-align:center}
+@media(max-width:1050px) and (min-width:761px){.agenda-preview .export-actions{grid-template-columns:repeat(4,minmax(0,1fr))}.agenda-preview .export-actions .button{padding:8px 6px;font-size:11px}}
+@media(max-width:760px){.agenda-preview .export-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.agenda-preview .export-actions .share-background-toggle,.agenda-preview .export-actions .share-punches-toggle{grid-column:auto}}
+.footer{align-items:center;gap:12px;flex-wrap:wrap}
+.control-panel .theme-toggle{display:flex;flex-direction:column;align-items:stretch;align-self:end;justify-self:stretch;gap:5px;min-width:0;margin:0;white-space:normal}
+.control-panel .theme-toggle>span{display:block;line-height:1.2}
+.control-panel .theme-toggle select{width:100%;min-width:0;flex:0 0 38px}
+@media(max-width:760px){.control-panel .theme-toggle{grid-column:1 / -1;justify-self:stretch;align-self:stretch}}
+.footer-credit{margin-left:auto;text-align:right}
+@media(max-width:760px){.footer{justify-content:space-between;gap:8px 14px}.footer-credit{flex-basis:100%;margin:0;text-align:center}}
+body.dark-mode .button-quiet,body.night-mode .button-quiet{color:var(--ink)!important;background:var(--card);border-color:var(--line)}body.dark-mode .button-quiet:hover,body.night-mode .button-quiet:hover{color:var(--ink)!important;background:var(--mint)}
+.background-file{color:#fff!important;background:#207c62!important;border-color:#17634e!important;font-weight:700}.background-file:hover{color:#fff!important;background:#17634e!important}
+.control-panel label,.holiday-fields label,.route-manager label,.background-file,.solid-background,.background-toggle,.theme-toggle,.sound-toggle{font-size:12px;color:var(--ink);line-height:1.3}.control-panel input,.control-panel select{font-size:14px}.button{font-size:14px}.calendar-help,.preview-credit,.record-note{font-size:12px;color:var(--muted)}.weekdays{font-size:12px}.route-preview{font-size:12px}.route-time{font-size:11px}.calendar-legend{font-size:12px}.month-summary span,.record-stats span{font-size:11px}.record-table{font-size:13px}.record-table th{font-size:11px}.record-table td{font-size:13px}.sync-status,.sync-now-button,.drive-logout-button,.record-button,.install-button{font-size:12px}.holiday-list li,.holiday-empty{font-size:12px}.chart-legend{font-size:11px}.month-name,.month-total{font-size:11px}.extra-hours-control{font-size:12px}.extra-hours-control small{font-size:11px}
+.topbar-actions{min-width:0}.topbar-actions [hidden]{display:none!important}@media(max-width:760px){.topbar{height:auto;min-height:66px;padding:10px 0;flex-wrap:wrap;gap:8px}.topbar-actions{width:100%;flex:1 1 100%;display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-width:0}.topbar-actions .drive-button{max-width:none;flex:1 1 150px}.topbar-actions .sync-now-button,.topbar-actions .drive-logout-button,.topbar-actions .record-button{flex:0 1 auto;max-width:none;white-space:nowrap}.topbar-actions .sync-status,.topbar-actions .topbar-note{display:none}}
+.language-toggle{display:inline-flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:7px;background:var(--card)}.language-toggle button{min-height:27px;padding:0 6px;border:0;border-radius:5px;color:var(--muted);background:transparent;font-size:10px;font-weight:700}.language-toggle button.is-active{color:#fff;background:var(--mint-strong)}
+@media(max-width:760px){.language-toggle{order:3}.language-toggle button{min-height:30px}}
+.annual-chart.is-fan .fan-chart{display:grid}.annual-chart.is-fan .monthly-stats{display:none}@media(max-width:760px){.annual-chart.is-fan .fan-chart{width:220px;margin:22px auto 16px}.annual-chart.is-fan .fan-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;font-size:9px;text-align:center}.annual-chart.is-fan .chart-legend{display:none}}
+.chart-view-toggle .chart-view-button{min-width:76px;border:1px solid var(--line);color:var(--muted);background:var(--card);font-weight:700}.chart-view-toggle .chart-view-button:hover{color:var(--ink);border-color:var(--coral);background:rgba(242,125,101,.12)}.chart-view-toggle .chart-view-button.is-active{color:#fff!important;background:var(--coral);border-color:var(--coral);box-shadow:0 5px 12px rgba(242,125,101,.28)}
+.record-stats{grid-template-columns:repeat(5,1fr)}.record-comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}.record-comparison article{display:grid;gap:5px;padding:16px;border:1px solid var(--line);border-radius:10px;background:rgba(204,239,225,.14)}.comparison-label{color:var(--mint-strong);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.record-comparison strong{font-family:"Space Grotesk",sans-serif;font-size:24px}.record-comparison small{color:var(--muted);font-size:11px;font-weight:600}@media(max-width:1050px){.record-stats{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.record-stats{grid-template-columns:repeat(2,1fr)}.record-comparison{grid-template-columns:1fr}}
+.chart-view-toggle{display:flex;gap:4px;margin-left:auto}.chart-view-button{min-height:28px;padding:0 9px;border:1px solid var(--line);border-radius:6px;color:var(--muted);background:var(--card);font-size:10px;font-weight:700}.chart-view-button.is-active{color:#fff;background:var(--mint-strong);border-color:var(--mint-strong)}.fan-chart{position:relative;display:grid;place-items:center;width:min(300px,70vw);aspect-ratio:1;margin:24px auto 14px;border-radius:50%;background:var(--line);box-shadow:inset 0 0 0 18px var(--card),0 12px 24px rgba(0,0,0,.12)}.fan-core{display:grid;place-items:center;width:45%;aspect-ratio:1;border-radius:50%;color:var(--ink);background:var(--card);text-align:center}.fan-core strong{font-family:"Space Grotesk",sans-serif;font-size:30px}.fan-core span{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase}.fan-labels{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 10px;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase}.fan-labels span::before{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:var(--fan-color);content:""}.annual-chart.is-fan .monthly-stats{display:none}.annual-chart:not(.is-fan) .fan-chart,.annual-chart:not(.is-fan) .fan-labels{display:none}
+@media(max-width:760px){.chart-view-toggle{margin:12px 0 0}.chart-heading{position:relative}.fan-chart{width:min(260px,76vw)}}
+.record-tabs{display:flex;gap:4px;margin:24px 0 20px;padding:4px;border:1px solid var(--line);border-radius:9px;background:rgba(204,239,225,.12)}.record-tab{flex:1;min-height:38px;border:0;border-radius:6px;color:var(--muted);background:transparent;font-size:12px;font-weight:700}.record-tab:hover{color:var(--ink);background:rgba(204,239,225,.3)}.record-tab.is-active{color:#fff;background:var(--mint-strong);box-shadow:0 4px 10px rgba(32,124,98,.2)}.record-tab-panel[hidden]{display:none}.record-tab-panel{min-width:0}@media(max-width:760px){.record-tabs{margin:18px 0 16px}.record-tab{font-size:11px;padding:0 5px}}
+@media(max-width:1050px){.record-stats{grid-template-columns:repeat(4,1fr)}}@media(max-width:760px){.record-stats{grid-template-columns:repeat(2,1fr)}}
+.annual-chart.is-fan .monthly-stats{display:none!important}.annual-chart.is-fan .fan-chart{display:grid!important}.annual-chart.is-fan .fan-labels{display:grid!important}
+@media(max-width:760px){.annual-chart.is-fan .fan-chart{width:220px;height:220px;margin:18px auto;border-radius:50%;box-shadow:inset 0 0 0 14px var(--card),0 8px 18px rgba(0,0,0,.18)}.annual-chart.is-fan .fan-core{width:46%}.annual-chart.is-fan .fan-core strong{font-size:25px}.annual-chart.is-fan .fan-labels{grid-template-columns:repeat(4,1fr);gap:7px 4px;text-align:center;font-size:9px;line-height:1.2}.annual-chart.is-fan .fan-labels span{white-space:nowrap}}
+.topbar{height:auto;min-height:78px;padding-top:28px}
+.brand-mark{display:block;width:192px;height:192px;flex:0 0 192px;object-fit:contain;background:transparent}
+.brand-mark::before,.brand-mark::after,.brand-lens{display:none}
+.control-panel .advanced-options{grid-column:1/-1;min-width:0;border-top:1px solid var(--line);padding-top:10px}
+.advanced-options>summary{min-height:40px;display:flex;align-items:center;color:var(--mint-strong);font-size:12px;font-weight:700;cursor:pointer}
+.advanced-options-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,1fr);align-items:center;gap:12px;padding-top:10px}
+.advanced-options-body .calendar-color-group,.advanced-options-body .background-controls,.advanced-options-body .solid-background{grid-column:1/-1;width:100%;min-width:0}
+@media(max-width:760px){.advanced-options>summary{min-height:44px}.advanced-options-body{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:1050px){.topbar{height:auto;flex-wrap:wrap;gap:10px;padding:12px 0}.topbar-actions{width:100%}}
+@media(max-width:760px){.brand-mark{width:min(38vw,144px);height:min(38vw,144px);flex-basis:min(38vw,144px)}}
+.drive-tutorial-steps li{position:relative;display:block;min-width:0;padding-left:38px}
+.drive-tutorial-steps li::before{position:absolute;top:0;left:0}
+.topbar{justify-content:flex-start}
+.topbar-actions{flex:1 1 auto;min-width:0;margin-left:30px;justify-content:flex-start;gap:clamp(16px,2.2vw,30px)}
+@media(max-width:1050px){.topbar-actions{margin-left:0;justify-content:flex-start;gap:clamp(12px,2vw,22px)}}
+@media(max-width:760px){.topbar{justify-content:center}.topbar-actions{justify-content:center;gap:6px}}
+.topbar-actions{flex-wrap:wrap;row-gap:8px}
+.intro-actions{display:flex;align-items:center;justify-content:center;gap:10px;flex:0 0 auto}
+@media(max-width:1050px){.intro-block{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px 24px}.intro-actions{grid-column:1;grid-row:2;justify-content:flex-start}.date-stamp{grid-column:2;grid-row:1 / span 2;align-self:center}}
+@media(max-width:760px){.intro-block{grid-template-columns:1fr;gap:18px}.intro-actions{grid-column:1;grid-row:auto;flex-wrap:wrap;justify-content:flex-start}.date-stamp{display:none}}
+.planner-fields{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(130px,.9fr) minmax(86px,.55fr);align-items:end;gap:14px;margin:0 0 18px;padding:0 0 16px;border-bottom:1px solid var(--line)}
+.planner-fields .field-group{min-width:0}
+.planner-fields label{display:block;margin-bottom:7px;color:var(--muted);font-size:10px;font-weight:700}
+.preferences-panel{grid-template-columns:minmax(0,1fr);padding:0;border:0;background:transparent;box-shadow:none}
+.preferences-panel .advanced-options{grid-column:1/-1;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.preferences-panel .advanced-options>summary{min-height:44px;padding:0 18px}
+.preferences-panel .advanced-options>summary::before{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--mint-strong);margin-right:8px;content:"";transition:transform .18s ease}
+.preferences-panel .advanced-options[open]>summary::before{transform:rotate(90deg)}
+.preferences-panel .advanced-options-body{padding:0 18px 18px}
+.preferences-panel .advanced-option-toggles{grid-column:1/-1;display:flex;align-items:center;flex-wrap:nowrap;gap:8px 18px;min-width:0}
+.preferences-panel .advanced-option-toggles .sound-toggle,.preferences-panel .advanced-option-toggles .background-toggle{grid-column:auto;align-self:center;min-height:42px;margin:0}
+.planner-fields input,.planner-fields select{width:100%;min-width:0}
+@media(max-width:760px){.planner-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.planner-fields .field-group:first-child{grid-column:1 / -1}}
+@media(max-width:760px){.intro-block{margin-bottom:10px}.preferences-panel{row-gap:10px;margin-bottom:0}.form-panel{margin-top:10px}}
+.install-button,.update-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--card);font-size:11px;font-weight:700;white-space:nowrap}
+.install-button:hover,.update-button:hover{border-color:var(--mint-strong);background:var(--mint)}
+.install-button:disabled,.update-button:disabled{cursor:wait;opacity:.65}
+.install-button svg,.update-button svg{width:15px;height:15px;flex:0 0 15px}
+.help-guide{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:16px 22px;padding:14px 18px 18px}
+.help-guide h3{margin:0 0 5px;color:var(--ink);font-family:"DM Sans",sans-serif;font-size:11px;line-height:1.3}
+.help-guide p{margin:0;color:var(--muted);font-size:12px;font-weight:500!important;line-height:1.55;text-transform:none!important}
+@media(max-width:760px){.help-guide{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.intro-copy{font-size:14px;line-height:1.4}}
+.mobile-navigation{display:none}
+.mobile-settings-page{padding:20px 0 28px}
+.mobile-settings-page h1{margin:0 0 18px;font-family:"Space Grotesk",sans-serif;font-size:30px;line-height:1.1}
+.mobile-settings-controls{display:grid;gap:14px;margin-bottom:18px}
+.mobile-settings-preferences{display:grid;gap:12px}
+body.native-android{--md-sys-color-primary:var(--mint-strong);--md-sys-color-on-primary:#fff;--md-sys-color-surface:var(--card);--md-sys-color-on-surface:var(--ink);--md-sys-color-surface-container:var(--card);--md-sys-color-secondary-container:var(--mint);--md-sys-color-on-secondary-container:var(--ink)}
+body.native-android [hidden]{display:none!important}
+body.native-android .topbar{width:100%;min-height:68px;height:68px;padding:8px 16px;border:0}
+body.native-android .topbar-actions,body.native-android .topbar-note,body.native-android .intro-actions,body.native-android .date-stamp,body.native-android .footer{display:none!important}
+body.native-android .topbar .brand{display:flex;flex-direction:row;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:transparent}
+body.native-android .topbar .brand-mark{width:46px;height:46px;flex:0 0 46px}
+body.native-android .topbar .brand-copy{align-items:flex-start;gap:0;text-align:left}
+body.native-android .workspace{width:100%;padding:8px 16px calc(104px + env(safe-area-inset-bottom));margin:0}
+body.native-android .web-welcome-banner{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;margin:0 0 18px;border-radius:16px}
+body.native-android .web-welcome-image{grid-column:1;grid-row:1;width:100%;height:auto;aspect-ratio:3/1;object-position:center}
+body.native-android .web-welcome-copy{grid-column:1;grid-row:2;padding:14px 16px 10px}
+body.native-android .web-welcome-copy h2{font-size:20px}
+body.native-android .web-welcome-copy p{font-size:15px;line-height:1.45}
+body.native-android .web-welcome-link{grid-column:1;grid-row:3;min-height:56px;margin:0 14px 14px;border-radius:14px;font-size:15px}
+body.native-android .form-panel,body.native-android .agenda-preview,body.native-android .record-card,body.native-android .preferences-panel{width:100%;max-width:none;margin:0;padding:0;border-radius:16px}
+body.native-android .agenda-preview{padding:16px;margin-bottom:18px}
+body.native-android .agenda-preview canvas{width:100%}
+body.native-android .preview-heading{display:grid;gap:14px}
+body.native-android .preview-heading h2{font-size:22px}
+body.native-android .preview-day-picker select,body.native-android .planner-fields input,body.native-android .planner-fields select,body.native-android .holiday-fields input,body.native-android .route-form input:not([type=hidden]),body.native-android .route-form select{min-height:56px;font-size:16px}
+body.native-android .calendar-view-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+body.native-android .calendar-view-controls.is-weekly{grid-template-columns:repeat(4,minmax(0,1fr))}
+body.native-android .calendar-view-control{width:100%;height:56px;min-height:56px;font-size:14px;border-radius:14px}
+body.native-android .form-panel .holiday-manager,body.native-android .preferences-panel .advanced-options{border-radius:16px;overflow:hidden}
+body.native-android .form-panel .holiday-manager>summary,body.native-android .preferences-panel .advanced-options>summary{min-height:60px;padding:0 18px;font-size:15px}
+body.native-android .holiday-manager-body,body.native-android .preferences-panel .advanced-options-body{padding:16px}
+body.native-android .planner-fields{grid-template-columns:1fr 1fr;gap:12px}
+body.native-android .planner-fields .field-group:first-child{grid-column:1/-1}
+body.native-android .holiday-fields{grid-template-columns:1fr 1fr;gap:12px}
+body.native-android .holiday-fields .button{grid-column:1/-1;width:100%}
+body.native-android .content-grid{width:100%;margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+body.native-android .editor-card{padding:16px}
+body.native-android .route-summary{min-height:64px}
+body.native-android .route-form{gap:14px}
+body.native-android .route-fields-row,body.native-android .work-schedule-row{grid-template-columns:1fr}
+body.native-android .clock-picker select{min-height:56px;min-width:68px;font-size:18px}
+body.native-android .fingerprint-button{width:56px;height:56px;flex:0 0 56px}
+body.native-android .form-actions{grid-template-columns:1fr;gap:10px}
+body.native-android .form-actions .button,body.native-android .record-card .button,body.native-android .holiday-fields .button{min-height:56px;border-radius:14px;font-size:15px}
+body.native-android md-filled-button#saveRouteButton{width:100%;--md-filled-button-container-height:60px;--md-filled-button-container-shape:14px;--md-filled-button-container-color:var(--mint-strong);--md-filled-button-label-text-color:#fff}
+body.native-android .record-card{padding:16px}
+body.native-android .record-heading{align-items:start;flex-direction:column}
+body.native-android .record-heading h2{font-size:24px}
+body.native-android .record-tabs{position:sticky;top:0;z-index:2;background:var(--card)}
+body.native-android .record-tab{min-height:52px;font-size:14px}
+body.native-android .record-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+body.native-android .record-stats div{min-height:92px;padding:16px}
+body.native-android .record-stats strong{font-size:27px}
+body.native-android .record-stats span{font-size:11px}
+body.native-android .record-comparison{grid-template-columns:1fr}
+body.native-android .annual-chart{overflow:hidden;padding:14px}
+body.native-android .mobile-settings-controls .topbar-locale-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+body.native-android .mobile-settings-controls .language-select select,body.native-android .mobile-settings-controls .theme-toggle select{width:100%;height:56px;font-size:16px}
+body.native-android .mobile-settings-controls .topbar-account-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:10px;min-width:0}
+body.native-android .mobile-settings-controls .topbar-account-actions button{width:100%;min-height:56px;padding:8px;border-radius:14px;font-size:14px;white-space:normal}
+body.native-android .mobile-settings-controls .topbar-account-actions #driveButton{grid-area:auto;grid-column:1/-1;width:100%;max-width:none;min-width:0;justify-content:flex-start}
+body.native-android .mobile-settings-controls .topbar-account-actions #driveButton span:last-child{max-width:none;overflow:visible;text-overflow:clip;white-space:normal}
+body.native-android .mobile-settings-controls #recordButton{display:none}
+body.native-android .mobile-settings-controls #syncStatus{grid-column:1/-1}
+body.native-android .mobile-settings-preferences .advanced-option-toggles{flex-wrap:wrap;gap:10px}
+body.native-android .mobile-settings-preferences .background-toggle,body.native-android .mobile-settings-preferences .sound-toggle{min-height:56px;font-size:14px}
+body.native-android .mobile-settings-preferences .calendar-color{min-height:56px;font-size:14px}
+body.native-android .mobile-settings-preferences .calendar-color input{width:48px;height:42px}
+body.native-android .mobile-settings-preferences .background-options{display:grid;grid-template-columns:1fr;gap:10px}
+body.native-android .mobile-settings-preferences .background-options>*{width:100%;min-height:52px;font-size:14px}
+body.native-android .mobile-settings-preferences .solid-background{min-height:56px;font-size:14px}
+body.native-android .mobile-navigation{position:fixed;z-index:1000;inset:auto 0 0;display:block;padding:0 8px env(safe-area-inset-bottom);border-top:1px solid var(--line);background:var(--card);box-shadow:0 -8px 24px rgba(23,33,31,.08)}
+body.native-android .mobile-navigation md-tabs{width:100%;height:76px;--md-sys-color-primary:var(--mint-strong);--md-sys-color-surface:var(--card);--md-sys-color-on-surface:var(--ink)}
+body.native-android .mobile-navigation md-tabs::part(divider){display:none}
+body.native-android .mobile-navigation md-primary-tab{min-width:0;--md-primary-tab-container-height:72px;--md-primary-tab-label-text-size:12px}
+body.native-android .mobile-navigation md-icon{font-size:22px;--md-icon-size:22px}
+body.native-android.settings-view .workspace>:not(#mobileSettingsPage){display:none!important}
+body.native-android.help-view .workspace>:not(#mobileHelpPage){display:none!important}
+body.native-android .mobile-settings-page{display:block}
+body.native-android .mobile-settings-page[hidden]{display:none}
+body.native-android .mobile-settings-planning{display:grid;gap:12px;margin-bottom:14px}
+body.native-android .mobile-settings-planning .holiday-manager{margin:0;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+body.native-android .mobile-settings-planning .holiday-manager>summary{min-height:56px;padding:0 16px;font-size:14px}
+body.native-android .mobile-settings-planning .holiday-manager-body{padding:14px}
+body.native-android .mobile-help-page{display:block;padding:20px 0 28px}
+body.native-android .mobile-help-page[hidden]{display:none}
+body.native-android .mobile-help-page h1{margin:0 0 18px;font-family:"Space Grotesk",sans-serif;font-size:30px;line-height:1.1}
+body.native-android .mobile-help-page .help-options{display:block;margin:0;border:0;border-radius:0;background:transparent}
+body.native-android .mobile-help-page .help-options>summary{display:none}
+body.native-android .mobile-help-page .help-guide{grid-template-columns:1fr;gap:18px;padding:0}
+body.native-android .mobile-help-page .help-guide h3{font-size:16px}
+body.native-android .mobile-help-page .help-guide p{font-size:15px;line-height:1.55}
+body.native-android .mobile-settings-preferences .help-guide{grid-template-columns:1fr}
+body.native-android .mobile-settings-preferences .export-actions{grid-template-columns:1fr 1fr;gap:10px}
+body.native-android .mobile-settings-preferences .export-actions .button{min-height:56px;font-size:14px;white-space:normal}
+body.native-android .preview-month-year-controls{display:grid;grid-template-columns:minmax(0,1fr) 76px;align-items:end;gap:6px}
+body.native-android .preview-month-year-controls .field-group{width:auto;min-width:0;margin:0}
+body.native-android .preview-month-year-controls .field-group label{margin:0 0 3px;font-size:9px;line-height:1}
+body.native-android .preview-month-year-controls #monthSelect,body.native-android .preview-month-year-controls #yearInput{width:100%;height:38px;min-height:38px;padding:0 6px;font-size:13px}
+body.native-android .preview-month-navigation{display:flex;align-items:end;gap:4px}
+body.native-android .preview-month-navigation .calendar-view-control{width:38px;height:38px;min-height:38px;font-size:18px}
+body.native-android .month-summary{gap:8px}
+body.native-android .month-summary>div{min-height:74px;padding:12px}
+body.native-android .month-summary strong{font-size:22px}
+body.native-android .month-summary span{font-size:11px}
+.mobile-orientation-hint{margin:0 0 8px;color:var(--muted);font-size:13px;text-align:center}
+.landscape-agenda-brand{display:none}
+body.native-android .intro-block{display:none}
+body.native-android .web-welcome-banner{order:0}
+body.native-android .agenda-preview{order:1}
+body.native-android .form-panel{order:2}
+body.native-android .record-card{order:1}
+@media (orientation:landscape) and (max-height:520px){
+	body.native-android .topbar{display:none}
+	body.native-android .workspace{padding:4px 8px calc(64px + env(safe-area-inset-bottom))}
+	body.native-android .web-welcome-banner{height:54px;grid-template-columns:126px minmax(0,1fr) auto;grid-template-rows:54px;margin:0 0 6px;border-radius:10px}
+	body.native-android .web-welcome-image{grid-column:1;grid-row:1;width:162px;height:54px;aspect-ratio:auto;object-fit:contain;object-position:center}
+	body.native-android .web-welcome-copy{grid-column:2;grid-row:1;padding:4px 8px}
+	body.native-android .web-welcome-copy h2{margin:0;font-size:13px;line-height:1.15}
+	body.native-android .web-welcome-copy p{display:none}
+	body.native-android .web-welcome-link{grid-column:3;grid-row:1;min-height:40px;margin:0 6px;padding:0 8px;border-radius:10px;font-size:11px}
+	body.native-android .agenda-preview{margin:0;padding:2px;border-radius:0;border:0}
+	body.native-android .preview-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 2px}
+	body.native-android .preview-heading>div:first-child{min-width:0}
+	body.native-android .preview-heading .section-label{display:none}
+	body.native-android .preview-heading h2{display:none}
+	body.native-android .landscape-agenda-brand{display:flex;align-items:center;gap:6px;height:34px;color:var(--ink);font-family:"Space Grotesk",sans-serif;font-size:12px;font-weight:700;text-decoration:none}
+	body.native-android .landscape-agenda-brand img{display:block;width:38px;height:32px;object-fit:contain}
+	body.native-android .preview-day-picker{gap:4px}
+	body.native-android .preview-day-picker select{width:104px;min-height:38px;height:38px;padding:0 4px;font-size:12px}
+	body.native-android .preview-month-year-controls{grid-template-columns:104px 70px;gap:4px}
+	body.native-android .preview-month-year-controls .field-group label{display:none}
+	body.native-android .preview-month-year-controls #monthSelect,body.native-android .preview-month-year-controls #yearInput{height:38px;min-height:38px;font-size:12px}
+	body.native-android .calendar-view-controls{width:auto;grid-template-columns:minmax(92px,auto);gap:4px}
+	body.native-android .calendar-view-controls.is-weekly{grid-template-columns:repeat(4,minmax(38px,1fr))}
+	body.native-android .calendar-view-control{height:38px;min-height:38px;padding:0 4px;border-radius:10px;font-size:12px}
+	body.native-android .mobile-orientation-hint{display:none!important}
+	body.native-android .agenda-preview canvas{display:block;width:auto;height:calc(100dvh - 114px);max-width:100%;margin:0 auto}
+	body.native-android .agenda-preview[data-calendar-view="month"] canvas{width:100%;height:auto;max-width:none}
+	body.native-android .mobile-navigation{padding:0 8px env(safe-area-inset-bottom)}
+	body.native-android .mobile-navigation md-tabs{height:62px}
+	body.native-android .mobile-navigation md-primary-tab{--md-primary-tab-container-height:60px;--md-primary-tab-label-text-size:11px}
+}
+.day-cell.has-route{min-height:112px}
+.route-time-row{display:flex;align-items:center;gap:4px;min-width:0;margin-top:4px}
+.route-time-row .route-time{min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.route-alarm{display:grid;place-items:center;width:14px;height:14px;flex:0 0 14px;color:var(--coral)}
+.route-alarm svg{display:block;width:13px;height:13px}
+.route-reminder{flex:0 0 auto;color:var(--coral);font-size:9px;font-weight:800;line-height:1;white-space:nowrap}
+.route-meta{display:block;max-width:100%;margin-top:3px;overflow:hidden;color:var(--muted);font-size:9px;font-weight:600;line-height:1.15;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:760px){.day-cell.has-route{min-height:96px}.route-meta{font-size:8px}}
+.day-cell.has-route{min-height:126px}
+.route-preview,.route-time,.route-meta{font-size:12px}
+@media(max-width:760px) and (orientation:portrait){
+	body.native-android .preview-day-picker{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;gap:8px;width:100%}
+	body.native-android #previewDaySelect{grid-column:1/-1;width:100%;min-width:0;height:52px;min-height:52px;font-size:16px}
+	body.native-android .preview-month-year-controls{grid-column:1;grid-template-columns:minmax(0,1fr) 88px;width:100%;gap:8px}
+	body.native-android .preview-month-year-controls #monthSelect,body.native-android .preview-month-year-controls #yearInput{height:48px;min-height:48px;font-size:15px}
+	body.native-android .preview-month-navigation{grid-column:2/4;justify-content:flex-end;gap:8px}
+	body.native-android .preview-month-navigation .calendar-view-control{width:44px;height:48px;min-height:48px;font-size:21px}
+	body.native-android .calendar-view-controls{grid-column:1/-1;grid-template-columns:minmax(0,1fr);width:100%}
+	body.native-android .calendar-view-controls.is-weekly{grid-template-columns:repeat(4,minmax(0,1fr))}
+	body.native-android .calendar-view-controls:not(.is-weekly) .calendar-view-control{width:min(100%,180px);justify-self:end;min-height:48px}
+	body.native-android .calendar-view-controls.is-weekly .calendar-view-control{height:48px;min-height:48px}
+	body.native-android .record-year-nav{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:8px;width:100%}
+	body.native-android .record-year-nav .button{width:48px;min-width:48px;height:48px;min-height:48px;padding:0;font-size:20px}
+	body.native-android .record-year-nav select{width:100%;min-width:0;height:48px;min-height:48px;font-size:15px}
+	body.native-android .mobile-settings-controls .topbar-locale-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+	body.native-android .mobile-settings-controls .language-select,body.native-android .mobile-settings-controls .theme-toggle{width:100%;min-width:0}
+	body.native-android .mobile-settings-controls .language-select select,body.native-android .mobile-settings-controls .theme-toggle select{width:100%;min-width:0;height:52px;font-size:15px}
+	body.native-android .mobile-settings-controls .topbar-account-actions{grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+	body.native-android .mobile-settings-controls .topbar-account-actions #driveButton{grid-column:1/-1;justify-content:flex-start}
+	body.native-android .mobile-settings-controls .topbar-account-actions #driveButton span:last-child{max-width:none;overflow:visible;text-overflow:clip;white-space:normal}
+	body.native-android .mobile-settings-controls .topbar-account-actions #syncStatus{grid-column:1/-1}
+}
+	.mobile-route-dialog{position:fixed;inset:auto 0 0;width:min(100%,620px);max-width:100%;max-height:min(92dvh,900px);margin:0 auto;padding:0;overflow:hidden;border:0;border-radius:22px 22px 0 0;color:var(--ink);background:var(--paper);box-shadow:0 -16px 48px rgba(23,33,31,.22)}
+	.mobile-route-dialog::backdrop{background:rgba(16,24,21,.56)}
+	.mobile-route-dialog[open]{display:flex;flex-direction:column}
+	.mobile-route-dialog-header{display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px 10px;border-bottom:1px solid var(--line);background:var(--card)}
+	.mobile-route-dialog-header .section-label{margin:0 0 3px}
+	.mobile-route-dialog-header h2{margin:0;font-family:"Space Grotesk",sans-serif;font-size:20px;line-height:1.2}
+	.mobile-route-dialog-close{display:grid;flex:0 0 48px;place-items:center;width:48px;height:48px;padding:0;border:1px solid var(--line);border-radius:50%;color:var(--ink);background:var(--card);font-size:28px;line-height:1}
+	.mobile-route-dialog-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 16px calc(16px + env(safe-area-inset-bottom))}
+	.mobile-route-dialog .route-manager{width:100%;max-width:none;margin:0;padding:0;border:0;border-radius:0;background:transparent!important;box-shadow:none}
+	.mobile-route-dialog .route-manager>.route-summary,.mobile-route-dialog .route-manager>.editor-hint,.mobile-route-dialog .route-manager>.empty-state{display:none}
+	.mobile-route-dialog .route-manager[open]>.route-form{display:grid;margin:0;padding:8px 0 16px}
+	body.native-android .mobile-route-dialog .form-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+	body.native-android .mobile-route-dialog .form-actions>*{width:100%;min-height:52px}
+	body.native-android .mobile-route-dialog md-filled-button#saveRouteButton{width:100%}
+	body.native-android .mobile-route-dialog{bottom:env(safe-area-inset-bottom)}
+	@media (orientation:landscape) and (max-height:520px){.mobile-route-dialog{top:12px;bottom:calc(68px + env(safe-area-inset-bottom));width:min(100% - 32px,760px);max-height:none;border-radius:20px}.mobile-route-dialog-content{padding-bottom:16px}}
+@media(max-width:760px){.day-cell.has-route{min-height:112px}.route-preview,.route-time,.route-meta{font-size:10px}}
+
+.record-year-nav{display:flex;align-items:center;gap:8px}.record-year-nav select{min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:inherit;font:inherit}
+@media(max-width:760px) and (orientation:portrait){
+	body.native-android .topbar{height:60px;min-height:60px;padding:6px 12px}
+	body.native-android .topbar .brand{width:100%;height:48px;justify-content:center;gap:8px;padding:0;border:0;background:transparent}
+	body.native-android .topbar .brand-mark{width:40px;height:40px;flex:0 0 40px}
+	body.native-android .topbar .brand-copy{align-items:flex-start;gap:1px;text-align:left;font-size:16px}
+	body.native-android .brand-version{font-size:10px}
+	body.native-android .record-card{padding:12px}
+	body.native-android .record-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px}
+	body.native-android .record-heading h2{font-size:21px;line-height:1.15}
+	body.native-android .record-note{grid-column:1/-1;margin:0;font-size:11px}
+	body.native-android .record-year-nav{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px;width:auto}
+	body.native-android .record-year-nav .button{width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:19px}
+	body.native-android .record-year-nav select{width:80px;min-width:80px;height:44px;min-height:44px;padding:0 6px;font-size:14px}
+	body.native-android .record-tabs{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--card)}
+	body.native-android .record-tab{min-width:0;min-height:46px;padding:6px 4px;font-size:12px;white-space:normal}
+	body.native-android .record-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+	body.native-android .record-stats div{display:flex;min-width:0;min-height:68px;flex-direction:column;justify-content:center;gap:4px;padding:9px 7px;text-align:center}
+	body.native-android .record-stats div:first-child{grid-column:auto}
+	body.native-android .record-stats strong{font-size:21px;line-height:1}
+	body.native-android .record-stats span{font-size:10px;line-height:1.15;white-space:normal}
+	body.native-android .record-comparison{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+	body.native-android .record-comparison article{min-width:0;min-height:78px;gap:5px;padding:9px}
+	body.native-android .record-comparison .comparison-label{font-size:10px}
+	body.native-android .record-comparison strong{font-size:17px}
+	body.native-android .record-comparison small{font-size:10px;line-height:1.2}
+	body.native-android .annual-chart{margin:14px 0;padding:10px 0}
+	body.native-android .chart-heading h3{font-size:14px;line-height:1.2}
+	body.native-android .annual-chart.is-fan .fan-chart{width:168px;height:168px;margin:14px auto}
+	body.native-android .annual-chart.is-fan .fan-labels{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px 3px;font-size:9px}
+	body.native-android .record-export .button{min-height:48px;font-size:12px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .preferences-panel{margin-bottom:0}
+	body:not(.native-android) .form-panel{margin-top:10px}
+	body:not(.native-android) .web-settings-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+	body:not(.native-android) .web-settings-tabs>details{display:contents}
+	body:not(.native-android) .web-settings-tabs>details>summary{grid-row:1;display:flex;min-width:0;min-height:50px;align-items:center;justify-content:center;padding:8px 12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;text-align:center;cursor:pointer;list-style:none}
+	body:not(.native-android) .web-settings-tabs>details:last-of-type>summary{border-right:0}
+	body:not(.native-android) .web-settings-tabs>details>summary::-webkit-details-marker{display:none}
+	body:not(.native-android) .web-settings-tabs>details>summary::before{width:0;height:0;flex:0 0 auto;margin-right:8px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--mint-strong);content:"";transition:transform .18s ease}
+	body:not(.native-android) .web-settings-tabs>details[open]>summary{color:var(--ink);background:var(--mint)}
+	body:not(.native-android) .web-settings-tabs>details[open]>summary::before{transform:rotate(90deg)}
+	body:not(.native-android) .web-settings-tabs>details>summary:hover{color:var(--ink);background:rgba(204,239,225,.45)}
+	body:not(.native-android) .web-settings-tabs .advanced-options-body,
+	body:not(.native-android) .web-settings-tabs .holiday-manager-body{grid-row:2;grid-column:1/-1;min-width:0;padding:16px 18px 18px;border-top:1px solid var(--line);background:var(--card)}
+	body:not(.native-android) .web-settings-tabs .holiday-manager{margin:0;border:0;border-radius:0;background:transparent}
+	body:not(.native-android) .web-settings-tabs .holiday-manager>summary{margin:0;padding:0}
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(1)>.advanced-options-body,
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(1)>.holiday-manager-body{position:relative;z-index:1;width:300%;grid-column:auto;transform:translateX(0)}
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(2)>.advanced-options-body,
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(2)>.holiday-manager-body{position:relative;z-index:1;width:300%;grid-column:auto;transform:translateX(-33.333%)}
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(3)>.advanced-options-body,
+	body:not(.native-android) .web-settings-tabs>details:nth-of-type(3)>.holiday-manager-body{position:relative;z-index:1;width:300%;grid-column:auto;transform:translateX(-66.666%)}
+	body:not(.native-android) .web-settings-tabs .calendar-color-group{grid-template-columns:repeat(4,max-content);justify-content:center;align-items:center;column-gap:clamp(18px,3vw,44px);row-gap:10px}
+	body:not(.native-android) .web-settings-tabs .calendar-color-title{grid-column:1/-1;text-align:center}
+}
+
+@media (max-width: 380px) and (orientation: portrait){
+	body.native-android .mobile-settings-preferences .calendar-color-group{grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch;column-gap:8px;row-gap:8px}
+	body.native-android .mobile-settings-preferences .calendar-color-group .calendar-color{display:grid;grid-column:auto;grid-template-columns:minmax(0,1fr) 42px;align-items:center;gap:4px;width:100%;min-width:0;white-space:normal;line-height:1.15}
+	body.native-android .mobile-settings-preferences .calendar-color-group .calendar-color input{width:42px;height:42px;flex:0 0 42px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .topbar{height:auto;min-height:68px;padding:8px 0;flex-wrap:nowrap;justify-content:space-between;gap:8px}
+	body:not(.native-android) .app-shell .topbar .brand{display:flex;flex:0 0 auto;flex-direction:row;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:transparent}
+	body:not(.native-android) .app-shell .topbar .brand-mark{width:44px;height:44px;flex:0 0 44px}
+	body:not(.native-android) .app-shell .topbar .brand-copy{align-items:flex-start;gap:2px;text-align:left;white-space:nowrap}
+	body:not(.native-android) .app-shell .topbar .topbar-actions{display:flex;width:auto;flex:1 1 auto;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px;min-width:0;margin:0}
+	body:not(.native-android) .app-shell .topbar .topbar-locale-actions{display:flex;flex:0 0 auto;align-items:center;gap:6px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:98px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:72px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{display:flex;flex:1 1 0;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:4px;min-width:0;max-width:none;margin:0}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:auto;min-width:0;max-width:128px;flex:0 1 128px;padding:0 7px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:94px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:92px;max-width:92px;flex:0 1 92px;overflow:hidden;text-align:center;text-overflow:ellipsis;white-space:nowrap;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:auto;max-width:120px;min-width:0;flex:0 1 120px;overflow:hidden;padding:0 6px;text-overflow:ellipsis;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:auto;max-width:88px;min-width:0;flex:0 1 88px;overflow:hidden;padding:0 5px;text-overflow:ellipsis;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:112px;max-width:112px;min-width:0;flex:0 0 112px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{border:1px solid #d9654e;border-radius:7px;color:#a94735;background:#ffe1da}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton:hover{border-color:#b94d39;background:#ffd1c7}
+	body:not(.native-android) .app-shell .topbar .offline-status{max-width:64px;overflow:hidden;padding:4px 5px;text-overflow:ellipsis;font-size:8px}
+}
+
+@media (min-width: 761px) and (max-width: 1050px){
+	body:not(.native-android) .app-shell .topbar .brand-mark{width:36px;height:36px;flex-basis:36px}
+	body:not(.native-android) .app-shell .topbar .brand-copy>span:first-child{font-size:11px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:85px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:62px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-actions{gap:6px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{gap:3px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:120px;flex-basis:120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:84px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:88px;max-width:88px;flex-basis:88px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:105px;flex-basis:105px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:80px;flex-basis:80px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex-basis:104px;padding:0 5px;font-size:10px}
+}
+
+@media (min-width: 901px) and (max-width: 1050px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:120px;flex-basis:120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:84px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:88px;max-width:88px;flex-basis:88px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:105px;flex-basis:105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:80px;flex-basis:80px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex-basis:104px}
+}
+
+@media (min-width: 801px) and (max-width: 900px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:105px;flex-basis:105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:70px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:68px;max-width:68px;flex-basis:68px;font-size:8px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:88px;flex-basis:88px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:64px;flex-basis:64px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:88px;max-width:88px;flex-basis:88px;padding:0 4px;font-size:9px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+
+@media (min-width: 761px) and (max-width: 800px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{gap:2px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:96px;max-width:96px;flex:0 0 96px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:58px;max-width:58px;flex:0 0 58px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:78px;max-width:78px;flex:0 0 78px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:70px;max-width:70px;flex:0 0 70px;padding:0 3px;font-size:8px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:78px;max-width:78px;flex:0 0 78px}
+}
+
+@media (min-width: 801px) and (max-width: 900px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions{gap:3px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:105px;max-width:105px;flex:0 0 105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:68px;max-width:68px;flex:0 0 68px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:88px;max-width:88px;flex:0 0 88px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:74px;max-width:74px;flex:0 0 74px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:88px;max-width:88px;flex:0 0 88px}
+}
+
+@media (min-width: 901px) and (max-width: 950px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:120px;max-width:120px;flex:0 0 120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:84px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:88px;max-width:88px;flex:0 0 88px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:105px;max-width:105px;flex:0 0 105px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:84px;max-width:84px;flex:0 0 84px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex:0 0 104px}
+}
+
+@media (min-width: 951px) and (max-width: 1050px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:150px;max-width:150px;flex:0 0 150px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:116px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncStatus{width:100px;max-width:100px;flex:0 0 100px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{width:120px;max-width:120px;flex:0 0 120px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{width:96px;max-width:96px;flex:0 0 96px;padding:0 4px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:104px;max-width:104px;flex:0 0 104px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+
+@media (min-width: 761px) and (max-width: 900px){
+	body:not(.native-android) .app-shell .topbar .brand{gap:6px}
+	body:not(.native-android) .app-shell .topbar .brand-mark{width:34px;height:34px;flex-basis:34px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:82px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:60px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:96px;flex-basis:96px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:78px;flex-basis:78px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:56px;flex-basis:56px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:78px;max-width:78px;flex-basis:78px}
+}
+
+@media (min-width: 761px){
+	body:not(.native-android) .app-shell .web-welcome-banner{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;align-items:center;min-height:0;margin:0 0 22px;overflow:hidden;border:1px solid rgba(32,124,98,.22);border-radius:12px;background:transparent;box-shadow:0 8px 24px rgba(32,124,98,.12)}
+	body:not(.native-android) .app-shell .web-welcome-image{grid-column:1;grid-row:1;width:100%;height:auto;min-height:0;aspect-ratio:3/1;object-fit:contain;object-position:center}
+	body:not(.native-android) .app-shell .web-welcome-copy{grid-column:1;grid-row:2;display:flex;flex-direction:column;align-items:center;max-width:900px;margin:0 auto;padding:18px 24px 20px;text-align:center;color:var(--ink);background:transparent}
+	body:not(.native-android) .app-shell .web-welcome-eyebrow{display:inline-flex;align-items:center;gap:7px;margin:0 0 7px;color:var(--mint-strong);font-size:10px;font-weight:700;line-height:1.3;text-transform:uppercase}
+	body:not(.native-android) .app-shell .web-welcome-eyebrow::before{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--coral);content:""}
+	body:not(.native-android) .app-shell .web-welcome-copy h1{margin:0 0 7px;font-family:"Space Grotesk",sans-serif;font-size:30px;font-weight:700;line-height:1.12}
+	body:not(.native-android) .app-shell .web-welcome-highlight{color:var(--coral)}
+	body:not(.native-android) .app-shell .web-welcome-copy>p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+	body:not(.native-android) .app-shell .web-welcome-link{grid-column:1;grid-row:auto;align-self:center;min-height:42px;margin:12px 0 0;padding:0 18px;border:1px solid var(--coral);color:#fff;background:var(--coral);font-size:12px;font-weight:700;box-shadow:0 4px 12px rgba(32,124,98,.16);transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease}
+	body:not(.native-android) .app-shell .web-welcome-link:hover{transform:translateY(-2px);border-color:var(--ink);color:#fff;background:var(--ink);box-shadow:0 7px 16px rgba(32,33,31,.2)}
+	body:not(.native-android) .app-shell .web-welcome-link:focus-visible{outline:3px solid var(--mint-strong);outline-offset:3px}
+}
