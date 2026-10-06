@@ -439,7 +439,7 @@ body.native-android .record-card{order:1}
 	body:not(.native-android) .form-panel{margin-top:10px}
 	body:not(.native-android) .web-settings-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--card)}
 	body:not(.native-android) .web-settings-tabs>details{display:contents}
-	body:not(.native-android) .web-settings-tabs>details>summary{grid-row:1;display:flex;min-width:0;min-height:50px;align-items:center;justify-content:center;padding:8px 12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;text-align:center;cursor:pointer;list-style:none}
+	body:not(.native-android) .web-settings-tabs>details>summary{grid-row:1;display:flex;min-width:0;min-height:50px;align-items:center;justify-content:center;padding:8px 12px;border-right:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;text-align:center;cursor:pointer;list-style:none}
 	body:not(.native-android) .web-settings-tabs>details:last-of-type>summary{border-right:0}
 	body:not(.native-android) .web-settings-tabs>details>summary::-webkit-details-marker{display:none}
 	body:not(.native-android) .web-settings-tabs>details>summary::before{width:0;height:0;flex:0 0 auto;margin-right:8px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid var(--mint-strong);content:"";transition:transform .18s ease}
