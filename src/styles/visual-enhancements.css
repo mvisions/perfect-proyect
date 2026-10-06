@@ -270,6 +270,7 @@ body.native-android .mobile-settings-controls .topbar-account-actions{display:gr
 body.native-android .mobile-settings-controls .topbar-account-actions button{width:100%;min-height:56px;padding:8px;border-radius:14px;font-size:14px;white-space:normal}
 body.native-android .mobile-settings-controls .topbar-account-actions #driveButton{grid-area:auto;grid-column:1/-1;width:100%;max-width:none;min-width:0;justify-content:flex-start}
 body.native-android .mobile-settings-controls .topbar-account-actions #driveButton span:last-child{max-width:none;overflow:visible;text-overflow:clip;white-space:normal}
+body.native-android .mobile-settings-controls #showQrButton{width:100%;min-height:56px;border-radius:14px;font-size:14px}
 body.native-android .mobile-settings-controls #recordButton{display:none}
 body.native-android .mobile-settings-controls #syncStatus{grid-column:1/-1}
 body.native-android .mobile-settings-preferences .advanced-option-toggles{flex-wrap:wrap;gap:10px}

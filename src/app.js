@@ -250,6 +250,7 @@ const mobileAccountHome = document.createComment("mobile account controls home")
 const mobilePreferencesHome = document.createComment("mobile preferences home");
 const mobilePlanningHome = document.createComment("mobile planning home");
 const mobileHelpHome = document.createComment("mobile help home");
+const mobileQrHome = document.createComment("mobile QR button home");
 const mobileRouteManagerHome = document.createComment("mobile route manager home");
 const monthFieldHome = document.createComment("month field home");
 const yearFieldHome = document.createComment("year field home");
@@ -258,6 +259,7 @@ topbarAccountActions.before(mobileAccountHome);
 preferencesPanel.before(mobilePreferencesHome);
 plannerDetails.before(mobilePlanningHome);
 mobileHelpSection.before(mobileHelpHome);
+showQrButton.before(mobileQrHome);
 routeManager.before(mobileRouteManagerHome);
 monthFieldGroup.before(monthFieldHome);
 yearFieldGroup.before(yearFieldHome);
@@ -2495,7 +2497,7 @@ function syncMobileLayout() {
     document.body.classList.add("native-android");
     configurationWasOpenBeforeMobile = mobileConfigurationDetails.open;
     mobileConfigurationDetails.open = true;
-    mobileSettingsControls.append(topbarLocaleActions, topbarAccountActions);
+    mobileSettingsControls.append(topbarLocaleActions, topbarAccountActions, showQrButton);
     mobileSettingsPlanning.append(plannerDetails);
     mobileSettingsPreferences.append(preferencesPanel);
     mobileHelpContent.append(mobileHelpSection);
@@ -2507,6 +2509,7 @@ function syncMobileLayout() {
 
   restorePortal(topbarLocaleActions, mobileLocaleHome);
   restorePortal(topbarAccountActions, mobileAccountHome);
+  restorePortal(showQrButton, mobileQrHome);
   restorePortal(plannerDetails, mobilePlanningHome);
   restorePortal(preferencesPanel, mobilePreferencesHome);
   mobileConfigurationDetails.open = configurationWasOpenBeforeMobile;
