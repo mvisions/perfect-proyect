@@ -1,6 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { decryptDriveBackup, encryptDriveBackup } from "./drive-encryption.mjs";
+import QRCode from "qrcode";
 import "@material/web/tabs/tabs.js";
 import "@material/web/tabs/primary-tab.js";
 import "@material/web/icon/icon.js";
@@ -3433,7 +3434,6 @@ async function shareMonthAgenda() {
 async function showMonthShareQr() {
   showQrButton.disabled = true;
   try {
-    const { default: QRCode } = await import("qrcode");
     const shareUrl = await createSharedMonthUrl();
     shareQrImage.src = await QRCode.toDataURL(shareUrl, {
       errorCorrectionLevel: "H",
