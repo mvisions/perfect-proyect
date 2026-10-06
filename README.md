@@ -69,6 +69,14 @@ npm run android:open
 
 El primer comando compila la web y sincroniza los recursos nativos; el segundo abre el proyecto Android.
 
+Para generar los artefactos Android firmados de release:
+
+```bash
+bash android/firmar-bundle.sh
+```
+
+El script genera el AAB para Google Play y el APK de release. Necesita el almacén de claves en `~/.android/keystores/memoria-laboral-upload.p12` y solicita su contraseña.
+
 ## Tecnologías
 
 Vite, Capacitor y JavaScript. La aplicación web se publica en GitHub Pages y el código fuente está disponible en este repositorio.

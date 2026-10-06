@@ -4,6 +4,7 @@ set -euo pipefail
 directorio_android="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 almacen_claves="${HOME}/.android/keystores/memoria-laboral-upload.p12"
 archivo_bundle="${directorio_android}/app/build/outputs/bundle/release/app-release.aab"
+archivo_apk="${directorio_android}/app/build/outputs/apk/release/app-release.apk"
 
 if [[ ! -f "$almacen_claves" ]]; then
   printf 'No se encuentra el almacén de claves: %s\n' "$almacen_claves" >&2
@@ -26,6 +27,7 @@ export MEMORIA_LABORAL_KEY_ALIAS=memoria-laboral-upload
 export MEMORIA_LABORAL_KEY_PASSWORD="$contrasena_almacen"
 
 cd "$directorio_android"
-./gradlew --no-daemon --rerun-tasks bundleRelease
+./gradlew --no-daemon --rerun-tasks bundleRelease assembleRelease
 jarsigner -verify "$archivo_bundle"
 printf 'Bundle firmado y verificado: %s\n' "$archivo_bundle"
+printf 'APK release generado: %s\n' "$archivo_apk"

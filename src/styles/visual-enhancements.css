@@ -165,8 +165,8 @@ body.dark-mode .button-quiet,body.night-mode .button-quiet{color:var(--ink)!impo
 @media(max-width:1050px){.record-stats{grid-template-columns:repeat(4,1fr)}}@media(max-width:760px){.record-stats{grid-template-columns:repeat(2,1fr)}}
 .annual-chart.is-fan .monthly-stats{display:none!important}.annual-chart.is-fan .fan-chart{display:grid!important}.annual-chart.is-fan .fan-labels{display:grid!important}
 @media(max-width:760px){.annual-chart.is-fan .fan-chart{width:220px;height:220px;margin:18px auto;border-radius:50%;box-shadow:inset 0 0 0 14px var(--card),0 8px 18px rgba(0,0,0,.18)}.annual-chart.is-fan .fan-core{width:46%}.annual-chart.is-fan .fan-core strong{font-size:25px}.annual-chart.is-fan .fan-labels{grid-template-columns:repeat(4,1fr);gap:7px 4px;text-align:center;font-size:9px;line-height:1.2}.annual-chart.is-fan .fan-labels span{white-space:nowrap}}
-.topbar{height:auto;min-height:78px;padding-top:28px}
-.brand-mark{display:block;width:192px;height:192px;flex:0 0 192px;object-fit:contain;background:transparent}
+.topbar{height:auto;min-height:88px;padding:12px 0}
+.brand-mark{display:block;width:56px;height:56px;flex:0 0 56px;object-fit:contain;background:transparent}
 .brand-mark::before,.brand-mark::after,.brand-lens{display:none}
 .control-panel .advanced-options{grid-column:1/-1;min-width:0;border-top:1px solid var(--line);padding-top:10px}
 .advanced-options>summary{min-height:40px;display:flex;align-items:center;color:var(--mint-strong);font-size:12px;font-weight:700;cursor:pointer}
@@ -174,11 +174,11 @@ body.dark-mode .button-quiet,body.night-mode .button-quiet{color:var(--ink)!impo
 .advanced-options-body .calendar-color-group,.advanced-options-body .background-controls,.advanced-options-body .solid-background{grid-column:1/-1;width:100%;min-width:0}
 @media(max-width:760px){.advanced-options>summary{min-height:44px}.advanced-options-body{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:1050px){.topbar{height:auto;flex-wrap:wrap;gap:10px;padding:12px 0}.topbar-actions{width:100%}}
-@media(max-width:760px){.brand-mark{width:min(38vw,144px);height:min(38vw,144px);flex-basis:min(38vw,144px)}}
+@media(max-width:760px){.brand-mark{width:min(22vw,56px);height:min(22vw,56px);flex-basis:min(22vw,56px)}}
 .drive-tutorial-steps li{position:relative;display:block;min-width:0;padding-left:38px}
 .drive-tutorial-steps li::before{position:absolute;top:0;left:0}
 .topbar{justify-content:flex-start}
-.topbar-actions{flex:1 1 auto;min-width:0;margin-left:30px;justify-content:flex-start;gap:clamp(16px,2.2vw,30px)}
+.topbar-actions{flex:1 1 auto;min-width:0;margin-left:0;justify-content:flex-start;gap:clamp(8px,1vw,14px)}
 @media(max-width:1050px){.topbar-actions{margin-left:0;justify-content:flex-start;gap:clamp(12px,2vw,22px)}}
 @media(max-width:760px){.topbar{justify-content:center}.topbar-actions{justify-content:center;gap:6px}}
 .topbar-actions{flex-wrap:wrap;row-gap:8px}
@@ -473,8 +473,8 @@ body.native-android .record-card{order:1}
 	body:not(.native-android) .app-shell .topbar .brand-copy{align-items:flex-start;gap:2px;text-align:left;white-space:nowrap}
 	body:not(.native-android) .app-shell .topbar .topbar-actions{display:flex;width:auto;flex:1 1 auto;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px;min-width:0;margin:0}
 	body:not(.native-android) .app-shell .topbar .topbar-locale-actions{display:flex;flex:0 0 auto;align-items:center;gap:6px}
-	body:not(.native-android) .app-shell .topbar .language-select select{width:98px}
-	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:72px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:112px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:92px}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions{display:flex;flex:1 1 0;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:4px;min-width:0;max-width:none;margin:0}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{width:auto;min-width:0;max-width:128px;flex:0 1 128px;padding:0 7px}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton span:last-child{max-width:94px;font-size:10px}
@@ -490,8 +490,8 @@ body.native-android .record-card{order:1}
 @media (min-width: 761px) and (max-width: 1050px){
 	body:not(.native-android) .app-shell .topbar .brand-mark{width:36px;height:36px;flex-basis:36px}
 	body:not(.native-android) .app-shell .topbar .brand-copy>span:first-child{font-size:11px}
-	body:not(.native-android) .app-shell .topbar .language-select select{width:85px;padding:0 5px;font-size:10px}
-	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:62px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:112px;padding:0 5px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:92px;padding:0 5px;font-size:10px}
 	body:not(.native-android) .app-shell .topbar .topbar-actions{gap:6px}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions{gap:3px}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:120px;flex-basis:120px}
@@ -567,11 +567,11 @@ body.native-android .record-card{order:1}
 @media (min-width: 761px) and (max-width: 900px){
 	body:not(.native-android) .app-shell .topbar .brand{gap:6px}
 	body:not(.native-android) .app-shell .topbar .brand-mark{width:34px;height:34px;flex-basis:34px}
-	body:not(.native-android) .app-shell .topbar .language-select select{width:82px;font-size:9px}
-	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:60px;font-size:9px}
+	body:not(.native-android) .app-shell .topbar .language-select select{width:112px;font-size:10px}
+	body:not(.native-android) .app-shell .topbar .theme-toggle select{width:92px;font-size:10px}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveButton{max-width:96px;flex-basis:96px}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions #syncNowButton{max-width:78px;flex-basis:78px}
-	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:56px;flex-basis:56px}
+	body:not(.native-android) .app-shell .topbar .topbar-account-actions #driveLogoutButton{max-width:88px;flex-basis:88px}
 	body:not(.native-android) .app-shell .topbar .topbar-account-actions #recordButton{width:78px;max-width:78px;flex-basis:78px}
 }
 
@@ -590,3 +590,12 @@ body.native-android .record-card{order:1}
 	body:not(.native-android) .app-shell .intro-actions #showQrButton{box-sizing:border-box;width:132px;height:40px;min-height:40px;justify-content:center;padding:0 12px;font-size:11px}
 	body:not(.native-android) .app-shell .intro-actions #showQrButton .material-symbols-outlined{font-size:16px}
 }
+
+
+
+
+
+
+
+
+
