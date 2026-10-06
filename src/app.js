@@ -1,6 +1,3 @@
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-import QRCode from "qrcode";
 import { Capacitor } from "@capacitor/core";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { decryptDriveBackup, encryptDriveBackup } from "./drive-encryption.mjs";
@@ -992,7 +989,6 @@ function loadCustomBackgrounds() {
 
 const customBackgroundData = loadCustomBackgrounds();
 const themeBackgroundAssets = import.meta.glob("../assets/background-themes/*/*.{jpg,webp}", {
-  eager: true,
   query: "?url",
   import: "default"
 });
@@ -1003,26 +999,36 @@ const customAgendaBackgrounds = customBackgroundData.map((source) => {
   image.addEventListener("load", () => drawAgendaCanvas());
   return image;
 });
-function createAgendaBackgrounds(theme) {
-  return months.map((_, index) => {
-    const image = new Image();
-    const assetPath = theme === "cleaning"
-      ? index === 0
-        ? "../assets/background-themes/cleaning/barrenderos.webp"
-        : `../assets/background-themes/cleaning/barrenderos-${String(index + 1).padStart(2, "0")}.jpg`
-      : `../assets/background-themes/${theme}/month-${String(index + 1).padStart(2, "0")}.jpg`;
-    const assetUrl = themeBackgroundAssets[assetPath];
-    if (assetUrl) image.src = assetUrl;
-    image.addEventListener("load", () => drawAgendaCanvas());
-    return image;
-  });
+function createAgendaBackgrounds() {
+  return months.map(() => null);
 }
 
-let agendaBackgrounds = createAgendaBackgrounds(selectedBackgroundTheme);
+let agendaBackgrounds = createAgendaBackgrounds();
 
 // Prioriza el fondo personalizado del mes y, si no existe, usa el predeterminado.
 function currentAgendaBackground() {
-  return customAgendaBackgrounds[state.month] || agendaBackgrounds[state.month];
+  const customBackground = customAgendaBackgrounds[state.month];
+  if (customBackground) return customBackground;
+
+  let image = agendaBackgrounds[state.month];
+  if (image) return image;
+
+  image = new Image();
+  image.addEventListener("load", () => drawAgendaCanvas());
+  const assetPath = selectedBackgroundTheme === "cleaning"
+    ? state.month === 0
+      ? "../assets/background-themes/cleaning/barrenderos.webp"
+      : `../assets/background-themes/cleaning/barrenderos-${String(state.month + 1).padStart(2, "0")}.jpg`
+    : `../assets/background-themes/${selectedBackgroundTheme}/month-${String(state.month + 1).padStart(2, "0")}.jpg`;
+  const loadAssetUrl = themeBackgroundAssets[assetPath];
+  if (loadAssetUrl) {
+    const backgrounds = agendaBackgrounds;
+    loadAssetUrl().then((assetUrl) => {
+      if (agendaBackgrounds === backgrounds) image.src = assetUrl;
+    }).catch(() => {});
+  }
+  agendaBackgrounds[state.month] = image;
+  return image;
 }
 
 function updateShareBackgroundOption() {
@@ -2057,7 +2063,11 @@ function downloadRecordCsv() {
   showToast("CSV descargado");
 }
 
-function downloadRecordPdf() {
+async function downloadRecordPdf() {
+  const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+    import("jspdf"),
+    import("jspdf-autotable")
+  ]);
   const records = yearRoutes(state.year);
   const pdf = new jsPDF({ orientation: "landscape" });
   pdf.setFontSize(16);
@@ -3400,6 +3410,7 @@ async function shareMonthAgenda() {
 async function showMonthShareQr() {
   showQrButton.disabled = true;
   try {
+    const { default: QRCode } = await import("qrcode");
     const shareUrl = await createSharedMonthUrl();
     shareQrImage.src = await QRCode.toDataURL(shareUrl, {
       errorCorrectionLevel: "H",
