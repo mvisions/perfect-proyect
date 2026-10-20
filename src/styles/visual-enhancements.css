@@ -435,6 +435,65 @@ body.native-android .record-card{order:1}
 	body.native-android .record-export .button{min-height:48px;font-size:12px}
 }
 
+.orientation-lock{position:fixed;z-index:20000;inset:0;display:grid;place-items:center;padding:28px;color:#f5fff9;background:#17211f;text-align:center}
+.orientation-lock[hidden]{display:none!important}
+.orientation-lock p{max-width:25em;margin:0;font-family:"Space Grotesk",sans-serif;font-size:22px;font-weight:700;line-height:1.35;letter-spacing:0}
+body.portrait-orientation-locked{overflow:hidden!important}
+body.portrait-orientation-locked>*{visibility:hidden!important}
+body.portrait-orientation-locked>#orientationLock{visibility:visible!important}
+
+html.mobile-scrollbars-hidden,
+html.mobile-scrollbars-hidden *{scrollbar-width:none;-ms-overflow-style:none}
+html.mobile-scrollbars-hidden::-webkit-scrollbar,
+html.mobile-scrollbars-hidden *::-webkit-scrollbar{display:none;width:0;height:0}
+body.native-android,
+body.native-android .workspace,
+body.native-android .mobile-route-dialog-content,
+body.native-android .agenda-zoom-scroll{-webkit-overflow-scrolling:touch}
+
+@media (orientation:landscape) and (max-height:520px){
+	body.native-android .mobile-navigation md-tabs{height:56px}
+	body.native-android .mobile-navigation md-primary-tab{--md-primary-tab-container-height:54px;--md-primary-tab-label-text-size:10px}
+	body.native-android.record-view .workspace{padding:2px 8px calc(60px + env(safe-area-inset-bottom))}
+	body.native-android.record-view .record-card{padding:0 4px}
+	body.native-android.record-view .record-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 8px;margin:0 0 4px}
+	body.native-android.record-view .record-heading .section-label,
+	body.native-android.record-view .record-note{display:none}
+	body.native-android.record-view .record-heading h2{margin:0;font-size:18px;line-height:1.1}
+	body.native-android.record-view .record-year-nav{display:grid;grid-template-columns:34px 72px 34px;gap:4px}
+	body.native-android.record-view .record-year-nav .button{width:34px;min-width:34px;height:34px;min-height:34px;padding:0;font-size:16px}
+	body.native-android.record-view .record-year-nav select{width:72px;min-width:72px;height:34px;min-height:34px;padding:0 4px;font-size:12px}
+	body.native-android.record-view .record-tabs{gap:2px;margin:4px 0 6px;padding:2px}
+	body.native-android.record-view .record-tab{min-height:34px;padding:2px;font-size:10px}
+	body.native-android.record-view .record-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:4px 0}
+	body.native-android.record-view .record-stats div:first-child{grid-column:auto}
+	body.native-android.record-view .record-stats div{display:flex;align-items:center;gap:8px;min-height:34px;padding:4px 8px;text-align:left}
+	body.native-android.record-view .record-stats strong{font-size:15px;line-height:1}
+	body.native-android.record-view .record-stats span{min-width:0;font-size:9px;line-height:1.1;white-space:normal}
+	body.native-android.record-view .record-comparison{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:4px 0}
+	body.native-android.record-view .record-comparison article{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;min-height:42px;gap:2px 6px;padding:3px 6px}
+	body.native-android.record-view .record-comparison .comparison-label{grid-column:1;grid-row:1;font-size:8px}
+	body.native-android.record-view .record-comparison strong{grid-column:2;grid-row:1;font-size:14px}
+	body.native-android.record-view .record-comparison small{grid-column:1/-1;grid-row:2;font-size:9px;line-height:1.1}
+	body.native-android.settings-view .workspace,
+	body.native-android.help-view .workspace{padding:4px 8px calc(60px + env(safe-area-inset-bottom))}
+	body.native-android .mobile-settings-page{padding:0 0 12px}
+	body.native-android .mobile-settings-page h1,
+	body.native-android .mobile-help-page h1{margin:0 0 8px;font-size:19px;line-height:1.15}
+	body.native-android.settings-view .mobile-settings-controls .topbar-locale-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%}
+	body.native-android.settings-view .mobile-settings-controls .language-select,
+	body.native-android.settings-view .mobile-settings-controls .theme-toggle{grid-column:auto;width:100%;min-width:0}
+	body.native-android .mobile-settings-controls .language-select select,
+	body.native-android .mobile-settings-controls .theme-toggle select{width:100%;height:36px;min-height:36px;font-size:12px}
+	body.native-android .mobile-settings-controls .topbar-account-actions{gap:6px}
+	body.native-android .mobile-settings-controls .topbar-account-actions button,
+	body.native-android .mobile-settings-controls #showQrButton{min-height:36px;padding:4px 6px;border-radius:8px;font-size:10px}
+	body.native-android .mobile-help-page{padding:0 0 12px}
+	body.native-android .mobile-help-page .help-guide{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+	body.native-android .mobile-help-page .help-guide h3{font-size:12px;line-height:1.2}
+	body.native-android .mobile-help-page .help-guide p{font-size:11px;line-height:1.3}
+}
+
 @media (min-width: 761px){
 	body:not(.native-android) .preferences-panel{margin-bottom:0}
 	body:not(.native-android) .form-panel{margin-top:10px}

@@ -7,6 +7,14 @@ import "@material/web/tabs/primary-tab.js";
 import "@material/web/icon/icon.js";
 import "@material/web/button/filled-button.js";
 
+function fittedCanvasText(context, text, maxWidth) {
+  const original = String(text).toLocaleUpperCase(currentLanguage).trim();
+  if (context.measureText(original).width <= maxWidth) return original;
+  let fitted = original;
+  while (fitted && context.measureText(`${fitted}…`).width > maxWidth) fitted = fitted.slice(0, -1).trimEnd();
+  return `${fitted}…`;
+}
+
 // Catálogos de meses, días, tipos de ruta y estados de la jornada.
 const months = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -101,6 +109,7 @@ const state = {
 const $ = (selector) => document.querySelector(selector);
 const mobileViewportQuery = window.matchMedia("(max-width: 760px), (orientation: landscape) and (max-height: 520px)");
 const mobileLandscapeQuery = window.matchMedia("(orientation: landscape) and (max-height: 520px)");
+const mobilePortraitQuery = window.matchMedia("(orientation: portrait)");
 const introScreen = document.getElementById("introScreen");
 const webWelcomeBanner = document.getElementById("webWelcomeBanner");
 const introVideo = document.getElementById("introVideo");
@@ -244,6 +253,7 @@ const mobileHelpPage = $("#mobileHelpPage");
 const mobileHelpContent = $("#mobileHelpContent");
 const mobileHelpSection = $(".help-options");
 const mobileOrientationHint = $("#mobileOrientationHint");
+const orientationLock = $("#orientationLock");
 const monthFieldGroup = monthSelect.closest(".field-group");
 const yearFieldGroup = yearInput.closest(".field-group");
 const mobileLocaleHome = document.createComment("mobile locale controls home");
@@ -799,6 +809,22 @@ Object.entries(staticUiTranslations).forEach(([source, translations]) => {
 Object.assign(languageTranslations.fr, { "Importar a Google Calendar": "Importer dans Google Agenda" });
 Object.assign(languageTranslations.it, { "Importar a Google Calendar": "Importa in Google Calendar" });
 Object.assign(languageTranslations.de, { "Importar a Google Calendar": "In Google Kalender importieren" });
+Object.assign(languagePairs, {
+  "ESTA VERSIÓN DE APLICACIÓN ES PARA MODO HORIZONTAL. GIRE SU MÓVIL PARA PODER UTILIZARLA":
+    "THIS APP VERSION IS DESIGNED FOR LANDSCAPE MODE. ROTATE YOUR PHONE TO CONTINUE."
+});
+Object.assign(languageTranslations.fr, {
+  "ESTA VERSIÓN DE APLICACIÓN ES PARA MODO HORIZONTAL. GIRE SU MÓVIL PARA PODER UTILIZARLA":
+    "CETTE VERSION DE L’APPLICATION EST CONÇUE POUR LE MODE PAYSAGE. TOURNEZ VOTRE TÉLÉPHONE POUR CONTINUER."
+});
+Object.assign(languageTranslations.it, {
+  "ESTA VERSIÓN DE APLICACIÓN ES PARA MODO HORIZONTAL. GIRE SU MÓVIL PARA PODER UTILIZARLA":
+    "QUESTA VERSIONE DELL’APP È PROGETTATA PER LA MODALITÀ ORIZZONTALE. RUOTA IL TELEFONO PER CONTINUARE."
+});
+Object.assign(languageTranslations.de, {
+  "ESTA VERSIÓN DE APLICACIÓN ES PARA MODO HORIZONTAL. GIRE SU MÓVIL PARA PODER UTILIZARLA":
+    "DIESE APP-VERSION IST FÜR DAS QUERFORMAT AUSGELEGT. DREHEN SIE IHR TELEFON, UM FORTZUFAHREN."
+});
 
 function localizedUiText(source) {
   if (currentLanguage === "es") return source;
@@ -2439,6 +2465,20 @@ function isMobileExperience() {
   return nativeAndroid() || mobileViewportQuery.matches;
 }
 
+function syncMobileOrientationLock() {
+  const shouldLock = isMobileExperience() && mobilePortraitQuery.matches;
+  document.body.classList.toggle("portrait-orientation-locked", shouldLock);
+  orientationLock.hidden = !shouldLock;
+  if (shouldLock) {
+    document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
+  }
+}
+
+function deferMobileOrientationLockSync() {
+  syncMobileOrientationLock();
+  window.setTimeout(syncMobileOrientationLock, 50);
+}
+
 webSettingsTabs?.addEventListener("toggle", (event) => {
   const activeTab = event.target;
   if (!(activeTab instanceof HTMLDetailsElement) || !activeTab.open || isMobileExperience()) return;
@@ -2492,6 +2532,7 @@ function restorePortal(element, anchor) {
 
 function syncMobileLayout() {
   const shouldEnable = isMobileExperience();
+  document.documentElement.classList.toggle("mobile-scrollbars-hidden", shouldEnable);
   if (shouldEnable === mobileLayoutEnabled) return;
   mobileLayoutEnabled = shouldEnable;
   if (shouldEnable) {
@@ -2526,7 +2567,13 @@ function syncMobileLayout() {
   recordCard.hidden = activeMobilePage !== "stats";
 }
 
-mobileViewportQuery.addEventListener("change", syncMobileLayout);
+mobileViewportQuery.addEventListener("change", () => {
+  syncMobileLayout();
+  deferMobileOrientationLockSync();
+});
+mobilePortraitQuery.addEventListener("change", deferMobileOrientationLockSync);
+window.addEventListener("resize", deferMobileOrientationLockSync, { passive: true });
+window.addEventListener("orientationchange", deferMobileOrientationLockSync);
 mobileLandscapeQuery.addEventListener("change", () => {
   if (!mobileLayoutEnabled) return;
   mobileOrientationHint.hidden = mobileLandscapeQuery.matches || activeMobilePage !== "agenda";
@@ -2779,6 +2826,7 @@ function canvasTextColorForFill(color) {
 function drawWeeklyAgendaCanvas() {
   const canvas = $("#agendaCanvas");
   const context = canvas.getContext("2d");
+  const mobileCanvasLayout = isMobileExperience();
   const width = 1600;
   const margin = 72;
   const gridTop = 320;
@@ -2822,7 +2870,7 @@ function drawWeeklyAgendaCanvas() {
   context.font = "700 44px Arial";
   fillUppercaseText(context, languageTranslations[currentLanguage]?.["Memoria laboral"] || "Memoria laboral", margin + 28, 101);
   context.fillStyle = "#ccefe1";
-  context.font = "700 18px Arial";
+  context.font = `700 ${mobileCanvasLayout ? 22 : 18}px Arial`;
   fillUppercaseText(context, localizedCalendarLabels[currentLanguage] || localizedCalendarLabels.es, margin + 28, 132);
   const rangeStart = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(dates[0]);
   const rangeEnd = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(dates[dates.length - 1]);
@@ -2870,7 +2918,7 @@ function drawWeeklyAgendaCanvas() {
     if (route) {
       const x = margin + 300;
       context.fillStyle = routeColor(route);
-      context.font = "700 25px Arial";
+      context.font = `700 ${mobileCanvasLayout ? 28 : 25}px Arial`;
       drawWrappedText(context, `${routeDisplayName(route)} · ${shiftHours(route.shift)} h`, x, rowY + 48, rowWidth - 350, 28);
       const entry = route.actualEntry || route.plannedTime || route.time || "";
       const exit = route.actualExit || route.plannedExit || route.exit || "";
@@ -2948,6 +2996,7 @@ function landscapeWeekLayout(canvas) {
 function drawLandscapeMonthCanvas() {
   const canvas = $("#agendaCanvas");
   const context = canvas.getContext("2d");
+  const mobileCanvasLayout = isMobileExperience();
   const { width, margin, compact, gridTop, gridGap, columnGap, cellHeight, firstDay, offset, daysInMonth, columns, rows, cellWidth } = landscapeMonthLayout(canvas);
   const height = gridTop + rows * (cellHeight + gridGap) + 8;
   canvas.width = width;
@@ -3023,19 +3072,25 @@ function drawLandscapeMonthCanvas() {
         const entry = route.actualEntry || route.plannedTime || route.time || "";
         const exit = route.actualExit || route.plannedExit || route.exit || "";
         const schedule = entry ? `${entry}${exit ? ` – ${exit}` : ""}` : statusLabel(route);
-        const details = [route.type?.trim(), schedule, routeExtraHours(route) ? `${routeExtraHours(route)} h extra` : ""].filter(Boolean).join(" · ");
+        const details = (mobileCanvasLayout
+          ? [schedule, routeExtraHours(route) ? `${routeExtraHours(route)} h extra` : ""]
+          : [route.type?.trim(), schedule, routeExtraHours(route) ? `${routeExtraHours(route)} h extra` : ""])
+          .filter(Boolean).join(" · ");
         context.fillStyle = routeColor(route);
-        context.font = "700 22px Arial";
-        drawWrappedText(context, title, textX, y + 52, textWidth, 20);
+        context.font = `700 ${mobileCanvasLayout ? 30 : 25}px Arial`;
+        if (mobileCanvasLayout) context.fillText(fittedCanvasText(context, title, textWidth), textX, y + 54);
+        else drawWrappedText(context, title, textX, y + 52, textWidth, 22);
         context.fillStyle = "#40534b";
-        context.font = "600 17px Arial";
-        drawWrappedText(context, details, textX, y + 84, textWidth, 18);
+        context.font = `600 ${mobileCanvasLayout ? 22 : 19}px Arial`;
+        if (mobileCanvasLayout) context.fillText(fittedCanvasText(context, details, textWidth), textX, y + 82);
+        else drawWrappedText(context, details, textX, y + 84, textWidth, 20);
       } else {
         const label = customHolidays.find((item) => item.date === calendarDateString(date))?.name
           || (holiday ? holidayLabel(day) : "");
         context.fillStyle = "#53645c";
-        context.font = "600 18px Arial";
-        drawWrappedText(context, label, textX, y + 60, textWidth, 19);
+        context.font = `600 ${mobileCanvasLayout ? 22 : 20}px Arial`;
+        if (mobileCanvasLayout) context.fillText(fittedCanvasText(context, label, textWidth), textX, y + 62);
+        else drawWrappedText(context, label, textX, y + 60, textWidth, 21);
       }
     }
   }
@@ -3045,6 +3100,7 @@ function drawLandscapeMonthCanvas() {
 function drawLandscapeAgendaCanvas() {
   const canvas = $("#agendaCanvas");
   const context = canvas.getContext("2d");
+  const mobileCanvasLayout = isMobileExperience();
   const { width, margin, gridTop, columnGap, rowHeight, rowGap, cardWidth, height } = landscapeWeekLayout(canvas);
   const dates = visibleWeekDates();
   const locale = { es: "es-ES", en: "en-US", fr: "fr-FR", it: "it-IT", de: "de-DE" }[currentLanguage] || "es-ES";
@@ -3063,7 +3119,7 @@ function drawLandscapeAgendaCanvas() {
   const rangeStart = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(dates[0]);
   const rangeEnd = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(dates[6]);
   context.textAlign = "right";
-  context.font = "600 22px Arial";
+  context.font = `600 ${mobileCanvasLayout ? 24 : 22}px Arial`;
   context.fillText(`${rangeStart} – ${rangeEnd}`, width - margin - 18, 40);
   context.textAlign = "left";
 
@@ -3106,26 +3162,29 @@ function drawLandscapeAgendaCanvas() {
     const weekday = new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date);
     const dayDate = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(date);
     context.fillStyle = "#17211f";
-    context.font = "700 22px Arial";
+    context.font = `700 ${mobileCanvasLayout ? 28 : 22}px Arial`;
     context.fillText(`${weekday} ${dayDate}`, x + 20, y + Math.round(rowHeight * 0.58));
     if (route) {
       const detailX = x + 182;
       const textWidth = cardWidth - 198;
       context.fillStyle = routeColor(route);
-      context.font = "700 21px Arial";
-      drawWrappedText(context, routeDisplayName(route), detailX, y + 25, textWidth, 20);
+      context.font = `700 ${mobileCanvasLayout ? 32 : 21}px Arial`;
+      if (mobileCanvasLayout) context.fillText(fittedCanvasText(context, routeDisplayName(route), textWidth), detailX, y + 28);
+      else drawWrappedText(context, routeDisplayName(route), detailX, y + 25, textWidth, 22);
       const entry = route.actualEntry || route.plannedTime || route.time || "";
       const exit = route.actualExit || route.plannedExit || route.exit || "";
       const schedule = entry ? `${entry}${exit ? ` – ${exit}` : ""}` : statusLabel(route);
       const details = [route.type?.trim(), schedule, routeExtraHours(route) ? `${routeExtraHours(route)} h` : ""].filter(Boolean).join(" · ");
       context.fillStyle = "#40534b";
-      context.font = "600 16px Arial";
-      drawWrappedText(context, details, detailX, y + rowHeight - 8, textWidth, 17);
+      context.font = `600 ${mobileCanvasLayout ? 22 : 16}px Arial`;
+      if (mobileCanvasLayout) context.fillText(fittedCanvasText(context, details, textWidth), detailX, y + rowHeight - 8);
+      else drawWrappedText(context, details, detailX, y + rowHeight - 8, textWidth, 20);
     } else {
       context.fillStyle = "#71807a";
-      context.font = "600 18px Arial";
+      context.font = `600 ${mobileCanvasLayout ? 26 : 18}px Arial`;
       const emptyLabel = customHoliday?.name || (holiday ? holidayLabel(date.getDate()) : localizedUiText("Sin actividad programada"));
-      drawWrappedText(context, emptyLabel, x + 182, y + Math.round(rowHeight * 0.58), cardWidth - 198, 18);
+      if (mobileCanvasLayout) context.fillText(fittedCanvasText(context, emptyLabel, cardWidth - 198), x + 182, y + Math.round(rowHeight * 0.58));
+      else drawWrappedText(context, emptyLabel, x + 182, y + Math.round(rowHeight * 0.58), cardWidth - 198, 18);
     }
     if (state.selected === date.getDate() && state.month === date.getMonth() && state.year === date.getFullYear()) {
       context.strokeStyle = "#f27d65";
@@ -3963,6 +4022,7 @@ $(".agenda-preview").appendChild($(".export-actions"));
 $(".export-actions").appendChild($(".share-punches-toggle"));
 webWelcomeBanner.hidden = false;
 syncMobileLayout();
+syncMobileOrientationLock();
 if (driveAccessToken) {
   driveButtonLabel.textContent = "Drive conectado";
   driveLogoutButton.hidden = false;
