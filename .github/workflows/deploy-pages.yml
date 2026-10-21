@@ -24,16 +24,6 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
-      - name: Publish study website under /estudionoe/
-        run: |
-          mkdir -p dist/estudionoe
-          cp estudionoe/index.html estudionoe/styles.css estudionoe/language.css estudionoe/english.css dist/estudionoe/
-          cp estudionoe/activity-*.mjs estudionoe/app.mjs estudionoe/config.mjs estudionoe/grading.mjs estudionoe/local-ranking.mjs dist/estudionoe/
-          cp estudionoe/dictation-*.mjs estudionoe/dictation.mjs estudionoe/english-*.mjs dist/estudionoe/
-          cp estudionoe/language-*.mjs estudionoe/ordinal-numbers.mjs estudionoe/powers-*.mjs estudionoe/questions.mjs estudionoe/ranking-profile.mjs estudionoe/study-topics.mjs estudionoe/teacher-notes.mjs estudionoe/theme.mjs estudionoe/visitor-tracker.mjs dist/estudionoe/
-          cp -R estudionoe/aula estudionoe/audio dist/estudionoe/
-      - name: Test published study pages
-        run: node --test estudionoe/tests/homepage.test.mjs estudionoe/tests/language-vowels.test.mjs estudionoe/tests/english.test.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
