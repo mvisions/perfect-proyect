@@ -1,0 +1,73 @@
+const number = value => ({ kind: "number", value });
+const power = (base, exponent) => ({ kind: "power", base, exponent });
+const question = (id, category, title, answer, wrong, solution, explanation) =>
+  ({ id, category, title, answer, wrong, solution, explanation });
+
+export const questions = [
+  question(1, "Entender potencias", "En 3⁴, ¿cuál es la base? Escribe el número.", "3", ["4", "12"], number(3),
+    "La base es el número que se repite como factor: 3⁴ = 3 · 3 · 3 · 3."),
+  question(2, "Entender potencias", "En 2⁵, ¿cuál es el exponente? Escribe el número.", "5", ["2", "10"], number(5),
+    "El exponente indica cuántas veces se multiplica la base por sí misma: aquí son cinco factores iguales a 2."),
+  question(3, "Entender potencias", "Calcula el valor de 2³.", "8", ["6", "9"], number(8),
+    "2³ = 2 · 2 · 2 = 8. Una potencia no es base por exponente: 2 · 3 no es 2³."),
+  question(4, "Entender potencias", "Calcula el valor de 5⁰.", "1", ["0", "5"], number(1),
+    "Toda base distinta de cero elevada a 0 vale 1. Por eso 5⁰ = 1."),
+  question(5, "Entender potencias", "Calcula el valor de 4¹.", "4", ["1", "16"], number(4),
+    "Una potencia de exponente 1 es igual a su base: 4¹ = 4."),
+  question(6, "Simplificar", "Simplifica (2²)³ en una sola potencia de base 2.", "2^6", ["2^5", "2^8"], power(2, 6),
+    "En una potencia de una potencia, se multiplican los exponentes: (2²)³ = 2^(2 · 3) = 2⁶."),
+  question(7, "Simplificar", "Simplifica (3³)² en una sola potencia de base 3.", "3^6", ["3^5", "3^9"], power(3, 6),
+    "(3³)² = 3³ · 3³ = 3^(3 + 3) = 3⁶. También puedes multiplicar los exponentes: 3 · 2 = 6."),
+  question(8, "Simplificar", "Simplifica (5²)² en una sola potencia de base 5.", "5^4", ["5^2", "5^6"], power(5, 4),
+    "(5²)² = 5^(2 · 2) = 5⁴. Se conserva la base y se multiplican los exponentes."),
+  question(9, "Simplificar", "Escribe 7 · 7 · 7 como una sola potencia de base 7.", "7^3", ["7^7", "3^7"], power(7, 3),
+    "Hay tres factores iguales a 7: la base es 7 y el exponente es 3."),
+  question(10, "Simplificar", "Simplifica (4³)¹ en una sola potencia de base 4.", "4^3", ["4^4", "4^1"], power(4, 3),
+    "(4³)¹ = 4^(3 · 1) = 4³. Elevar a 1 no cambia la potencia."),
+  question(11, "Sumar", "Calcula 2³ + 2². Escribe el resultado numérico.", "12", ["32", "16"], number(12),
+    "Primero calcula cada potencia: 2³ + 2² = 8 + 4 = 12. No se suman los exponentes al sumar potencias."),
+  question(12, "Sumar", "Calcula 3² + 3². Escribe el resultado numérico.", "18", ["81", "36"], number(18),
+    "3² + 3² = 9 + 9 = 18. Dos potencias iguales se suman como dos cantidades iguales, no como 3⁴."),
+  question(13, "Sumar", "Calcula 5¹ + 5². Escribe el resultado numérico.", "30", ["125", "10"], number(30),
+    "5¹ + 5² = 5 + 25 = 30. La regla de sumar exponentes solo sirve para multiplicar potencias de la misma base."),
+  question(14, "Sumar", "Calcula 2⁰ + 2³. Escribe el resultado numérico.", "9", ["8", "10"], number(9),
+    "2⁰ vale 1 y 2³ vale 8: 1 + 8 = 9."),
+  question(15, "Sumar", "Calcula 4² + 4¹. Escribe el resultado numérico.", "20", ["64", "24"], number(20),
+    "4² + 4¹ = 16 + 4 = 20. Primero las potencias; después la suma."),
+  question(16, "Restar", "Calcula 2⁴ − 2². Escribe el resultado numérico.", "12", ["4", "8"], number(12),
+    "2⁴ − 2² = 16 − 4 = 12. No se restan los exponentes al restar potencias."),
+  question(17, "Restar", "Calcula 3³ − 3². Escribe el resultado numérico.", "18", ["3", "9"], number(18),
+    "3³ − 3² = 27 − 9 = 18. Restar exponentes es una regla de división, no de resta."),
+  question(18, "Restar", "Calcula 5² − 5¹. Escribe el resultado numérico.", "20", ["5", "25"], number(20),
+    "5² − 5¹ = 25 − 5 = 20."),
+  question(19, "Restar", "Calcula 4² − 4⁰. Escribe el resultado numérico.", "15", ["16", "4"], number(15),
+    "4² − 4⁰ = 16 − 1 = 15. Recuerda que 4⁰ = 1, no 0."),
+  question(20, "Restar", "Calcula 6² − 6². Escribe el resultado numérico.", "0", ["1", "6"], number(0),
+    "6² − 6² = 36 − 36 = 0. No es 6^(2 − 2): esa regla correspondería a una división."),
+  question(21, "Multiplicar", "Simplifica 2³ · 2² en una sola potencia de base 2.", "2^5", ["2^6", "4^5"], power(2, 5),
+    "Al multiplicar potencias de la misma base se conserva la base y se suman los exponentes: 2^(3 + 2) = 2⁵."),
+  question(22, "Multiplicar", "Simplifica 3² · 3⁴ en una sola potencia de base 3.", "3^6", ["3^8", "9^6"], power(3, 6),
+    "3² · 3⁴ = 3^(2 + 4) = 3⁶. No multipliques ni las bases ni los exponentes."),
+  question(23, "Multiplicar", "Simplifica 5¹ · 5³ en una sola potencia de base 5.", "5^4", ["5^3", "25^4"], power(5, 4),
+    "5¹ · 5³ = 5^(1 + 3) = 5⁴."),
+  question(24, "Multiplicar", "Simplifica 7⁰ · 7² en una sola potencia de base 7.", "7^2", ["7^0", "7^3"], power(7, 2),
+    "7⁰ · 7² = 7^(0 + 2) = 7². Como 7⁰ = 1, multiplicar por él no cambia el valor."),
+  question(25, "Multiplicar", "Simplifica 4³ · 4³ en una sola potencia de base 4.", "4^6", ["4^9", "8^6"], power(4, 6),
+    "4³ · 4³ = 4^(3 + 3) = 4⁶. Es una multiplicación de potencias, no una potencia de una potencia."),
+  question(26, "Dividir", "Simplifica 2⁶ ÷ 2² en una sola potencia de base 2.", "2^4", ["2^3", "2^8"], power(2, 4),
+    "Al dividir potencias de la misma base, distinta de cero, se restan los exponentes: 2^(6 − 2) = 2⁴."),
+  question(27, "Dividir", "Simplifica 3⁵ ÷ 3³ en una sola potencia de base 3.", "3^2", ["3^8", "3^3"], power(3, 2),
+    "3⁵ ÷ 3³ = 3^(5 − 3) = 3². Se conserva la base."),
+  question(28, "Dividir", "Simplifica 5⁴ ÷ 5¹ en una sola potencia de base 5.", "5^3", ["5^4", "5^5"], power(5, 3),
+    "5⁴ ÷ 5¹ = 5^(4 − 1) = 5³."),
+  question(29, "Dividir", "Simplifica 7³ ÷ 7³ en una sola potencia de base 7.", "7^0", ["7^1", "7^6"], power(7, 0),
+    "7³ ÷ 7³ = 7^(3 − 3) = 7⁰ = 1. Cualquier número no nulo dividido por sí mismo vale 1."),
+  question(30, "Dividir", "Simplifica 4⁵ ÷ 4⁰ en una sola potencia de base 4.", "4^5", ["4^0", "4^6"], power(4, 5),
+    "4⁵ ÷ 4⁰ = 4^(5 − 0) = 4⁵. Como 4⁰ = 1, dividir por él no cambia el valor."),
+];
+
+const pairSources = [1, 2, 3, 13, 5, 6, 8, 9, 11, 12, 15, 19, 20, 21, 26, 27, 28, 29, 30, 25];
+export const matchingPairs = pairSources.map(source => {
+  const item = questions.find(question => question.id === source);
+  return { ...item, id: `p${source}`, source };
+});

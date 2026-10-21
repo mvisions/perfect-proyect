@@ -1,0 +1,22 @@
+Dictado: Una aventura en la biblioteca
+
+Texto original de esta web. Audio generado localmente con Piper y el modelo
+es_ES-sharvard-medium, voz F (speaker 1). No es una grabacion de una persona
+leyendo este dictado. No se ha modificado la identidad de la voz.
+
+Modelo y ficha:
+https://huggingface.co/rhasspy/piper-voices/tree/main/es/es_ES/sharvard/medium
+
+Fuente de los datos de voz: Sharvard, University of Edinburgh DataShare.
+https://datashare.ed.ac.uk/handle/10283/574
+Ficha del modelo: licencia Creative Commons Attribution 3.0 (CC BY 3.0).
+https://creativecommons.org/licenses/by/3.0/
+
+El audio de este dictado se distribuye con atribucion bajo CC BY 3.0.
+Se permite compartirlo y adaptarlo con atribucion a esta web y a la fuente
+Sharvard, un enlace a la licencia y una indicacion de los cambios realizados.
+No se implica respaldo de los autores de Sharvard.
+
+Generador utilizado: Piper 2023.11.14-2 (MIT).
+https://github.com/rhasspy/piper
+El generador y el modelo no se incluyen en la web; solo los audios resultantes.

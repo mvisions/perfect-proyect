@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es" data-subject="language">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#923f48">
+    <meta name="description" content="Escucha un dictado para 5.º de Primaria, escríbelo y revisa tus faltas de ortografía, tildes y signos.">
+    <title>Lengua · Dictados · Noé</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../language.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">N</span><span>Noé<span class="brand-subtitle">MI ESPACIO DE ESTUDIO</span></span></a>
+      <div class="header-actions"><span class="header-tag">Lengua · Dictados</span>
+        <button id="theme-toggle" class="secondary" type="button" aria-pressed="false">Modo oscuro</button>
+      </div>
+    </header>
+    <main>
+      <nav aria-label="Ruta de navegación"><a class="secondary" href="./lengua-actual.html">← Lengua</a></nav>
+      <section class="hero" aria-labelledby="language-title">
+        <div>
+          <span class="eyebrow">5.º de Primaria · 10 años</span>
+          <h1 id="language-title">Escucha, escribe<br><span class="accent">y aprende.</span></h1>
+          <p>Un dictado corto para practicar la ortografía. Escucha con calma, escribe lo que oyes y descubre cómo mejorar.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="book"><span>MI CUADERNO</span><strong>Las<br>palabras</strong><span>LENGUA</span></div>
+          <div class="art-note">Cada palabra es una oportunidad</div>
+        </div>
+      </section>
+      <section class="question-card" aria-labelledby="dictation-title">
+        <span class="eyebrow">Tu primer dictado</span>
+        <h2 id="dictation-title">Una aventura en la biblioteca</h2>
+        <p class="muted">Pulsa Play. La voz lee por fragmentos, dice las comas y los puntos y deja cuatro segundos para escribir. Puedes detenerla y repetir el fragmento. El texto se muestra al corregir.</p>
+        <label class="input-label" for="voice-speed">Velocidad de lectura</label>
+        <select id="voice-speed" class="voice-speed">
+          <option value="0.9">Despacio</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.15">Más rápido</option>
+        </select>
+        <div class="audio-controls" role="group" aria-label="Reproductor del dictado">
+          <button id="play-dictation" class="primary" type="button"><span aria-hidden="true">▶</span> Play · Escuchar dictado</button>
+          <button id="stop-dictation" class="secondary" type="button" disabled>Detener</button>
+          <button id="repeat-chunk" class="secondary" type="button" disabled>Repetir fragmento</button>
+          <button id="next-chunk" class="secondary" type="button" disabled>Siguiente fragmento</button>
+        </div>
+        <p id="audio-status" class="muted" role="status" aria-live="polite">Audio en español preparado. Pulsa Play para escuchar.</p>
+        <p id="audio-error" class="form-error" role="alert" hidden></p>
+        <p class="muted">No necesitas micrófono ni instalar voces. Es un audio con voz neuronal en español, generado localmente e incluido en esta web. No se lee ni se envía tu respuesta. <a href="../audio/VOICE-LICENSE.txt">Créditos y licencia de la voz</a>.</p>
+        <form id="dictation-form">
+          <label class="input-label" for="dictation-answer">Escribe aquí tu dictado</label>
+          <textarea id="dictation-answer" rows="8" maxlength="4000" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" placeholder="Escucha y escribe aquí, con tildes y signos de puntuación…" aria-describedby="writing-help"></textarea>
+          <p id="writing-help" class="muted">La ayuda ortográfica del navegador está desactivada para practicar. Revisa tu texto antes de corregir. Tu borrador se guarda solo en este navegador.</p>
+          <p id="writing-error" class="form-error" role="alert" hidden></p>
+          <div class="nav">
+            <button class="primary" type="submit">Corregir mi dictado</button>
+            <button id="reset-dictation" class="secondary danger" type="button">Empezar de nuevo</button>
+          </div>
+        </form>
+      </section>
+      <section id="dictation-results" aria-labelledby="results-title" hidden></section>
+      <div data-activity-rankings></div>
+      <details class="source-note adult-reader">
+        <summary>Lectura por un adulto si no funciona la voz</summary>
+        <p>Pide a un adulto que pulse este botón y lea despacio sin enseñarte la pantalla. Al mostrarlo ya podrás ver la solución.</p>
+        <button id="reveal-dictation" class="secondary" type="button">Mostrar texto para leerlo</button>
+        <p id="adult-text" class="dictation-text" hidden></p>
+      </details>
+    </main>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+    <footer>Hecho para aprender, no solo para acertar.</footer>
+    <script type="module" src="../dictation.mjs?v=3"></script>
+    <script type="module" src="../visitor-tracker.mjs"></script>
+  </body>
+</html>

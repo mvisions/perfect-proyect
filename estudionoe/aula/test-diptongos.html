@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es" data-subject="language">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#923f48">
+    <meta name="description" content="Practica cómo reconocer diptongos y triptongos con un test de palabras.">
+    <title>Test de diptongos y triptongos · Noé</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../language.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">N</span><span>Noé<span class="brand-subtitle">MI ESPACIO DE ESTUDIO</span></span></a>
+      <div class="header-actions">
+        <span class="header-tag">Lengua · Test</span>
+        <button id="theme-toggle" class="secondary" type="button" aria-pressed="false">Modo oscuro</button>
+      </div>
+    </header>
+    <main>
+      <nav aria-label="Ruta de navegación"><a class="secondary" href="./lengua-actual.html">← Volver a Lengua</a></nav>
+      <section class="language-practice" aria-labelledby="practice-title">
+        <span class="eyebrow">Herramienta de trabajo</span>
+        <h1 id="practice-title">¿Diptongo, triptongo o ninguno?</h1>
+        <p class="muted">Clasifica cada palabra. Si no tiene diptongo ni triptongo, elige «Ninguno». Al corregir, aparecerá una explicación.</p>
+        <form id="vowel-quiz" class="vowel-quiz">
+          <div id="vowel-questions" class="vowel-question-list"></div>
+          <div class="vowel-quiz-actions">
+            <button class="primary" type="submit">Corregir el test</button>
+            <button class="secondary" type="reset">Empezar de nuevo</button>
+          </div>
+        </form>
+        <p id="vowel-quiz-result" class="vowel-quiz-result" role="status" aria-live="polite"></p>
+      </section>
+      <div data-activity-rankings></div>
+    </main>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+    <footer>Hecho para aprender, no solo para acertar.</footer>
+    <script type="module" src="../language-home.mjs"></script>
+    <script type="module" src="../language-vowels.mjs"></script>
+    <script type="module" src="../visitor-tracker.mjs"></script>
+  </body>
+</html>
